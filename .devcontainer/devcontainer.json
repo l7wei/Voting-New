@@ -1,0 +1,41 @@
+{
+  "name": "Voting System Development",
+  "dockerComposeFile": "../docker-compose.new-dev.yml",
+  "service": "mongo",
+  "workspaceFolder": "/workspace",
+  "features": {
+    "ghcr.io/devcontainers/features/node:1": {
+      "version": "20"
+    },
+    "ghcr.io/devcontainers/features/github-cli:1": {}
+  },
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "bradlc.vscode-tailwindcss",
+        "mongodb.mongodb-vscode"
+      ],
+      "settings": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "esbenp.prettier-vscode",
+        "editor.codeActionsOnSave": {
+          "source.fixAll.eslint": "explicit"
+        }
+      }
+    }
+  },
+  "forwardPorts": [3000, 27017],
+  "portsAttributes": {
+    "3000": {
+      "label": "Application",
+      "onAutoForward": "notify"
+    },
+    "27017": {
+      "label": "MongoDB"
+    }
+  },
+  "postCreateCommand": "npm install && cp .env.example .env.local",
+  "remoteUser": "node"
+}

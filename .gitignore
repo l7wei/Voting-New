@@ -1,6 +1,9 @@
 .vscode
 .vs
 .env
+.env.local
+.env.production
+.env.development
 db_files/
 **/node_modules
 *.swp
@@ -12,3 +15,21 @@ voting
 backups/
 libs/*.csv
 libs/*.backup
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+*.log
+*.pid
+*.seed
+*.pid.lock
+.npm
+.eslintcache
