@@ -21,6 +21,7 @@ coverage/
 db/
 db_files/
 backups/
+data/*.backup
 
 # Uploads
 uploads/

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import dbConnect from '@/lib/db/mongoose';
 import { Vote, Activity, Option } from '@/lib/db/models';
 import { requireAuth } from '@/lib/auth/middleware';
+import { isEligibleVoter } from '@/lib/utils/voterList';
 import mongoose from 'mongoose';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -64,6 +65,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { success: false, error: 'Invalid activity_id' },
         { status: 400 }
+      );
+    }
+
+    // Check if user is eligible to vote
+    if (!isEligibleVoter(user.student_id)) {
+      return NextResponse.json(
+        { success: false, error: 'You are not eligible to vote in this activity' },
+        { status: 403 }
       );
     }
 
