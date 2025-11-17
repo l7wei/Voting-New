@@ -37,3 +37,6 @@ uploads/
 .npm
 .eslintcache
 wget*
+
+# TypeScript
+tsconfig.tsbuildinfo
