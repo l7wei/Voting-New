@@ -12,7 +12,9 @@
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
     "type-check": "tsc --noEmit",
-    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d",
+    "seed": "tsx scripts/seed.ts",
+    "docker:dev": "docker-compose -f docker-compose.new-dev.yml up -d",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up -d",
     "legacy:dev": "docker-compose -f ./docker-compose.dev.yml up -d && env NODE_ENV=dev && node app.js",
     "legacy:start": "node app.js"
   },
@@ -49,6 +51,7 @@
     "@types/uuid": "^10.0.0",
     "babel-eslint": "^10.1.0",
     "eslint": "^8.10.0",
-    "eslint-config-google": "^0.14.0"
+    "eslint-config-google": "^0.14.0",
+    "tsx": "^4.20.6"
   }
 }
