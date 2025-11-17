@@ -1,20 +1,11 @@
-.vscode
-.vs
+# Environment
 .env
 .env.local
 .env.production
 .env.development
-db_files/
-**/node_modules
-*.swp
-.DS_Store
-uploads/
-wget*
-db/
-voting
-backups/
-libs/*.csv
-libs/*.backup
+
+# Dependencies
+node_modules/
 
 # Next.js
 .next/
@@ -26,10 +17,23 @@ dist/
 coverage/
 .nyc_output/
 
+# Database
+db/
+db_files/
+backups/
+
+# Uploads
+uploads/
+
 # Misc
 *.log
 *.pid
 *.seed
 *.pid.lock
+*.swp
+.DS_Store
+.vscode/
+.vs/
 .npm
 .eslintcache
+wget*

@@ -1,8 +1,7 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "name": "voting-system",
+  "version": "2.0.0",
+  "description": "NTHU Voting System - Next.js Edition",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -13,10 +12,8 @@
     "test:coverage": "jest --coverage",
     "type-check": "tsc --noEmit",
     "seed": "tsx scripts/seed.ts",
-    "docker:dev": "docker-compose -f docker-compose.new-dev.yml up -d",
-    "docker:prod": "docker-compose -f docker-compose.prod.yml up -d",
-    "legacy:dev": "docker-compose -f ./docker-compose.dev.yml up -d && env NODE_ENV=dev && node app.js",
-    "legacy:start": "node app.js"
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d",
+    "docker:prod": "docker-compose -f docker-compose.prod.yml up -d"
   },
   "keywords": [],
   "author": "",
@@ -28,20 +25,14 @@
     "@types/react": "^19.2.5",
     "@types/react-dom": "^19.2.3",
     "autoprefixer": "^10.4.22",
-    "axios": "^0.21.4",
-    "body-parser": "^1.19.0",
-    "csv-file-validator": "^1.13.1",
-    "dotenv": "^8.2.0",
-    "express": "^4.17.1",
-    "express-fileupload": "^1.2.0",
+    "chart.js": "^4.4.7",
     "jsonwebtoken": "^8.5.1",
     "mongoose": "^5.12.8",
     "next": "^16.0.3",
     "postcss": "^8.5.6",
     "react": "^19.2.0",
+    "react-chartjs-2": "^5.3.0",
     "react-dom": "^19.2.0",
-    "request": "^2.88.2",
-    "request-promise": "^4.2.6",
     "tailwindcss": "^4.1.17",
     "typescript": "^5.9.3",
     "uuid": "^7.0.3"
@@ -49,9 +40,7 @@
   "devDependencies": {
     "@types/jsonwebtoken": "^9.0.10",
     "@types/uuid": "^10.0.0",
-    "babel-eslint": "^10.1.0",
     "eslint": "^8.10.0",
-    "eslint-config-google": "^0.14.0",
     "tsx": "^4.20.6"
   }
 }

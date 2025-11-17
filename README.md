@@ -1,230 +1,272 @@
-# Voting-DSA
+# 清大線上投票系統 (Voting System)
 
-清大學生會首個線上投票系統上線啦～
+國立清華大學學生會線上投票系統 - 使用 Next.js 14+ 與 MongoDB 重構版本
 
-2020 年新型冠狀病毒全球大流行，為了減少人與人之間的接觸、保持社交距離，選委會決定將過往實體投票的選舉改為線上選舉，因此委託學生會資訊部開發，並且順利完成第 29 屆學生會正副會長、學生議會學生議員之選舉。
+## 🚀 技術棧
 
-此專案歡迎各界高手幫忙開發貢獻，也歡迎其他學生自治組織使用這套投票系統，如果有好點子、改善建議也都相當歡迎提出 issue。
+- **Frontend & Backend**: Next.js 14+ (App Router)
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS v4
+- **Database**: MongoDB with Mongoose
+- **Authentication**: JWT + OAuth 2.0 (CCXP)
+- **Containerization**: Docker & Docker Compose
+- **CI/CD**: GitHub Actions
+- **Development Environment**: GitHub Codespaces支援
 
-## 操作畫面
+## 📋 功能特色
 
-- [投票教學影片](https://www.youtube.com/watch?v=SN2JP758dFA&feature=youtu.be)
+- ✅ 現代化的使用者介面
+- ✅ 完整的投票流程管理
+- ✅ 管理員後台系統
+- ✅ 活動與候選人管理
+- ✅ Mock OAuth 開發模式
+- ✅ 資料視覺化 (開發中)
+- ✅ 自動化測試 CI/CD
+- ✅ Docker 容器化部署
 
-![](README/img/voting.jpg)
+## 🛠️ 安裝與設定
 
-![](README/img/activity.png)
+### 前置需求
 
-![](README/img/verification.jpg)
+- Node.js 20+
+- MongoDB 7.0+
+- Docker & Docker Compose (選用)
 
-## 安裝、執行
+### 本地開發
 
-1. `npm install`
-1. `cp .env.dev .env`
-1. `npm run dev`
-
-## 開發
-
-- 在 [README/postman](README/postman) 中有 API 測試範本
-  - 記得改 `service_token`，產生方式如下
-- 如何關閉 OAuth，啟用學號模擬？
-  - `cp .env.dev`
-  - 將 **For development** 中的註解拿掉
-  - 在網頁中登入後，開啟瀏覽器命令列輸入 `jwtToken` 即可獲得
-- 如何從本機產生登入 JWT Token?
-  - 先透過 `addUser` API 建立使用者，並取得 `_id` 與 `student_id`
-  - 打開 Node.js CLI 輸入以下程式碼產生 Token
-  - 將 Token 直接貼到瀏覽器 cookie 中 `service_token` 欄位
-
-```javascript
-auth = require('./libs/ccxpAuth.js');
-user = {"_id": "5ed699efdc02ue515d79627b","student_id": "108060001"}
-auth.obtainServiceToken('108060001', user);
+1. **克隆專案**
+```bash
+git clone https://github.com/l7wei/Voting-New.git
+cd Voting-New
 ```
 
-## 匯入測試檔案
+2. **安裝依賴**
+```bash
+npm install
+```
 
-- `mongorestore --drop --host localhost --port 27017 -uroot -ppassword --db voting_sa README/dump`
+3. **設定環境變數**
+```bash
+cp .env.example .env.local
+```
 
-## 指派使用者為管理員
-  ```bash
-    mongo
+編輯 `.env.local`:
+```env
+MONGODB_URI=mongodb://root:password@127.0.0.1:27017/voting_sa
+TOKEN_SECRET=your-secret-key
+NODE_ENV=development
+```
 
-    use DATABASE_NAME
-    
-    db.TABLE_NAME.update({student_id:'{YOUR_STUDENTID}'}, {$set: {"remark":"admin"}})
+4. **啟動 MongoDB (使用 Docker)**
+```bash
+npm run docker:dev
+```
 
-  ```
+5. **載入測試資料**
+```bash
+npm run seed
+```
 
-## 新增投票活動步驟
+這會建立:
+- 管理員帳號: `108000000`
+- 測試用戶: `108000001`, `108000002`, `108000003`
+- 範例投票活動與候選人
 
-1. 透過 Postman 新增管理員（addUser）
+6. **啟動開發伺服器**
+```bash
+npm run dev
+```
 
-   ```json
-   {
-     "student_id": "108062001",
-   }
-   ```
+開啟瀏覽器訪問 [http://localhost:3000](http://localhost:3000)
 
-   加上 admin 權限
+### 使用 Mock OAuth 登入
 
-   ```json
-   {
-     "student_id": "108062001",
-     "remark": "admin"
-   }
-   ```
+在開發模式下，可以直接使用 Mock OAuth 登入:
 
-   
+```
+http://localhost:3000/api/auth/mock-login?student_id=108000000
+```
 
-1. 透過 Postman 新增活動（addActivity）
+## 🐳 使用 Docker
 
-    ```json
-    {
-        "name": "第 30 屆學生會正副會長",
-        "type": "candidate",
-        "rule": "choose_all",
-        "open_from": "2020/06/28 12:00:00",
-        "open_to": "2020/06/30 12:00:00"
-    }
-    ```
+### 開發環境
 
-    ```json
-    {
-        "name": "第 30 屆學生議員",
-        "type": "candidate",
-        "rule": "choose_all",
-        "open_from": "2020/06/28 12:00:00",
-        "open_to": "2020/06/30 12:00:00"
-    }
-    ```
+```bash
+npm run docker:dev
+npm run dev
+```
 
-    會返回類似於下面的資訊，請把 `_id` 記下來。
+### 生產環境
 
-    ```json
-    {
-        "users": [],
-        "options": [],
-        "_id": "60dea866076f71776b9da13b",
-        "name": "第 30 屆學生會正副會長",
-        "type": "candidate",
-        "rule": "choose_all",
-        "created_at": "2021-07-02T05:47:18.861Z",
-        "updated_at": "2021-07-02T05:47:18.861Z",
-        "open_from": "2020-06-28T04:00:00.000Z",
-        "open_to": "2020-06-30T04:00:00.000Z",
-        "__v": 0
-    }
-    ```
+```bash
+npm run docker:prod
+```
 
-    ```json
-    {
-        "users": [],
-        "options": [],
-        "_id": "60dea866076f71776b9da13c",
-        "name": "第 30 屆學生議員",
-        "type": "candidate",
-        "rule": "choose_all",
-        "created_at": "2021-07-02T05:47:18.861Z",
-        "updated_at": "2021-07-02T05:47:18.861Z",
-        "open_from": "2020-06-28T04:00:00.000Z",
-        "open_to": "2020-06-30T04:00:00.000Z",
-        "__v": 0
-    }
-    ```
+或手動:
 
-1. 新增選舉人（addOption）
+```bash
+docker-compose -f docker-compose.prod.yml up -d
+```
 
-   記得把 `activity_id`、`avatar_url` 換掉
+## 🧪 測試
 
-    - 會長參選人
-    ```json
-    {
-      "activity_id": "60dea866076f71776b9da13b",
-      "type": "candidate",
-      "candidate": {
-        "name": "王小明",
-        "department": "人文社會學院學士班 20 級",
-        "college": "人文社會學院",
-        "avatar_url": "https://imgur.com/xxxxx.jpg",
-        "personal_experiences": [
-          "國立清華大學105學年度下學期-書卷獎"
-        ],
-        "political_opinions": [
-          "1. 履行會長之職責。",
-          "2. 持續關注學生感興趣的校內議題。"
-        ]
-      },
-      "vice1": {
-        "personal_experiences": [
-          "國立清華大學轉學生聯誼會-活動"
-        ],
-        "name": "陳小明",
-        "department": "科技管理學院學士班 22 級",
-        "college": "科技管理學院",
-        "avatar_url": "https://imgur.com/xxxxx.jpg"
-      },
-      "vice2": {
-        "personal_experiences": [
-          "國立清華大學學生會第29屆秘書部-部員"
-        ],
-        "name": "劉曉明",
-        "department": "教育與學習科技學系 24 級",
-        "college": "教育學院",
-        "avatar_url": "https://imgur.com/xxxxx.jpg"
-      }
-    }
-    ```
-    - 議員參選人
-    ```json
-    {
-      "activity_id": "60dea866076f71776b9da13c",
-      "type": "candidate",
-      "candidate": {
-        "name": "陳小明",
-        "department": "科技管理學院學士班 23 級",
-        "college": "科技管理學院",
-        "avatar_url": "https://imgur.com/xxxxxx.jpg",
-        "personal_experiences": [
-          "國立清華大學第 28 屆學生會秘書部部員",
-          "國立清華大學第 29 屆學生議會秘書長"
-        ],
-        "political_opinions": [
-          "1. 履行議員之職責。",
-          "2. 持續關注學生感興趣的校內議題。"
-        ]
-      }
-    }
-    ```
+```bash
+# 執行所有測試
+npm test
 
-1. 到後台檢查名稱、日期（UTC+0）是否正確
-   - http://127.0.0.1:3000/activity.html
+# 監看模式
+npm run test:watch
 
-1. 修改 `libs/全校在學學生資料.csv`，這是可以投票的學生名單
+# 生成測試覆蓋率報告
+npm run test:coverage
 
+# TypeScript 型別檢查
+npm run type-check
 
-# Development
+# ESLint 檢查
+npm run lint
+```
 
-## Backup
-`mongodump -h 127.0.0.1 -d DB_NAME -o ./mongo-backup`
+## 📦 建置
 
-## Restore
-`mongorestore -h 127.0.0.1 -d DB_NAME --directoryperdb DB_FILE`
+```bash
+npm run build
+```
 
-     
-# TODO 111-2
+建置完成後，可以使用以下指令啟動生產伺服器:
 
-- [ ] 新增編輯投票人名單 UI
-- [ ] 新增選舉活動、候選人增修查改 UI
-- [ ] 將介面「我不投給他」改成「反對」
-- [ ] 介面增加**一人多票**的說明
-- [ ] 候選人增加一欄「參選執行長意願」
-- [ ] 完善 README.md
+```bash
+npm start
+```
+
+## 🔧 開發工具
+
+### GitHub Codespaces
+
+本專案已配置 GitHub Codespaces，可直接在雲端開發:
+
+1. 點擊 GitHub 儲存庫頁面的 "Code" 按鈕
+2. 選擇 "Create codespace on main"
+3. 等待環境建立完成
+4. 自動執行 `npm install` 和設定
+
+### VS Code 建議擴充套件
+
+- ESLint
+- Prettier
+- Tailwind CSS IntelliSense
+- MongoDB for VS Code
+
+## 📚 API 文檔
+
+### 認證 API
+
+- `GET /api/auth/login` - OAuth 登入
+- `GET /api/auth/mock-login?student_id=<學號>` - Mock 登入 (僅開發模式)
+- `GET /api/auth/logout` - 登出
+
+### 活動 API
+
+- `GET /api/activities` - 獲取所有活動
+- `GET /api/activities?available=true` - 獲取進行中的活動
+- `GET /api/activities/[id]` - 獲取單一活動
+- `POST /api/activities` - 建立活動 (管理員)
+- `PUT /api/activities/[id]` - 更新活動 (管理員)
+- `DELETE /api/activities/[id]` - 刪除活動 (管理員)
+
+### 選項/候選人 API
+
+- `GET /api/options?activity_id=<活動ID>` - 獲取活動的候選人
+- `POST /api/options` - 新增候選人 (管理員)
+
+### 投票 API
+
+- `POST /api/votes` - 提交投票
+- `GET /api/votes?activity_id=<活動ID>` - 獲取投票結果 (管理員)
+
+### 使用者 API
+
+- `GET /api/users` - 獲取所有使用者 (管理員)
+- `POST /api/users` - 建立使用者 (管理員)
+
+## 🗂️ 專案結構
+
+```
+.
+├── app/                    # Next.js App Router
+│   ├── api/               # API Routes
+│   │   ├── auth/          # 認證相關
+│   │   ├── activities/    # 活動管理
+│   │   ├── votes/         # 投票
+│   │   ├── options/       # 候選人/選項
+│   │   └── users/         # 使用者管理
+│   ├── admin/             # 管理員頁面
+│   ├── voting/            # 投票頁面
+│   ├── layout.tsx         # 根佈局
+│   ├── page.tsx           # 首頁
+│   └── globals.css        # 全域樣式
+├── components/            # React 元件
+│   ├── admin/            # 管理員元件
+│   ├── voting/           # 投票元件
+│   └── ui/               # 通用 UI 元件
+├── lib/                   # 工具庫
+│   ├── db/               # 資料庫
+│   │   ├── models/       # Mongoose Models
+│   │   └── mongoose.ts   # MongoDB 連線
+│   └── auth/             # 認證工具
+│       ├── jwt.ts        # JWT 工具
+│       └── middleware.ts # 認證中介層
+├── scripts/              # 工具腳本
+│   └── seed.ts          # 資料庫種子資料
+├── public/              # 靜態資源
+├── .github/
+│   └── workflows/       # GitHub Actions
+└── docker-compose.*.yml # Docker 設定
+```
+
+## 🔐 安全性
+
+- JWT Token 用於身份驗證
+- Cookie 設定 HttpOnly 和 Secure
+- API 路由使用中介層保護
+- 管理員權限檢查
+- 環境變數加密敏感資訊
+
+## 📝 授權
+
+ISC
+
+## 👥 貢獻
+
+歡迎提交 Issue 和 Pull Request!
+
+### 開發流程
+
+1. Fork 專案
+2. 建立功能分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交變更 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 開啟 Pull Request
+
+## 📞 聯絡資訊
+
+國立清華大學學生會資訊部
+
+## 🙏 致謝
+
+感謝所有為本專案做出貢獻的開發者與使用者。
 
 ---
 
-- [ ] 加入登入跳轉到原先頁面
-- [ ] 加入 debug、log
-- [ ] 加入後台投票統計圓餅圖
-- [ ] 加入自動化測試
-- [ ] 修正投票按鈕點選範圍
-- [ ] 重構前端程式碼
+## 📅 版本歷史
+
+### v2.0.0 (2025-11)
+- 完整重構為 Next.js 14+ 架構
+- 加入 TypeScript 型別安全
+- 使用 Tailwind CSS v4
+- Docker 容器化部署
+- GitHub Actions CI/CD
+
+### v1.x (Legacy)
+- 原 Express.js + jQuery 架構
+- 已完全移除並由新架構取代

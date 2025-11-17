@@ -1,22 +1,23 @@
-version: '3'
+version: '3.8'
+
 services:
   mongo:
-    env_file:
-      - ./.env.dev
-    image: mongo:4.2
+    image: mongo:7.0
+    container_name: voting-mongo-dev
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=root
-      - MONGO_INITDB_ROOT_PASSWORD=password
-    volumes:
-      - /data/db
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+      MONGO_INITDB_DATABASE: voting_sa
     ports:
-      - 27017:27017
-    restart: on-failure
+      - "27017:27017"
+    volumes:
+      - mongo-data-dev:/data/db
     networks:
-      - internal
-    command: mongod
+      - voting-network
 
 networks:
-  internal:
+  voting-network:
     driver: bridge
 
+volumes:
+  mongo-data-dev:
