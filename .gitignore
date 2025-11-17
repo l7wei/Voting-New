@@ -1,14 +1,58 @@
-.vscode
-.vs
-.env
-db_files/
-**/node_modules
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Testing
+coverage/
+*.log
+
+# Next.js
+.next/
+out/
+build/
+dist/
+
+# Production
 *.swp
 .DS_Store
+
+# Environment
+.env
+.env*.local
+.env.production
+
+# IDE
+.vscode/
+.vs/
+.idea/
+
+# Database
+db_files/
+db/
+backups/
+
+# Uploads
 uploads/
 wget*
-db/
-voting
-backups/
+
+# CSV files (sensitive data)
 libs/*.csv
 libs/*.backup
+
+# Backup
+.backup/
+
+# TypeScript
+*.tsbuildinfo
+next-env.d.ts
+
+# Debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# Misc
+voting
+restartVoteService.sh

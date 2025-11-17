@@ -1,23 +1,49 @@
-version: '3'
+version: '3.8'
+
 services:
-  mongo:
-    image: mongo:4.2
+  mongodb:
+    image: mongo:6
+    container_name: voting-mongodb
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-root}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-password}
+      MONGO_INITDB_DATABASE: ${MONGO_NAME:-voting_sa}
+    ports:
+      - "27017:27017"
     volumes:
-      - /data/db
-    ports:
-      - 27017:27017
-    restart: on-failure
+      - mongodb_data:/data/db
     networks:
-      - internal
-    command: mongod
-  server:
-    build: ./server
+      - voting-network
+    restart: unless-stopped
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: voting-app
     ports:
-      - ${SERVER_PORT}:3000
+      - "${PORT:-3000}:3000"
     environment:
-      - DATABASE_HOST=db
+      - NODE_ENV=production
+      - MONGODB_URI=mongodb://${MONGO_USERNAME:-root}:${MONGO_PASSWORD:-password}@mongodb:27017/${MONGO_NAME:-voting_sa}
+      - TOKEN_SECRET=${TOKEN_SECRET:-mysecret}
+      - OAUTH_CLIENT_ID=${OAUTH_CLIENT_ID}
+      - OAUTH_CLIENT_SECRET=${OAUTH_CLIENT_SECRET}
+      - OAUTH_AUTHORIZE=${OAUTH_AUTHORIZE}
+      - OAUTH_TOKEN_URL=${OAUTH_TOKEN_URL}
+      - OAUTH_RESOURCE_URL=${OAUTH_RESOURCE_URL}
+      - OAUTH_CALLBACK_URL=${OAUTH_CALLBACK_URL}
+      - OAUTH_SCOPE=${OAUTH_SCOPE}
     depends_on:
-      - mongo
+      - mongodb
+    networks:
+      - voting-network
+    restart: unless-stopped
+
+networks:
+  voting-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
+
