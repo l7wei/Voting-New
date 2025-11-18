@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { JWTPayload, AuthUser } from '@/types';
+import adminsConfig from '@/config/admins.json';
 
 const TOKEN_SECRET = process.env.TOKEN_SECRET || 'mysecret';
 
@@ -25,6 +26,10 @@ export function verifyToken(token: string): JWTPayload | null {
   } catch {
     return null;
   }
+}
+
+export function isAdmin(studentId: string): boolean {
+  return adminsConfig.admins.includes(studentId);
 }
 
 export async function hashPassword(password: string): Promise<string> {

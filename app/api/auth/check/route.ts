@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken } from '@/lib/auth';
+import { verifyToken, isAdmin } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,11 +15,14 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ authenticated: false }, { status: 200 });
     }
 
+    const isUserAdmin = isAdmin(payload.student_id);
+
     return NextResponse.json({ 
       authenticated: true,
       user: {
         student_id: payload.student_id,
-        remark: payload.remark,
+        name: payload.student_id, // We'll get the actual name from OAuth
+        isAdmin: isUserAdmin,
       }
     }, { status: 200 });
   } catch (error) {

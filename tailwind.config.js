@@ -9,17 +9,17 @@ module.exports = {
     extend: {
       colors: {
         primary: {
-          50: '#faf5fb',
-          100: '#f3e8f5',
-          200: '#e8d5ec',
-          300: '#d8b4de',
-          400: '#c592cc',
-          500: '#b081b7', // Main brand color
-          600: '#9866a0',
-          700: '#7e5386',
-          800: '#66446e',
-          900: '#55395a',
+          DEFAULT: '#b081b7', // Main brand color
+          light: '#f3e5f5',   // Light purple for backgrounds/cards
         },
+        neutral: {
+          light: '#f5f5f5',   // Light gray background
+          DEFAULT: '#616161', // Dark gray for text
+          dark: '#212121',    // Near-black for titles
+        },
+      },
+      fontFamily: {
+        sans: ['system-ui', '-apple-system', 'sans-serif'],
       },
     },
   },
