@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { exchangeCodeForToken, getUserInfo } from '@/lib/oauth';
 import { generateToken } from '@/lib/auth';
+import { isAdmin } from '@/lib/adminConfig';
 import { User } from '@/lib/models/User';
 import connectDB from '@/lib/db';
 
@@ -21,6 +22,9 @@ export async function GET(request: NextRequest) {
     const userInfo = await getUserInfo(tokenInfo.access_token);
     const studentId = userInfo.Userid;
 
+    // Check if user is admin from JSON config
+    const adminStatus = isAdmin(studentId);
+
     // Connect to database
     await connectDB();
 
@@ -29,9 +33,20 @@ export async function GET(request: NextRequest) {
     if (!user) {
       user = await User.create({
         student_id: studentId,
+        remark: adminStatus ? 'admin' : undefined,
         created_at: new Date(),
         updated_at: new Date(),
       });
+    } else if (adminStatus && user.remark !== 'admin') {
+      // Update existing user to admin if they're in the admin list
+      user.remark = 'admin';
+      user.updated_at = new Date();
+      await user.save();
+    } else if (!adminStatus && user.remark === 'admin') {
+      // Remove admin status if they're no longer in the admin list
+      user.remark = undefined;
+      user.updated_at = new Date();
+      await user.save();
     }
 
     // Generate service token
@@ -42,7 +57,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Create response with redirect
-    const response = NextResponse.redirect(new URL('/voting', request.url));
+    const response = NextResponse.redirect(new URL('/vote', request.url));
     
     // Set token in cookie
     response.cookies.set('service_token', serviceToken, {

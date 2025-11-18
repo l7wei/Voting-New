@@ -4,9 +4,11 @@ export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const redirectUri = searchParams.get('redirect_uri');
   
-  // For mock, generate a fake code
-  const code = 'mock_code_' + Date.now();
+  // Redirect to login page with redirect_uri
+  const loginUrl = new URL('/login', request.url);
+  if (redirectUri) {
+    loginUrl.searchParams.set('redirect_uri', redirectUri);
+  }
   
-  const callbackUrl = `${redirectUri}?code=${code}`;
-  return NextResponse.redirect(callbackUrl);
+  return NextResponse.redirect(loginUrl);
 }
