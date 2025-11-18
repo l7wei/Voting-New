@@ -2,9 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Card from '@/components/Card';
-import Button from '@/components/Button';
-import Loading from '@/components/Loading';
+import Header from '@/components/Header';
+import { Card, CardBody, CardHeader, Button, Chip, Spinner } from '@heroui/react';
 
 interface Activity {
   _id: string;
@@ -56,24 +55,35 @@ export default function VotePage() {
     const openTo = new Date(activity.open_to);
 
     if (now < openFrom) {
-      return <span className="px-3 py-1 text-sm rounded-full bg-yellow-100 text-yellow-800">即將開始</span>;
+      return <Chip color="warning" variant="flat" size="sm">即將開始</Chip>;
     } else if (now > openTo) {
-      return <span className="px-3 py-1 text-sm rounded-full bg-gray-100 text-gray-800">已結束</span>;
+      return <Chip color="default" variant="flat" size="sm">已結束</Chip>;
     } else {
-      return <span className="px-3 py-1 text-sm rounded-full bg-green-100 text-green-800">進行中</span>;
+      return <Chip color="success" variant="flat" size="sm">進行中</Chip>;
     }
   };
 
   if (loading) {
-    return <Loading />;
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-purple-50 to-blue-50">
+        <Header />
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <div className="flex justify-center items-center py-20">
+            <Spinner size="lg" label="載入中..." />
+          </div>
+        </main>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-purple-100 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-purple-50 to-blue-50">
+      <Header />
+      
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Header */}
-        <div className="text-center mb-8 sm:mb-12">
-          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3 sm:mb-4">
+        <div className="text-center mb-10">
+          <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-3">
             投票活動選擇
           </h1>
           <p className="text-base sm:text-lg text-gray-600">
@@ -83,47 +93,57 @@ export default function VotePage() {
 
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800 text-sm">{error}</p>
-          </div>
+          <Card className="mb-6 border-danger-200 bg-danger-50">
+            <CardBody>
+              <p className="text-danger-800 text-sm">{error}</p>
+            </CardBody>
+          </Card>
         )}
 
         {/* Activities List */}
         {activities.length === 0 ? (
-          <Card className="text-center py-12">
-            <div className="inline-block p-6 bg-white rounded-full shadow-lg mb-4">
-              <svg className="w-16 h-16 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-              </svg>
-            </div>
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">目前沒有進行中的投票活動</h3>
-            <p className="text-gray-500 mb-6">請稍後再回來查看</p>
-            <Button href="/" variant="primary">
-              返回首頁
-            </Button>
+          <Card className="border-none bg-white/80 backdrop-blur-sm">
+            <CardBody className="text-center py-16">
+              <div className="inline-block p-6 bg-primary-100 rounded-full mb-6">
+                <svg className="w-16 h-16 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <h3 className="text-2xl font-semibold text-gray-900 mb-3">目前沒有進行中的投票活動</h3>
+              <p className="text-gray-600 mb-6">請稍後再回來查看</p>
+              <Button 
+                as={Link}
+                href="/" 
+                color="primary"
+                variant="flat"
+              >
+                返回首頁
+              </Button>
+            </CardBody>
           </Card>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {activities.map((activity) => (
-              <Card key={activity._id} hover>
-                <div className="flex justify-between items-start mb-4">
-                  <h3 className="text-lg sm:text-xl font-bold text-gray-900 flex-1 pr-2">
-                    {activity.name}
-                  </h3>
-                  {getStatusBadge(activity)}
-                </div>
-
-                <div className="space-y-2 mb-6">
-                  <div className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <Card key={activity._id} className="border-none bg-white/80 backdrop-blur-sm hover:shadow-xl transition-shadow">
+                <CardHeader className="flex flex-col items-start gap-2 pb-4">
+                  <div className="flex justify-between items-start w-full gap-2">
+                    <h3 className="text-xl font-bold text-gray-900 flex-1">
+                      {activity.name}
+                    </h3>
+                    {getStatusBadge(activity)}
+                  </div>
+                </CardHeader>
+                <CardBody className="pt-0 space-y-3">
+                  <div className="flex items-center text-sm text-gray-700">
+                    <svg className="w-5 h-5 mr-2 flex-shrink-0 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                     </svg>
                     <span className="font-medium">類型：</span>
                     <span className="ml-1">{activity.type}</span>
                   </div>
 
-                  <div className="flex items-center text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex items-center text-sm text-gray-700">
+                    <svg className="w-5 h-5 mr-2 flex-shrink-0 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                     </svg>
                     <span className="font-medium">投票方式：</span>
@@ -132,37 +152,57 @@ export default function VotePage() {
                     </span>
                   </div>
 
-                  <div className="flex items-start text-sm text-gray-600">
-                    <svg className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className="flex items-start text-sm text-gray-700">
+                    <svg className="w-5 h-5 mr-2 flex-shrink-0 mt-0.5 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                     </svg>
-                    <div>
+                    <div className="flex-1">
                       <span className="font-medium">截止時間：</span>
                       <span className="ml-1 block sm:inline">
-                        {new Date(activity.open_to).toLocaleString('zh-TW')}
+                        {new Date(activity.open_to).toLocaleString('zh-TW', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit'
+                        })}
                       </span>
                     </div>
                   </div>
-                </div>
 
-                <Button href={`/vote/${activity._id}`} variant="primary" fullWidth>
-                  開始投票
-                </Button>
+                  <div className="pt-4">
+                    <Button 
+                      as={Link}
+                      href={`/vote/${activity._id}`} 
+                      color="primary"
+                      className="w-full"
+                    >
+                      開始投票
+                    </Button>
+                  </div>
+                </CardBody>
               </Card>
             ))}
           </div>
         )}
 
         {/* Back Button */}
-        <div className="text-center mt-8 sm:mt-12">
-          <Link
+        <div className="text-center mt-12">
+          <Button
+            as={Link}
             href="/"
-            className="inline-block text-primary-600 hover:text-primary-800 font-medium transition text-sm sm:text-base"
+            variant="light"
+            color="primary"
+            startContent={
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+              </svg>
+            }
           >
-            ← 返回首頁
-          </Link>
+            返回首頁
+          </Button>
         </div>
-      </div>
+      </main>
     </div>
   );
 }
