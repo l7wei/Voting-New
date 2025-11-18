@@ -2,7 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { Card, CardBody, CardHeader, Button, Chip, Spinner, Divider, ButtonGroup } from '@heroui/react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Loading } from '@/components/ui/loader';
+import { CheckCircle2, Tag, Briefcase, FileText, ArrowLeft, AlertCircle } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface Candidate {
   name: string;
@@ -139,37 +145,35 @@ export default function VotingPage() {
 
   const renderCandidate = (candidate: Candidate, role: string) => {
     return (
-      <Card className="mb-4 border-none bg-gradient-to-r from-primary-50 to-purple-50">
-        <CardBody className="p-4">
-          <div className="flex items-start gap-4 mb-3">
+      <Card className="mb-4 border-primary/20 bg-gradient-to-br from-primary/5 to-purple-50">
+        <CardContent className="p-4">
+          <div className="mb-3 flex items-start gap-4">
             {candidate.avatar_url && (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={candidate.avatar_url}
                 alt={candidate.name}
-                className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg flex-shrink-0"
+                className="h-20 w-20 flex-shrink-0 rounded-full border-4 border-white object-cover shadow-lg"
               />
             )}
             <div className="flex-1">
-              <Chip color="primary" variant="solid" size="sm" className="mb-2">{role}</Chip>
-              <h4 className="font-bold text-xl text-gray-900 mb-1">{candidate.name}</h4>
-              <p className="text-sm text-primary-700 font-medium">{candidate.department}</p>
-              <p className="text-sm text-gray-600">{candidate.college}</p>
+              <Badge variant="default" className="mb-2">{role}</Badge>
+              <h4 className="mb-1 text-xl font-bold">{candidate.name}</h4>
+              <p className="text-sm font-medium text-primary">{candidate.department}</p>
+              <p className="text-sm text-muted-foreground">{candidate.college}</p>
             </div>
           </div>
           
           {candidate.personal_experiences && candidate.personal_experiences.length > 0 && (
-            <div className="mb-3 bg-white/80 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
-                <p className="text-sm font-bold text-gray-900">經歷</p>
+            <div className="mb-3 rounded-lg bg-white/80 p-3">
+              <div className="mb-2 flex items-center gap-2">
+                <Briefcase className="h-4 w-4 text-primary" />
+                <p className="text-sm font-bold">經歷</p>
               </div>
               <ul className="space-y-1">
                 {candidate.personal_experiences.map((exp, idx) => (
-                  <li key={idx} className="text-sm text-gray-700 flex items-start">
-                    <span className="text-primary-500 mr-2">•</span>
+                  <li key={idx} className="flex items-start text-sm">
+                    <span className="mr-2 text-primary">•</span>
                     <span>{exp}</span>
                   </li>
                 ))}
@@ -178,49 +182,44 @@ export default function VotingPage() {
           )}
           
           {candidate.political_opinions && candidate.political_opinions.length > 0 && (
-            <div className="bg-white/80 rounded-lg p-3">
-              <div className="flex items-center gap-2 mb-2">
-                <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
-                <p className="text-sm font-bold text-gray-900">政見</p>
+            <div className="rounded-lg bg-white/80 p-3">
+              <div className="mb-2 flex items-center gap-2">
+                <FileText className="h-4 w-4 text-primary" />
+                <p className="text-sm font-bold">政見</p>
               </div>
               <ul className="space-y-1">
                 {candidate.political_opinions.map((opinion, idx) => (
-                  <li key={idx} className="text-sm text-gray-700 flex items-start">
-                    <span className="text-primary-500 mr-2">•</span>
+                  <li key={idx} className="flex items-start text-sm">
+                    <span className="mr-2 text-primary">•</span>
                     <span>{opinion}</span>
                   </li>
                 ))}
               </ul>
             </div>
           )}
-        </CardBody>
+        </CardContent>
       </Card>
     );
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-purple-50 to-blue-50 flex items-center justify-center">
-        <Spinner size="lg" label="載入中..." />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loading text="載入中..." />
       </div>
     );
   }
 
   if (!activity) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-primary-50 via-purple-50 to-blue-50 flex items-center justify-center px-4">
-        <Card className="max-w-md w-full">
-          <CardBody className="text-center py-12">
-            <h2 className="text-2xl font-bold text-gray-900 mb-4">找不到投票活動</h2>
-            <Button
-              onClick={() => router.push('/vote')}
-              color="primary"
-            >
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-md">
+          <CardContent className="py-12 text-center">
+            <h2 className="mb-4 text-2xl font-bold">找不到投票活動</h2>
+            <Button onClick={() => router.push('/vote')}>
               返回投票列表
             </Button>
-          </CardBody>
+          </CardContent>
         </Card>
       </div>
     );
@@ -228,135 +227,133 @@ export default function VotingPage() {
 
   if (showConfirmation) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center px-4">
-        <Card className="max-w-2xl w-full border-none shadow-2xl">
-          <CardBody className="text-center py-12">
-            <div className="inline-block p-6 bg-green-100 rounded-full mb-6">
-              <svg className="w-16 h-16 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
+      <div className="flex min-h-screen items-center justify-center bg-background px-4">
+        <Card className="w-full max-w-2xl">
+          <CardContent className="py-12 text-center">
+            <div className="mx-auto mb-6 inline-flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
+              <CheckCircle2 className="h-10 w-10 text-green-600" />
             </div>
-            <h2 className="text-3xl font-bold text-gray-900 mb-4">投票成功！</h2>
-            <p className="text-lg text-gray-600 mb-8">感謝您的參與，您的投票已成功送出</p>
+            <h2 className="mb-4 text-3xl font-bold">投票成功！</h2>
+            <p className="mb-8 text-lg text-muted-foreground">
+              感謝您的參與，您的投票已成功送出
+            </p>
 
-            <Card className="border-primary-200 bg-primary-50 mb-8">
-              <CardBody className="p-6">
-                <h3 className="text-lg font-semibold text-primary-900 mb-2">投票證明 UUID</h3>
-                <div className="font-mono text-sm text-primary-700 bg-white p-4 rounded-lg border border-primary-200 break-all">
+            <Card className="mb-8 border-primary bg-primary/5">
+              <CardContent className="p-6">
+                <h3 className="mb-2 text-lg font-semibold text-primary">投票證明 UUID</h3>
+                <div className="break-all rounded-lg border border-primary/20 bg-white p-4 font-mono text-sm text-primary">
                   {voteToken}
                 </div>
-                <p className="text-sm text-gray-600 mt-4">
+                <p className="mt-4 text-sm text-muted-foreground">
                   請妥善保存此 UUID，這是您投票的唯一證明。系統採用匿名投票機制，無法追溯您的投票內容。
                 </p>
-              </CardBody>
+              </CardContent>
             </Card>
 
-            <Button
-              onClick={() => router.push('/vote')}
-              color="primary"
-              size="lg"
-            >
+            <Button size="lg" onClick={() => router.push('/vote')}>
               返回投票列表
             </Button>
-          </CardBody>
+          </CardContent>
         </Card>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-primary-50 via-purple-50 to-blue-50 py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-4xl mx-auto">
+    <div className="min-h-screen bg-background py-8 px-4 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-4xl">
         {/* Header */}
-        <Card className="mb-8 border-none shadow-lg bg-white/80 backdrop-blur-sm">
-          <CardHeader className="flex flex-col items-start gap-2 pb-4">
-            <h1 className="text-3xl font-bold text-gray-900">{activity.name}</h1>
-            <div className="flex flex-wrap gap-4 text-sm text-gray-600">
-              <div className="flex items-center">
-                <svg className="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
-                </svg>
-                <span>類型：{activity.type}</span>
-              </div>
-              <div className="flex items-center">
-                <svg className="w-5 h-5 mr-2 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>投票方式：{activity.rule === 'choose_all' ? '多選評分' : '單選'}</span>
+        <Card className="mb-8">
+          <CardHeader>
+            <div className="flex flex-col gap-2">
+              <CardTitle className="text-3xl">{activity.name}</CardTitle>
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center">
+                  <Tag className="mr-2 h-4 w-4 text-primary" />
+                  <span>類型：{activity.type}</span>
+                </div>
+                <div className="flex items-center">
+                  <CheckCircle2 className="mr-2 h-4 w-4 text-primary" />
+                  <span>投票方式：{activity.rule === 'choose_all' ? '多選評分' : '單選'}</span>
+                </div>
               </div>
             </div>
           </CardHeader>
           {activity.rule === 'choose_all' && (
             <>
-              <Divider />
-              <CardBody className="pt-4">
-                <Chip color="primary" variant="flat" className="w-full justify-start">
-                  <strong>投票說明：</strong> 請對每位候選人表達您的意見（支持、反對或無意見）
-                </Chip>
-              </CardBody>
+              <Separator />
+              <CardContent className="pt-4">
+                <Badge variant="outline" className="w-full justify-start text-sm">
+                  <strong className="mr-2">投票說明：</strong>
+                  請對每位候選人表達您的意見（支持、反對或無意見）
+                </Badge>
+              </CardContent>
             </>
           )}
         </Card>
 
         {/* Error Message */}
         {error && (
-          <Card className="mb-6 border-danger-200 bg-danger-50">
-            <CardBody>
-              <p className="text-danger-800">{error}</p>
-            </CardBody>
+          <Card className="mb-6 border-destructive bg-destructive/10">
+            <CardContent className="flex items-center gap-2 py-4">
+              <AlertCircle className="h-5 w-5 text-destructive" />
+              <p className="text-destructive">{error}</p>
+            </CardContent>
           </Card>
         )}
 
         {/* Options/Candidates */}
-        <div className="space-y-6 mb-8">
+        <div className="mb-8 space-y-6">
           {activity.options.map((option, index) => (
-            <Card key={option._id} className="border-none shadow-lg bg-white/80 backdrop-blur-sm">
-              <CardHeader className="pb-4">
-                <h3 className="text-xl font-bold text-gray-900">
+            <Card key={option._id}>
+              <CardHeader>
+                <CardTitle className="text-xl">
                   候選人 {index + 1}
-                </h3>
+                </CardTitle>
               </CardHeader>
-              <Divider />
-              <CardBody className="pt-6">
+              <Separator />
+              <CardContent className="pt-6">
                 {option.candidate && renderCandidate(option.candidate, '會長')}
                 {option.vice1 && renderCandidate(option.vice1, '副會長一')}
                 {option.vice2 && renderCandidate(option.vice2, '副會長二')}
 
                 {/* Vote Selection */}
-                <div className="mt-6 pt-6 border-t border-gray-200">
-                  <p className="text-sm font-semibold text-gray-700 mb-3">您的選擇：</p>
+                <div className="mt-6 border-t pt-6">
+                  <p className="mb-3 text-sm font-semibold">您的選擇：</p>
                   {activity.rule === 'choose_all' ? (
-                    <ButtonGroup className="w-full">
+                    <div className="grid grid-cols-3 gap-2">
                       <Button
                         onClick={() => handleChooseAllChange(option._id, '我要投給他')}
-                        color={chooseAllVotes[option._id] === '我要投給他' ? 'success' : 'default'}
-                        variant={chooseAllVotes[option._id] === '我要投給他' ? 'solid' : 'bordered'}
-                        className="flex-1"
+                        variant={chooseAllVotes[option._id] === '我要投給他' ? 'default' : 'outline'}
+                        className={cn(
+                          "flex-1",
+                          chooseAllVotes[option._id] === '我要投給他' && "bg-green-600 hover:bg-green-700 text-white border-green-600"
+                        )}
                       >
                         支持
                       </Button>
                       <Button
                         onClick={() => handleChooseAllChange(option._id, '我不投給他')}
-                        color={chooseAllVotes[option._id] === '我不投給他' ? 'danger' : 'default'}
-                        variant={chooseAllVotes[option._id] === '我不投給他' ? 'solid' : 'bordered'}
+                        variant={chooseAllVotes[option._id] === '我不投給他' ? 'destructive' : 'outline'}
                         className="flex-1"
                       >
                         反對
                       </Button>
                       <Button
                         onClick={() => handleChooseAllChange(option._id, '我沒有意見')}
-                        color={chooseAllVotes[option._id] === '我沒有意見' ? 'default' : 'default'}
-                        variant={chooseAllVotes[option._id] === '我沒有意見' ? 'solid' : 'bordered'}
-                        className="flex-1"
+                        variant={chooseAllVotes[option._id] === '我沒有意見' ? 'default' : 'outline'}
+                        className={cn(
+                          "flex-1",
+                          chooseAllVotes[option._id] === '我沒有意見' && "bg-gray-500 hover:bg-gray-600 text-white"
+                        )}
                       >
                         無意見
                       </Button>
-                    </ButtonGroup>
+                    </div>
                   ) : (
                     <Button
                       onClick={() => setChooseOneVote(option._id)}
-                      color={chooseOneVote === option._id ? 'primary' : 'default'}
-                      variant={chooseOneVote === option._id ? 'solid' : 'bordered'}
+                      variant={chooseOneVote === option._id ? 'default' : 'outline'}
                       className="w-full"
                       size="lg"
                     >
@@ -364,7 +361,7 @@ export default function VotingPage() {
                     </Button>
                   )}
                 </div>
-              </CardBody>
+              </CardContent>
             </Card>
           ))}
         </div>
@@ -373,20 +370,20 @@ export default function VotingPage() {
         <div className="flex gap-4">
           <Button
             onClick={() => router.push('/vote')}
-            variant="bordered"
+            variant="outline"
             size="lg"
             className="flex-1"
           >
+            <ArrowLeft className="mr-2 h-4 w-4" />
             返回
           </Button>
           <Button
             onClick={handleSubmitVote}
-            color="primary"
             size="lg"
-            isLoading={submitting}
+            disabled={submitting}
             className="flex-1"
           >
-            確認投票
+            {submitting ? '提交中...' : '確認投票'}
           </Button>
         </div>
       </div>
