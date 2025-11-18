@@ -17,9 +17,9 @@ export async function GET(request: NextRequest) {
     const tokenInfo = await exchangeCodeForToken(code);
     console.log('Callback: Got token info');
     
-    // Get user info
+    // Get user info from OAuth (Userid field maps to student_id)
     const userInfo = await getUserInfo(tokenInfo.access_token);
-    const studentId = userInfo.Userid;
+    const studentId = userInfo.Userid; // OAuth returns "Userid", we map it to student_id
     const userName = userInfo.name || studentId;
     console.log('Callback: Got user info for student ID:', studentId, 'name:', userName);
 

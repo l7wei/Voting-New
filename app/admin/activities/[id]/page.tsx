@@ -1,8 +1,35 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
+import Header from '@/components/Header';
+import AdminGuard from '@/components/auth/AdminGuard';
+import { 
+  Card, 
+  CardHeader,
+  CardBody, 
+  Button, 
+  Spinner,
+  Input,
+  Textarea,
+  Chip,
+  Divider,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  useDisclosure
+} from '@heroui/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { 
+  faArrowLeft, 
+  faPlus,
+  faTrash,
+  faChartBar,
+  faClipboardCheck
+} from '@fortawesome/free-solid-svg-icons';
 
 interface Candidate {
   name: string;
@@ -32,30 +59,39 @@ interface Activity {
   options: Option[];
 }
 
-export default function ActivityManagementPage() {
+function ActivityManagementContent() {
   const params = useParams();
-  const router = useRouter();
-  const activityId = params.id as string;
-
+  const activityId = params?.id as string;
+  
   const [activity, setActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const [showAddCandidate, setShowAddCandidate] = useState(false);
-
-  // Form state for adding candidate
-  // Form state for adding candidate - to be implemented
-  // const [candidateForm, setCandidateForm] = useState({...});
-  const [includeVice1, setIncludeVice1] = useState(false);
-  const [includeVice2, setIncludeVice2] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  
+  // Candidate form state
+  const [candidateForm, setCandidateForm] = useState({
+    name: '',
+    department: '',
+    college: '',
+    avatar_url: '',
+    personal_experiences: '',
+    political_opinions: '',
+  });
 
   useEffect(() => {
-    fetchActivity();
+    if (activityId) {
+      fetchActivity();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activityId]);
 
   const fetchActivity = async () => {
     try {
-      const response = await fetch(`/api/activities/${activityId}?include_options=true`);
+      const response = await fetch(`/api/activities/${activityId}?include_options=true`, {
+        credentials: 'include',
+      });
       const data = await response.json();
 
       if (data.success) {
@@ -73,24 +109,77 @@ export default function ActivityManagementPage() {
 
   const handleAddCandidate = async () => {
     setError('');
+    setSubmitting(true);
     
     try {
-      // TODO: Implement with auth token
-      setError('請先實作管理員認證功能');
+      const candidate = {
+        name: candidateForm.name,
+        department: candidateForm.department,
+        college: candidateForm.college,
+        avatar_url: candidateForm.avatar_url || undefined,
+        personal_experiences: candidateForm.personal_experiences 
+          ? candidateForm.personal_experiences.split('\n').filter(e => e.trim())
+          : [],
+        political_opinions: candidateForm.political_opinions
+          ? candidateForm.political_opinions.split('\n').filter(p => p.trim())
+          : [],
+      };
+
+      const response = await fetch('/api/options', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          activity_id: activityId,
+          type: 'candidate',
+          candidate,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        onClose();
+        setCandidateForm({
+          name: '',
+          department: '',
+          college: '',
+          avatar_url: '',
+          personal_experiences: '',
+          political_opinions: '',
+        });
+        fetchActivity();
+      } else {
+        setError(data.error || '新增候選人失敗');
+      }
     } catch (err) {
       console.error('Error adding candidate:', err);
       setError('新增候選人時發生錯誤');
+    } finally {
+      setSubmitting(false);
     }
   };
 
-  const handleDeleteOption = async (_optionId: string) => {
+  const handleDeleteOption = async (optionId: string) => {
     if (!confirm('確定要刪除此候選人嗎？')) {
       return;
     }
 
     try {
-      // TODO: Implement with auth token
-      setError('請先實作管理員認證功能');
+      const response = await fetch(`/api/options/${optionId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        fetchActivity();
+      } else {
+        setError(data.error || '刪除候選人失敗');
+      }
     } catch (err) {
       console.error('Error deleting option:', err);
       setError('刪除候選人時發生錯誤');
@@ -99,274 +188,292 @@ export default function ActivityManagementPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">載入中...</p>
-        </div>
+      <div className="min-h-screen bg-neutral-100">
+        <Header />
+        <main className="container mx-auto max-w-7xl px-6 py-12">
+          <div className="flex justify-center items-center py-20">
+            <Spinner size="lg" label="載入中..." />
+          </div>
+        </main>
       </div>
     );
   }
 
   if (!activity) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">找不到投票活動</h2>
-          <button
-            onClick={() => router.push('/admin')}
-            className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition"
-          >
-            返回管理後台
-          </button>
-        </div>
+      <div className="min-h-screen bg-neutral-100">
+        <Header />
+        <main className="container mx-auto max-w-7xl px-6 py-12">
+          <Card className="glass-card text-center p-8">
+            <CardBody>
+              <h2 className="text-2xl font-bold text-neutral-900 mb-4">找不到投票活動</h2>
+              <Button
+                as={Link}
+                href="/admin"
+                color="primary"
+              >
+                返回管理後台
+              </Button>
+            </CardBody>
+          </Card>
+        </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-100">
-      {/* Header */}
-      <header className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <Link
-                href="/admin"
-                className="mr-4 text-gray-600 hover:text-gray-900"
-              >
-                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                </svg>
-              </Link>
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">{activity.name}</h1>
-                <p className="text-gray-600 mt-1">管理候選人與活動設定</p>
-              </div>
+    <div className="min-h-screen bg-neutral-100">
+      <Header />
+
+      <main className="container mx-auto max-w-7xl px-6 py-8">
+        {/* Header */}
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <Button
+              as={Link}
+              href="/admin"
+              isIconOnly
+              variant="light"
+            >
+              <FontAwesomeIcon icon={faArrowLeft} className="text-xl" />
+            </Button>
+            <div>
+              <h1 className="text-4xl font-bold text-neutral-900">{activity.name}</h1>
+              <p className="text-neutral-600 mt-1">管理候選人與活動設定</p>
             </div>
-            <Link
+          </div>
+          <div className="flex gap-2">
+            <Button
+              as={Link}
               href={`/admin/activities/${activityId}/results`}
-              className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+              variant="flat"
+              startContent={<FontAwesomeIcon icon={faChartBar} />}
             >
               查看統計
-            </Link>
+            </Button>
+            <Button
+              as={Link}
+              href={`/admin/activities/${activityId}/verification`}
+              variant="flat"
+              startContent={<FontAwesomeIcon icon={faClipboardCheck} />}
+            >
+              驗票
+            </Button>
           </div>
         </div>
-      </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Error Message */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800">{error}</p>
-          </div>
+          <Card className="mb-6 bg-danger-50 border-danger-200">
+            <CardBody>
+              <p className="text-danger-800">{error}</p>
+            </CardBody>
+          </Card>
         )}
 
         {/* Activity Info */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">活動資訊</h2>
-          <div className="grid md:grid-cols-2 gap-4">
-            <div>
-              <p className="text-sm text-gray-600">活動類型</p>
-              <p className="font-medium text-gray-900">{activity.type}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">投票方式</p>
-              <p className="font-medium text-gray-900">
-                {activity.rule === 'choose_all' ? '多選評分' : '單選'}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">開始時間</p>
-              <p className="font-medium text-gray-900">
-                {new Date(activity.open_from).toLocaleString('zh-TW')}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">結束時間</p>
-              <p className="font-medium text-gray-900">
-                {new Date(activity.open_to).toLocaleString('zh-TW')}
-              </p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">候選人數</p>
-              <p className="font-medium text-gray-900">{activity.options.length}</p>
-            </div>
-            <div>
-              <p className="text-sm text-gray-600">已投票人數</p>
-              <p className="font-medium text-gray-900">{activity.users.length}</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Candidates List */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-gray-900">候選人列表</h2>
-            <button
-              onClick={() => setShowAddCandidate(!showAddCandidate)}
-              className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition"
-            >
-              {showAddCandidate ? '取消新增' : '+ 新增候選人'}
-            </button>
-          </div>
-
-          {/* Add Candidate Form */}
-          {showAddCandidate && (
-            <div className="mb-8 p-6 bg-gray-50 rounded-lg border-2 border-green-200">
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">新增候選人</h3>
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-                <p className="text-sm text-blue-900">
-                  <strong>說明：</strong> 請填寫候選人資訊。如果是會長選舉，可以選擇是否包含副會長。
+        <Card className="glass-card mb-8">
+          <CardHeader>
+            <h2 className="text-xl font-bold text-neutral-900">活動資訊</h2>
+          </CardHeader>
+          <Divider />
+          <CardBody>
+            <div className="grid md:grid-cols-3 gap-4">
+              <div className="p-4 bg-neutral-50 rounded-lg">
+                <p className="text-sm text-neutral-600 mb-1">活動類型</p>
+                <p className="font-semibold text-neutral-900">{activity.type}</p>
+              </div>
+              <div className="p-4 bg-neutral-50 rounded-lg">
+                <p className="text-sm text-neutral-600 mb-1">投票方式</p>
+                <p className="font-semibold text-neutral-900">
+                  {activity.rule === 'choose_all' ? '多選評分' : '單選'}
                 </p>
               </div>
-              
-              <div className="space-y-4">
-                <div className="grid md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">姓名 *</label>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                      placeholder="王小明"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">系所 *</label>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                      placeholder="資訊工程學系 22 級"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">學院 *</label>
-                    <input
-                      type="text"
-                      className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                      placeholder="電機資訊學院"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">照片網址</label>
-                  <input
-                    type="url"
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-                    placeholder="https://example.com/photo.jpg"
-                  />
-                </div>
-
-                <div className="flex gap-4">
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={includeVice1}
-                      onChange={(e) => setIncludeVice1(e.target.checked)}
-                      className="mr-2"
-                    />
-                    <span className="text-sm font-medium text-gray-700">包含副會長一</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={includeVice2}
-                      onChange={(e) => setIncludeVice2(e.target.checked)}
-                      className="mr-2"
-                    />
-                    <span className="text-sm font-medium text-gray-700">包含副會長二</span>
-                  </label>
-                </div>
-
-                <button
-                  onClick={handleAddCandidate}
-                  className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3 px-6 rounded-lg transition"
-                >
-                  確認新增
-                </button>
+              <div className="p-4 bg-neutral-50 rounded-lg">
+                <p className="text-sm text-neutral-600 mb-1">候選人數</p>
+                <p className="font-semibold text-neutral-900">{activity.options.length}</p>
+              </div>
+              <div className="p-4 bg-neutral-50 rounded-lg">
+                <p className="text-sm text-neutral-600 mb-1">已投票人數</p>
+                <p className="font-semibold text-neutral-900">{activity.users.length}</p>
+              </div>
+              <div className="p-4 bg-neutral-50 rounded-lg">
+                <p className="text-sm text-neutral-600 mb-1">開始時間</p>
+                <p className="font-semibold text-neutral-900 text-sm">
+                  {new Date(activity.open_from).toLocaleString('zh-TW')}
+                </p>
+              </div>
+              <div className="p-4 bg-neutral-50 rounded-lg">
+                <p className="text-sm text-neutral-600 mb-1">結束時間</p>
+                <p className="font-semibold text-neutral-900 text-sm">
+                  {new Date(activity.open_to).toLocaleString('zh-TW')}
+                </p>
               </div>
             </div>
-          )}
+          </CardBody>
+        </Card>
 
-          {/* Candidates Display */}
-          {activity.options.length === 0 ? (
-            <div className="text-center py-12">
-              <p className="text-gray-500">目前沒有候選人</p>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              {activity.options.map((option, index) => (
-                <div key={option._id} className="border border-gray-200 rounded-lg p-6 hover:shadow-md transition">
-                  <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-lg font-bold text-gray-900">候選人 {index + 1}</h3>
-                    <button
-                      onClick={() => handleDeleteOption(option._id)}
-                      className="text-red-600 hover:text-red-800 text-sm font-medium"
-                    >
-                      刪除
-                    </button>
-                  </div>
-
-                  <div className="space-y-4">
-                    {option.candidate && (
-                      <div className="flex items-start">
-                        {option.candidate.avatar_url && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={option.candidate.avatar_url}
-                            alt={option.candidate.name}
-                            className="w-16 h-16 rounded-full mr-4 object-cover"
-                          />
-                        )}
-                        <div>
-                          <p className="font-semibold text-gray-900">會長：{option.candidate.name}</p>
-                          <p className="text-sm text-gray-600">{option.candidate.department}</p>
-                          <p className="text-sm text-gray-500">{option.candidate.college}</p>
+        {/* Candidates Section */}
+        <Card className="glass-card">
+          <CardHeader className="flex justify-between items-center">
+            <h2 className="text-xl font-bold text-neutral-900">候選人列表</h2>
+            <Button
+              color="primary"
+              startContent={<FontAwesomeIcon icon={faPlus} />}
+              onPress={onOpen}
+            >
+              新增候選人
+            </Button>
+          </CardHeader>
+          <Divider />
+          <CardBody>
+            {activity.options.length === 0 ? (
+              <div className="text-center py-16">
+                <p className="text-neutral-600 mb-4">目前沒有候選人</p>
+                <Button
+                  color="primary"
+                  startContent={<FontAwesomeIcon icon={faPlus} />}
+                  onPress={onOpen}
+                >
+                  新增第一個候選人
+                </Button>
+              </div>
+            ) : (
+              <div className="grid gap-4">
+                {activity.options.map((option) => (
+                  <Card key={option._id} className="border border-neutral-200" shadow="none">
+                    <CardBody className="p-6">
+                      <div className="flex justify-between items-start">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-3 mb-3">
+                            <h3 className="text-xl font-bold text-neutral-900">
+                              {option.candidate?.name}
+                            </h3>
+                            <Chip size="sm" variant="flat">
+                              {option.candidate?.college}
+                            </Chip>
+                          </div>
+                          <p className="text-neutral-600 mb-4">{option.candidate?.department}</p>
+                          
+                          {option.candidate?.personal_experiences && option.candidate.personal_experiences.length > 0 && (
+                            <div className="mb-3">
+                              <p className="text-sm font-semibold text-neutral-700 mb-1">經歷</p>
+                              <ul className="list-disc list-inside text-sm text-neutral-600 space-y-1">
+                                {option.candidate.personal_experiences.map((exp, i) => (
+                                  <li key={i}>{exp}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
+                          
+                          {option.candidate?.political_opinions && option.candidate.political_opinions.length > 0 && (
+                            <div>
+                              <p className="text-sm font-semibold text-neutral-700 mb-1">政見</p>
+                              <ul className="list-disc list-inside text-sm text-neutral-600 space-y-1">
+                                {option.candidate.political_opinions.map((opinion, i) => (
+                                  <li key={i}>{opinion}</li>
+                                ))}
+                              </ul>
+                            </div>
+                          )}
                         </div>
+                        <Button
+                          isIconOnly
+                          color="danger"
+                          variant="flat"
+                          size="sm"
+                          onPress={() => handleDeleteOption(option._id)}
+                        >
+                          <FontAwesomeIcon icon={faTrash} />
+                        </Button>
                       </div>
-                    )}
-                    {option.vice1 && (
-                      <div className="flex items-start">
-                        {option.vice1.avatar_url && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={option.vice1.avatar_url}
-                            alt={option.vice1.name}
-                            className="w-16 h-16 rounded-full mr-4 object-cover"
-                          />
-                        )}
-                        <div>
-                          <p className="font-semibold text-gray-900">副會長一：{option.vice1.name}</p>
-                          <p className="text-sm text-gray-600">{option.vice1.department}</p>
-                          <p className="text-sm text-gray-500">{option.vice1.college}</p>
-                        </div>
-                      </div>
-                    )}
-                    {option.vice2 && (
-                      <div className="flex items-start">
-                        {option.vice2.avatar_url && (
-                          // eslint-disable-next-line @next/next/no-img-element
-                          <img
-                            src={option.vice2.avatar_url}
-                            alt={option.vice2.name}
-                            className="w-16 h-16 rounded-full mr-4 object-cover"
-                          />
-                        )}
-                        <div>
-                          <p className="font-semibold text-gray-900">副會長二：{option.vice2.name}</p>
-                          <p className="text-sm text-gray-600">{option.vice2.department}</p>
-                          <p className="text-sm text-gray-500">{option.vice2.college}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </div>
+                    </CardBody>
+                  </Card>
+                ))}
+              </div>
+            )}
+          </CardBody>
+        </Card>
       </main>
+
+      {/* Add Candidate Modal */}
+      <Modal isOpen={isOpen} onClose={onClose} size="2xl" scrollBehavior="inside">
+        <ModalContent>
+          <ModalHeader>新增候選人</ModalHeader>
+          <ModalBody>
+            <div className="space-y-4">
+              <Input
+                label="姓名"
+                placeholder="例如：王小明"
+                value={candidateForm.name}
+                onValueChange={(value) => setCandidateForm({ ...candidateForm, name: value })}
+                isRequired
+                variant="bordered"
+              />
+              <Input
+                label="學院"
+                placeholder="例如：資訊電機學院"
+                value={candidateForm.college}
+                onValueChange={(value) => setCandidateForm({ ...candidateForm, college: value })}
+                isRequired
+                variant="bordered"
+              />
+              <Input
+                label="系所"
+                placeholder="例如：資訊工程學系"
+                value={candidateForm.department}
+                onValueChange={(value) => setCandidateForm({ ...candidateForm, department: value })}
+                isRequired
+                variant="bordered"
+              />
+              <Input
+                label="照片網址"
+                placeholder="https://example.com/photo.jpg（選填）"
+                value={candidateForm.avatar_url}
+                onValueChange={(value) => setCandidateForm({ ...candidateForm, avatar_url: value })}
+                variant="bordered"
+              />
+              <Textarea
+                label="個人經歷"
+                placeholder="每行一項經歷（選填）"
+                value={candidateForm.personal_experiences}
+                onValueChange={(value) => setCandidateForm({ ...candidateForm, personal_experiences: value })}
+                variant="bordered"
+                minRows={3}
+              />
+              <Textarea
+                label="政見"
+                placeholder="每行一項政見（選填）"
+                value={candidateForm.political_opinions}
+                onValueChange={(value) => setCandidateForm({ ...candidateForm, political_opinions: value })}
+                variant="bordered"
+                minRows={3}
+              />
+            </div>
+          </ModalBody>
+          <ModalFooter>
+            <Button variant="flat" onPress={onClose}>
+              取消
+            </Button>
+            <Button 
+              color="primary" 
+              onPress={handleAddCandidate}
+              isLoading={submitting}
+              isDisabled={!candidateForm.name || !candidateForm.college || !candidateForm.department}
+            >
+              新增
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </div>
+  );
+}
+
+export default function ActivityManagementPage() {
+  return (
+    <AdminGuard>
+      <ActivityManagementContent />
+    </AdminGuard>
   );
 }
