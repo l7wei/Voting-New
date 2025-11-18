@@ -1,7 +1,7 @@
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
-let adminCache: string[] | null = null;
+let adminCache: string[] = [];
 let lastLoadTime = 0;
 const CACHE_DURATION = 60000; // 1 minute cache
 
@@ -9,7 +9,7 @@ export async function loadAdmins(): Promise<string[]> {
   const now = Date.now();
   
   // Return cached data if still valid
-  if (adminCache && (now - lastLoadTime) < CACHE_DURATION) {
+  if (adminCache.length > 0 && (now - lastLoadTime) < CACHE_DURATION) {
     return adminCache;
   }
   
@@ -34,6 +34,6 @@ export async function isAdmin(studentId: string): Promise<boolean> {
 }
 
 export function clearAdminCache(): void {
-  adminCache = null;
+  adminCache = [];
   lastLoadTime = 0;
 }

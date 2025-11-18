@@ -1,7 +1,15 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Simple in-memory store for mock OAuth data
-const mockOAuthStore = new Map<string, any>();
+interface MockOAuthData {
+  Userid: string;
+  name: string;
+  inschool: string;
+  uuid: string;
+  timestamp: number;
+}
+
+const mockOAuthStore = new Map<string, MockOAuthData>();
 
 export async function POST(request: NextRequest) {
   try {
