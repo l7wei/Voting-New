@@ -2,6 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import Header from '@/components/Header';
+import Card from '@/components/Card';
+import Button from '@/components/Button';
+import Loading from '@/components/Loading';
 
 interface Activity {
   _id: string;
@@ -70,40 +74,17 @@ export default function AdminDashboard() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">載入中...</p>
-        </div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-100">
-      {/* Header */}
-      <header className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">管理員後台</h1>
-              <p className="text-gray-600 mt-1">投票系統管理控制台</p>
-            </div>
-            <Link
-              href="/"
-              className="text-gray-600 hover:text-gray-900 font-medium transition"
-            >
-              返回首頁
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header title="管理員後台" subtitle="投票系統管理控制台" />
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
         {/* Stats Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <Card>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">總活動數</p>
@@ -115,9 +96,9 @@ export default function AdminDashboard() {
                 </svg>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <Card>
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">進行中</p>
@@ -134,9 +115,9 @@ export default function AdminDashboard() {
                 </svg>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
+          <Card className="sm:col-span-2 lg:col-span-1">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-medium text-gray-600">已結束</p>
@@ -150,65 +131,53 @@ export default function AdminDashboard() {
                 </svg>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
 
         {/* Error Message */}
         {error && (
           <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800">{error}</p>
+            <p className="text-red-800 text-sm">{error}</p>
           </div>
         )}
 
         {/* Quick Actions */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+        <Card className="mb-6 sm:mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">快速操作</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            <Link
-              href="/admin/activities/new"
-              className="flex items-center justify-center p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition transform hover:scale-105"
-            >
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <Button href="/admin/activities/new" variant="success" className="flex items-center justify-center">
               <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
               新增投票活動
-            </Link>
-            <Link
-              href="/admin/voters"
-              className="flex items-center justify-center p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition transform hover:scale-105"
-            >
+            </Button>
+            <Button href="/admin/voters" variant="primary" className="flex items-center justify-center">
               <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
               </svg>
               管理投票人名單
-            </Link>
-            <button
-              className="flex items-center justify-center p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition transform hover:scale-105"
-              onClick={() => window.location.reload()}
-            >
+            </Button>
+            <Button onClick={() => window.location.reload()} className="flex items-center justify-center bg-purple-600 hover:bg-purple-700">
               <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
               重新整理
-            </button>
+            </Button>
           </div>
-        </div>
+        </Card>
 
         {/* Activities List */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <Card padding="none">
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-bold text-gray-900">投票活動列表</h2>
           </div>
 
           {activities.length === 0 ? (
-            <div className="text-center py-12">
+            <div className="text-center py-12 px-4">
               <p className="text-gray-500 mb-4">目前沒有任何投票活動</p>
-              <Link
-                href="/admin/activities/new"
-                className="inline-block bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-6 rounded-lg transition"
-              >
+              <Button href="/admin/activities/new" variant="success">
                 新增第一個活動
-              </Link>
+              </Button>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -221,13 +190,13 @@ export default function AdminDashboard() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       狀態
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
                       投票方式
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                       候選人數
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell">
                       已投票人數
                     </th>
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -245,13 +214,13 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4 whitespace-nowrap">
                         {getStatusBadge(activity)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden sm:table-cell">
                         {activity.rule === 'choose_all' ? '多選評分' : '單選'}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
                         {activity.options.length}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
                         {activity.users.length}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
@@ -280,7 +249,7 @@ export default function AdminDashboard() {
               </table>
             </div>
           )}
-        </div>
+        </Card>
       </main>
     </div>
   );
