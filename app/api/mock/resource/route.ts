@@ -4,7 +4,7 @@ export async function POST(_request: NextRequest) {
   // Mock user resource - use student ID from query or default
   
   // In development, you can customize this student ID
-  const mockStudentId = process.env.MOCK_STUDENT_ID || '108060001';
+  const mockStudentId = process.env.MOCK_STUDENT_ID || '110000114';
   
   const response = {
     Userid: mockStudentId,
