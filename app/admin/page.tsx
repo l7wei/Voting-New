@@ -4,33 +4,31 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
 import AdminGuard from '@/components/auth/AdminGuard';
-import { 
-  Card, 
-  CardHeader,
-  CardBody, 
-  Button, 
-  Chip, 
-  Spinner, 
-  Divider,
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { Loading } from '@/components/ui/loader';
+import {
   Table,
-  TableHeader,
-  TableColumn,
   TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
   TableRow,
-  TableCell
-} from '@heroui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faPlus, 
-  faUsers, 
-  faRotate,
-  faClipboardList,
-  faCheckCircle,
-  faClock,
-  faPencil,
-  faChartBar,
-  faClipboardCheck
-} from '@fortawesome/free-solid-svg-icons';
+} from '@/components/ui/table';
+import {
+  Plus,
+  Users,
+  RefreshCw,
+  ClipboardList,
+  CheckCircle,
+  Clock,
+  Edit,
+  BarChart3,
+  ClipboardCheck,
+  AlertCircle,
+} from 'lucide-react';
 
 interface Activity {
   _id: string;
@@ -70,17 +68,27 @@ function AdminDashboardContent() {
     }
   };
 
-  const getStatusChip = (activity: Activity) => {
+  const getStatusBadge = (activity: Activity) => {
     const now = new Date();
     const openFrom = new Date(activity.open_from);
     const openTo = new Date(activity.open_to);
 
     if (now < openFrom) {
-      return <Chip color="warning" variant="flat" size="sm" startContent={<FontAwesomeIcon icon={faClock} />}>即將開始</Chip>;
+      return (
+        <Badge variant="warning" className="gap-1">
+          <Clock className="h-3 w-3" />
+          即將開始
+        </Badge>
+      );
     } else if (now > openTo) {
-      return <Chip color="default" variant="flat" size="sm">已結束</Chip>;
+      return <Badge variant="secondary">已結束</Badge>;
     } else {
-      return <Chip color="success" variant="flat" size="sm" startContent={<FontAwesomeIcon icon={faCheckCircle} />}>進行中</Chip>;
+      return (
+        <Badge variant="success" className="gap-1">
+          <CheckCircle className="h-3 w-3" />
+          進行中
+        </Badge>
+      );
     }
   };
 
@@ -93,153 +101,140 @@ function AdminDashboardContent() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-neutral-100">
+      <div className="min-h-screen bg-background">
         <Header />
         <main className="container mx-auto max-w-7xl px-6 py-12">
-          <div className="flex justify-center items-center py-20">
-            <Spinner size="lg" label="載入中..." />
-          </div>
+          <Loading text="載入中..." />
         </main>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-neutral-100">
+    <div className="min-h-screen bg-background">
       <Header />
 
       <main className="container mx-auto max-w-7xl px-6 py-8">
         {/* Title */}
         <div className="mb-8">
-          <h2 className="text-4xl font-bold text-neutral-900 mb-2">
-            管理員後台
-          </h2>
-          <p className="text-neutral-600">投票系統管理控制台</p>
+          <h2 className="mb-2 text-4xl font-bold">管理員後台</h2>
+          <p className="text-muted-foreground">投票系統管理控制台</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card shadow="sm" className="glass-card">
-            <CardBody className="p-6">
+        <div className="mb-8 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <Card>
+            <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-neutral-600 mb-1">總活動數</p>
-                  <p className="text-4xl font-bold text-neutral-900">{activities.length}</p>
+                  <p className="mb-1 text-sm font-medium text-muted-foreground">總活動數</p>
+                  <p className="text-4xl font-bold">{activities.length}</p>
                 </div>
-                <div className="p-4 bg-neutral-100 rounded-xl">
-                  <FontAwesomeIcon icon={faClipboardList} className="text-3xl text-primary" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  <ClipboardList className="h-6 w-6 text-primary" />
                 </div>
               </div>
-            </CardBody>
+            </CardContent>
           </Card>
 
-          <Card shadow="sm" className="glass-card">
-            <CardBody className="p-6">
+          <Card>
+            <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-neutral-600 mb-1">進行中</p>
-                  <p className="text-4xl font-bold text-success-600">{activeCount}</p>
+                  <p className="mb-1 text-sm font-medium text-muted-foreground">進行中</p>
+                  <p className="text-4xl font-bold text-green-600">{activeCount}</p>
                 </div>
-                <div className="p-4 bg-neutral-100 rounded-xl">
-                  <FontAwesomeIcon icon={faCheckCircle} className="text-3xl text-success-600" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100">
+                  <CheckCircle className="h-6 w-6 text-green-600" />
                 </div>
               </div>
-            </CardBody>
+            </CardContent>
           </Card>
 
-          <Card shadow="sm" className="glass-card">
-            <CardBody className="p-6">
+          <Card>
+            <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-neutral-600 mb-1">已結束</p>
-                  <p className="text-4xl font-bold text-neutral-500">{completedCount}</p>
+                  <p className="mb-1 text-sm font-medium text-muted-foreground">已結束</p>
+                  <p className="text-4xl font-bold text-muted-foreground">{completedCount}</p>
                 </div>
-                <div className="p-4 bg-neutral-100 rounded-xl">
-                  <FontAwesomeIcon icon={faClock} className="text-3xl text-neutral-500" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
+                  <Clock className="h-6 w-6 text-muted-foreground" />
                 </div>
               </div>
-            </CardBody>
+            </CardContent>
           </Card>
         </div>
 
         {/* Error Message */}
         {error && (
-          <Card className="mb-6 border-danger">
-            <CardBody>
-              <p className="text-danger">{error}</p>
-            </CardBody>
+          <Card className="mb-6 border-destructive bg-destructive/10">
+            <CardContent className="flex items-center gap-2 py-4">
+              <AlertCircle className="h-5 w-5 text-destructive" />
+              <p className="text-destructive">{error}</p>
+            </CardContent>
           </Card>
         )}
 
         {/* Quick Actions */}
-        <Card shadow="sm" className="mb-8 glass-card">
-          <CardHeader className="pb-4">
-            <h3 className="text-xl font-bold text-neutral-900">快速操作</h3>
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle>快速操作</CardTitle>
           </CardHeader>
-          <Divider />
-          <CardBody className="pt-6">
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Button 
-                as={Link}
-                href="/admin/activities/new" 
-                color="primary"
-                size="lg"
-                startContent={<FontAwesomeIcon icon={faPlus} />}
-              >
-                新增投票活動
+          <Separator />
+          <CardContent className="pt-6">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+              <Button size="lg" asChild>
+                <Link href="/admin/activities/new">
+                  <Plus className="mr-2 h-4 w-4" />
+                  新增投票活動
+                </Link>
               </Button>
-              <Button 
-                as={Link}
-                href="/admin/voters" 
-                variant="flat"
-                size="lg"
-                startContent={<FontAwesomeIcon icon={faUsers} />}
-              >
-                管理投票人名單
+              <Button size="lg" variant="outline" asChild>
+                <Link href="/admin/voters">
+                  <Users className="mr-2 h-4 w-4" />
+                  管理投票人名單
+                </Link>
               </Button>
-              <Button 
-                onClick={() => window.location.reload()} 
-                variant="bordered"
-                size="lg"
-                startContent={<FontAwesomeIcon icon={faRotate} />}
-              >
+              <Button size="lg" variant="outline" onClick={() => window.location.reload()}>
+                <RefreshCw className="mr-2 h-4 w-4" />
                 重新整理
               </Button>
             </div>
-          </CardBody>
+          </CardContent>
         </Card>
 
         {/* Activities Table */}
-        <Card shadow="sm" className="glass-card">
-          <CardHeader className="pb-4">
-            <h3 className="text-xl font-bold text-neutral-900">投票活動列表</h3>
+        <Card>
+          <CardHeader>
+            <CardTitle>投票活動列表</CardTitle>
           </CardHeader>
-          <Divider />
-          <CardBody className="p-0">
+          <Separator />
+          <CardContent className="p-0">
             {activities.length === 0 ? (
-              <div className="text-center py-16 px-4">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-neutral-100 rounded-full mb-4">
-                  <FontAwesomeIcon icon={faClipboardList} className="text-4xl text-primary" />
+              <div className="px-4 py-16 text-center">
+                <div className="mx-auto mb-4 inline-flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+                  <ClipboardList className="h-10 w-10 text-muted-foreground" />
                 </div>
-                <p className="text-neutral-600 mb-6 text-lg">目前沒有任何投票活動</p>
-                <Button 
-                  as={Link}
-                  href="/admin/activities/new" 
-                  color="primary"
-                  startContent={<FontAwesomeIcon icon={faPlus} />}
-                >
-                  新增第一個活動
+                <p className="mb-6 text-lg text-muted-foreground">目前沒有任何投票活動</p>
+                <Button asChild>
+                  <Link href="/admin/activities/new">
+                    <Plus className="mr-2 h-4 w-4" />
+                    新增第一個活動
+                  </Link>
                 </Button>
               </div>
             ) : (
-              <Table aria-label="活動列表" removeWrapper>
+              <Table>
                 <TableHeader>
-                  <TableColumn>活動名稱</TableColumn>
-                  <TableColumn>狀態</TableColumn>
-                  <TableColumn>投票方式</TableColumn>
-                  <TableColumn>候選人數</TableColumn>
-                  <TableColumn>已投票</TableColumn>
-                  <TableColumn>操作</TableColumn>
+                  <TableRow>
+                    <TableHead>活動名稱</TableHead>
+                    <TableHead>狀態</TableHead>
+                    <TableHead>投票方式</TableHead>
+                    <TableHead>候選人數</TableHead>
+                    <TableHead>已投票</TableHead>
+                    <TableHead>操作</TableHead>
+                  </TableRow>
                 </TableHeader>
                 <TableBody>
                   {activities.map((activity) => (
@@ -247,10 +242,10 @@ function AdminDashboardContent() {
                       <TableCell>
                         <div>
                           <div className="font-semibold">{activity.name}</div>
-                          <div className="text-xs text-default-500">{activity.type}</div>
+                          <div className="text-xs text-muted-foreground">{activity.type}</div>
                         </div>
                       </TableCell>
-                      <TableCell>{getStatusChip(activity)}</TableCell>
+                      <TableCell>{getStatusBadge(activity)}</TableCell>
                       <TableCell className="text-sm">
                         {activity.rule === 'choose_all' ? '多選評分' : '單選'}
                       </TableCell>
@@ -258,33 +253,23 @@ function AdminDashboardContent() {
                       <TableCell>{activity.users?.length || 0}</TableCell>
                       <TableCell>
                         <div className="flex gap-2">
-                          <Button
-                            as={Link}
-                            href={`/admin/activities/${activity._id}`}
-                            size="sm"
-                            color="primary"
-                            variant="flat"
-                            startContent={<FontAwesomeIcon icon={faPencil} />}
-                          >
-                            管理
+                          <Button size="sm" variant="outline" asChild>
+                            <Link href={`/admin/activities/${activity._id}`}>
+                              <Edit className="mr-1 h-3 w-3" />
+                              管理
+                            </Link>
                           </Button>
-                          <Button
-                            as={Link}
-                            href={`/admin/activities/${activity._id}/results`}
-                            size="sm"
-                            variant="flat"
-                            startContent={<FontAwesomeIcon icon={faChartBar} />}
-                          >
-                            統計
+                          <Button size="sm" variant="outline" asChild>
+                            <Link href={`/admin/activities/${activity._id}/results`}>
+                              <BarChart3 className="mr-1 h-3 w-3" />
+                              統計
+                            </Link>
                           </Button>
-                          <Button
-                            as={Link}
-                            href={`/admin/activities/${activity._id}/verification`}
-                            size="sm"
-                            variant="flat"
-                            startContent={<FontAwesomeIcon icon={faClipboardCheck} />}
-                          >
-                            驗票
+                          <Button size="sm" variant="outline" asChild>
+                            <Link href={`/admin/activities/${activity._id}/verification`}>
+                              <ClipboardCheck className="mr-1 h-3 w-3" />
+                              驗票
+                            </Link>
                           </Button>
                         </div>
                       </TableCell>
@@ -293,7 +278,7 @@ function AdminDashboardContent() {
                 </TableBody>
               </Table>
             )}
-          </CardBody>
+          </CardContent>
         </Card>
       </main>
     </div>
