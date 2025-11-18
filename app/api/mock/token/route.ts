@@ -10,10 +10,18 @@ export async function POST(request: NextRequest) {
     // Try to fetch mock data from the store
     if (code) {
       try {
-        const baseUrl = request.nextUrl.origin;
-        const storeResponse = await fetch(`${baseUrl}/api/mock/store?code=${code}`);
+        // Use the store API via internal request
+        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
+        const storeResponse = await fetch(`${baseUrl}/api/mock/store?code=${encodeURIComponent(code)}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
         if (storeResponse.ok) {
           mockData = await storeResponse.json();
+        } else {
+          console.log('Store response not OK:', storeResponse.status);
         }
       } catch (error) {
         console.error('Error fetching from mock store:', error);
@@ -22,6 +30,7 @@ export async function POST(request: NextRequest) {
     
     // Fallback to default data
     if (!mockData) {
+      console.log('Using fallback mock data');
       mockData = {
         Userid: process.env.MOCK_STUDENT_ID || '110000114',
         name: '測試學生',
@@ -49,7 +58,8 @@ export async function POST(request: NextRequest) {
     });
     
     return response;
-  } catch {
+  } catch (error) {
+    console.error('Token route error:', error);
     return NextResponse.json({
       access_token: 'mock_access_token_' + Date.now(),
       expires_in: 3600,
