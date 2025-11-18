@@ -6,7 +6,6 @@ const UserSchema = new Schema<IUser>({
     type: String,
     required: true,
     unique: true,
-    index: true,
   },
   remark: {
     type: String,
@@ -26,6 +25,6 @@ const UserSchema = new Schema<IUser>({
   strict: 'throw',
 });
 
-UserSchema.index({ student_id: 1 });
+// student_id index is automatically created by unique: true
 
 export const User: Model<IUser> = mongoose.models.User || mongoose.model<IUser>('User', UserSchema);

@@ -38,7 +38,6 @@ const VoteSchema = new Schema<IVote>({
     type: String,
     required: true,
     unique: true,
-    index: true,
   },
   created_at: {
     type: Date,
@@ -52,7 +51,7 @@ const VoteSchema = new Schema<IVote>({
   },
 } as const);
 
+// Index for activity_id (token index is automatically created by unique: true)
 VoteSchema.index({ activity_id: 1 });
-VoteSchema.index({ token: 1 });
 
 export const Vote: Model<IVote> = mongoose.models.Vote || mongoose.model<IVote>('Vote', VoteSchema);
