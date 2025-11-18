@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { exchangeCodeForToken, getUserInfo } from '@/lib/oauth';
 import { generateToken } from '@/lib/auth';
-import { User } from '@/lib/models/User';
-import connectDB from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
@@ -25,28 +23,10 @@ export async function GET(request: NextRequest) {
     const userName = userInfo.name || studentId;
     console.log('Callback: Got user info for student ID:', studentId, 'name:', userName);
 
-    // Connect to database
-    await connectDB();
-    console.log('Callback: Connected to DB');
-
-    // Find or create user
-    let user = await User.findOne({ student_id: studentId });
-    if (!user) {
-      user = await User.create({
-        student_id: studentId,
-        created_at: new Date(),
-        updated_at: new Date(),
-      });
-      console.log('Callback: Created new user');
-    } else {
-      console.log('Callback: Found existing user');
-    }
-
-    // Generate service token with name included
+    // Generate service token with name included (no database lookup needed)
     const serviceToken = generateToken({
-      _id: user._id.toString(),
-      student_id: user.student_id,
-      remark: user.remark,
+      _id: studentId, // Use student_id as _id
+      student_id: studentId,
       name: userName,
     });
 

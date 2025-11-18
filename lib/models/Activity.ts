@@ -16,8 +16,7 @@ const ActivitySchema = new Schema<IActivity>({
     required: true,
   },
   users: [{
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+    type: String,
   }],
   options: [{
     type: Schema.Types.ObjectId,
