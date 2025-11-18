@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 // Simple in-memory store for mock OAuth sessions
-const sessions = new Map<string, any>();
+const sessions = new Map<string, Record<string, string>>();
 
 export async function POST(request: NextRequest) {
   try {
