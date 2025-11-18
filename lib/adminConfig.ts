@@ -1,0 +1,39 @@
+import { readFile } from 'fs/promises';
+import { join } from 'path';
+
+let adminCache: string[] | null = null;
+let lastLoadTime = 0;
+const CACHE_DURATION = 60000; // 1 minute cache
+
+export async function loadAdmins(): Promise<string[]> {
+  const now = Date.now();
+  
+  // Return cached data if still valid
+  if (adminCache && (now - lastLoadTime) < CACHE_DURATION) {
+    return adminCache;
+  }
+  
+  try {
+    const filePath = join(process.cwd(), 'config', 'admins.json');
+    const fileContent = await readFile(filePath, 'utf-8');
+    const data = JSON.parse(fileContent);
+    
+    adminCache = data.admins || [];
+    lastLoadTime = now;
+    
+    return adminCache;
+  } catch (error) {
+    console.error('Error loading admins.json:', error);
+    return [];
+  }
+}
+
+export async function isAdmin(studentId: string): Promise<boolean> {
+  const admins = await loadAdmins();
+  return admins.includes(studentId);
+}
+
+export function clearAdminCache(): void {
+  adminCache = null;
+  lastLoadTime = 0;
+}

@@ -42,7 +42,7 @@ export async function GET(request: NextRequest) {
     });
 
     // Create response with redirect
-    const response = NextResponse.redirect(new URL('/voting', request.url));
+    const response = NextResponse.redirect(new URL('/vote', request.url));
     
     // Set token in cookie
     response.cookies.set('service_token', serviceToken, {
