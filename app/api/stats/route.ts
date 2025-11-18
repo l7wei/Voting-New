@@ -42,8 +42,8 @@ export async function GET(request: NextRequest) {
     const totalVotes = votes.length;
     const totalEligibleVoters = activity.users.length;
     const turnoutRate = totalEligibleVoters > 0 
-      ? (totalEligibleVoters / totalEligibleVoters * 100).toFixed(2) 
-      : 0;
+      ? ((totalVotes / totalEligibleVoters) * 100).toFixed(2) 
+      : '0';
 
     // Calculate vote distribution by option
     const optionStats: Record<string, {

@@ -1,40 +1,55 @@
 @import "tailwindcss";
-@plugin './hero.ts';
-@source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
-@custom-variant dark (&:is(.dark *));
 
-@layer theme {
-  :root {
-    --color-primary-50: #faf5ff;
-    --color-primary-100: #f3e5f5;
-    --color-primary-200: #e1bee7;
-    --color-primary-300: #ce93d8;
-    --color-primary-400: #ba68c8;
-    --color-primary-500: #b081b7;
-    --color-primary-600: #9c27b0;
-    --color-primary-700: #7b1fa2;
-    --color-primary-800: #6a1b9a;
-    --color-primary-900: #4a148c;
-    --color-primary: #b081b7;
-  }
+@theme {
+  --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  
+  --color-background: #ffffff;
+  --color-foreground: #09090b;
+  
+  --color-card: #ffffff;
+  --color-card-foreground: #09090b;
+  
+  --color-popover: #ffffff;
+  --color-popover-foreground: #09090b;
+  
+  --color-primary: #e2a6eb;
+  --color-primary-foreground: #09090b;
+  
+  --color-secondary: #f4f4f5;
+  --color-secondary-foreground: #18181b;
+  
+  --color-muted: #f4f4f5;
+  --color-muted-foreground: #71717a;
+  
+  --color-accent: #f4f4f5;
+  --color-accent-foreground: #18181b;
+  
+  --color-destructive: #ef4444;
+  --color-destructive-foreground: #fafafa;
+  
+  --color-border: #e4e4e7;
+  --color-input: #e4e4e7;
+  --color-ring: #e2a6eb;
+  
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
 }
 
 @layer base {
-  body {
-    @apply font-sans text-neutral-600 bg-neutral-100;
-  }
-
-  h1, h2, h3, h4, h5, h6 {
-    @apply font-bold text-neutral-900;
-  }
-}
-
-@layer components {
-  .glass-card {
-    @apply bg-white/80 backdrop-blur-md rounded-lg shadow-sm;
+  * {
+    border-color: var(--color-border);
   }
   
-  .glass-card-strong {
-    @apply bg-white/90 backdrop-blur-lg rounded-lg shadow-md;
+  body {
+    background-color: #fafafa;
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: #09090b;
   }
 }

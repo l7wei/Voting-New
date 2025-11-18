@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import { HeroUIProvider } from "@heroui/react";
 
 export const metadata: Metadata = {
   title: '清大投票系統',
@@ -15,9 +14,7 @@ export default function RootLayout({
   return (
     <html lang="zh-TW">
       <body>
-        <HeroUIProvider>
-          {children}
-        </HeroUIProvider>
+        {children}
       </body>
     </html>
   );
