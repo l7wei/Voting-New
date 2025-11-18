@@ -2,54 +2,54 @@ import Link from 'next/link';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center p-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-      <div className="max-w-5xl w-full bg-white rounded-2xl shadow-2xl p-8 md:p-12">
+    <div className="min-h-screen flex flex-col items-center justify-center p-4 sm:p-8 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
+      <div className="max-w-5xl w-full bg-white rounded-2xl shadow-2xl p-6 sm:p-8 md:p-12">
         {/* Logo/Icon */}
         <div className="flex justify-center mb-6">
           <div className="p-4 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full">
-            <svg className="w-16 h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-12 h-12 sm:w-16 sm:h-16 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
         </div>
 
-        <h1 className="text-5xl font-bold text-center mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold text-center mb-3 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
           清大學生會投票系統
         </h1>
-        <h2 className="text-xl text-center mb-10 text-gray-500 font-light">
+        <h2 className="text-lg sm:text-xl text-center mb-10 text-gray-500 font-light">
           NTHU Student Association Voting System
         </h2>
 
         <div className="space-y-8">
-          <p className="text-lg text-gray-700 text-center leading-relaxed">
+          <p className="text-base sm:text-lg text-gray-700 text-center leading-relaxed">
             歡迎使用清華大學學生會線上投票系統<br />
             採用現代化技術架構，確保投票過程的匿名性與安全性
           </p>
 
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="group p-8 border-2 border-blue-200 rounded-2xl hover:border-blue-400 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            <div className="group p-6 sm:p-8 border-2 border-blue-200 rounded-2xl hover:border-blue-400 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="flex items-center mb-4">
                 <div className="p-3 bg-blue-100 rounded-full mr-3 group-hover:bg-blue-500 transition-colors">
                   <svg className="w-6 h-6 text-blue-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-blue-700">
+                <h3 className="text-xl sm:text-2xl font-bold text-blue-700">
                   學生投票
                 </h3>
               </div>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 mb-6 text-sm sm:text-base">
                 選擇投票活動，進行投票，完成後取得投票證明
               </p>
               <Link
                 href="/vote"
-                className="inline-block w-full text-center bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-6 rounded-xl transition transform hover:scale-105 shadow-lg"
+                className="inline-block w-full text-center bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-semibold py-3 px-4 sm:px-6 rounded-xl transition transform hover:scale-105 shadow-lg text-sm sm:text-base"
               >
                 前往投票
               </Link>
             </div>
 
-            <div className="group p-8 border-2 border-green-200 rounded-2xl hover:border-green-400 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
+            <div className="group p-6 sm:p-8 border-2 border-green-200 rounded-2xl hover:border-green-400 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1">
               <div className="flex items-center mb-4">
                 <div className="p-3 bg-green-100 rounded-full mr-3 group-hover:bg-green-500 transition-colors">
                   <svg className="w-6 h-6 text-green-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -57,27 +57,49 @@ export default function HomePage() {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-green-700">
+                <h3 className="text-xl sm:text-2xl font-bold text-green-700">
                   管理後台
                 </h3>
               </div>
-              <p className="text-gray-600 mb-6">
+              <p className="text-gray-600 mb-6 text-sm sm:text-base">
                 新增投票、管理候選人、查看投票統計
               </p>
               <Link
                 href="/admin"
-                className="inline-block w-full text-center bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-6 rounded-xl transition transform hover:scale-105 shadow-lg"
+                className="inline-block w-full text-center bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-semibold py-3 px-4 sm:px-6 rounded-xl transition transform hover:scale-105 shadow-lg text-sm sm:text-base"
               >
                 後台管理
               </Link>
             </div>
+
+            <div className="group p-6 sm:p-8 border-2 border-purple-200 rounded-2xl hover:border-purple-400 hover:shadow-xl transition-all duration-300 transform hover:-translate-y-1 sm:col-span-2 lg:col-span-1">
+              <div className="flex items-center mb-4">
+                <div className="p-3 bg-purple-100 rounded-full mr-3 group-hover:bg-purple-500 transition-colors">
+                  <svg className="w-6 h-6 text-purple-600 group-hover:text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+                  </svg>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-purple-700">
+                  模擬登入
+                </h3>
+              </div>
+              <p className="text-gray-600 mb-6 text-sm sm:text-base">
+                開發測試用模擬 OAuth 登入介面
+              </p>
+              <Link
+                href="/login"
+                className="inline-block w-full text-center bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white font-semibold py-3 px-4 sm:px-6 rounded-xl transition transform hover:scale-105 shadow-lg text-sm sm:text-base"
+              >
+                前往登入
+              </Link>
+            </div>
           </div>
 
-          <div className="mt-10 p-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-100">
-            <h3 className="text-2xl font-bold mb-6 text-gray-900 text-center">
+          <div className="mt-10 p-6 sm:p-8 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl border border-blue-100">
+            <h3 className="text-xl sm:text-2xl font-bold mb-6 text-gray-900 text-center">
               🌟 系統特色
             </h3>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid sm:grid-cols-2 gap-4">
               <div className="flex items-start">
                 <div className="flex-shrink-0 mr-3">
                   <div className="p-2 bg-green-100 rounded-lg">
@@ -108,13 +130,13 @@ export default function HomePage() {
                 <div className="flex-shrink-0 mr-3">
                   <div className="p-2 bg-purple-100 rounded-lg">
                     <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
                     </svg>
                   </div>
                 </div>
                 <div>
-                  <p className="font-semibold text-gray-900">現代化介面</p>
-                  <p className="text-sm text-gray-600">響應式設計，支援各種裝置</p>
+                  <p className="font-semibold text-gray-900">響應式設計</p>
+                  <p className="text-sm text-gray-600">支援各種裝置</p>
                 </div>
               </div>
               <div className="flex items-start">

@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import PageHeader from '@/components/PageHeader';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import StatusBadge from '@/components/StatusBadge';
 
 interface Activity {
   _id: string;
@@ -55,54 +58,31 @@ export default function AdminDashboard() {
     }
   };
 
-  const getStatusBadge = (activity: Activity) => {
+  const getActivityStatus = (activity: Activity): 'upcoming' | 'active' | 'ended' => {
     const now = new Date();
     const openFrom = new Date(activity.open_from);
     const openTo = new Date(activity.open_to);
 
-    if (now < openFrom) {
-      return <span className="px-3 py-1 text-xs rounded-full bg-yellow-100 text-yellow-800 font-medium">即將開始</span>;
-    } else if (now > openTo) {
-      return <span className="px-3 py-1 text-xs rounded-full bg-gray-100 text-gray-800 font-medium">已結束</span>;
-    } else {
-      return <span className="px-3 py-1 text-xs rounded-full bg-green-100 text-green-800 font-medium">進行中</span>;
-    }
+    if (now < openFrom) return 'upcoming';
+    if (now > openTo) return 'ended';
+    return 'active';
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">載入中...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-100">
-      {/* Header */}
-      <header className="bg-white shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">管理員後台</h1>
-              <p className="text-gray-600 mt-1">投票系統管理控制台</p>
-            </div>
-            <Link
-              href="/"
-              className="text-gray-600 hover:text-gray-900 font-medium transition"
-            >
-              返回首頁
-            </Link>
-          </div>
-        </div>
-      </header>
+      <PageHeader 
+        title="管理員後台" 
+        subtitle="投票系統管理控制台"
+        backLink="/"
+      />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Stats Cards */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
           <div className="bg-white rounded-xl shadow-lg p-6">
             <div className="flex items-center justify-between">
               <div>
@@ -122,10 +102,7 @@ export default function AdminDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-600">進行中</p>
                 <p className="text-3xl font-bold text-green-600 mt-2">
-                  {activities.filter(a => {
-                    const now = new Date();
-                    return now >= new Date(a.open_from) && now <= new Date(a.open_to);
-                  }).length}
+                  {activities.filter(a => getActivityStatus(a) === 'active').length}
                 </p>
               </div>
               <div className="p-4 bg-green-100 rounded-full">
@@ -141,7 +118,7 @@ export default function AdminDashboard() {
               <div>
                 <p className="text-sm font-medium text-gray-600">已結束</p>
                 <p className="text-3xl font-bold text-gray-500 mt-2">
-                  {activities.filter(a => new Date() > new Date(a.open_to)).length}
+                  {activities.filter(a => getActivityStatus(a) === 'ended').length}
                 </p>
               </div>
               <div className="p-4 bg-gray-100 rounded-full">
@@ -163,7 +140,7 @@ export default function AdminDashboard() {
         {/* Quick Actions */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
           <h2 className="text-xl font-bold text-gray-900 mb-4">快速操作</h2>
-          <div className="grid md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <Link
               href="/admin/activities/new"
               className="flex items-center justify-center p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition transform hover:scale-105"
@@ -243,7 +220,7 @@ export default function AdminDashboard() {
                         <div className="text-sm text-gray-500">{activity.type}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        {getStatusBadge(activity)}
+                        <StatusBadge status={getActivityStatus(activity)} />
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                         {activity.rule === 'choose_all' ? '多選評分' : '單選'}

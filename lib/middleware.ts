@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
-import { User } from '@/lib/models/User';
-import connectDB from '@/lib/db';
+import { isAdmin } from '@/lib/adminConfig';
 import { JWTPayload } from '@/types';
 
 export interface AuthenticatedRequest extends NextRequest {
@@ -32,24 +31,14 @@ export async function requireAuth(request: NextRequest): Promise<JWTPayload | Ne
 }
 
 export async function requireAdmin(user: JWTPayload): Promise<NextResponse | null> {
-  try {
-    await connectDB();
-    const userDoc = await User.findOne({ _id: user._id, remark: 'admin' });
-    
-    if (!userDoc) {
-      return NextResponse.json(
-        { success: false, error: 'Authorization failed: Admin access required' },
-        { status: 403 }
-      );
-    }
-
-    return null;
-  } catch {
+  if (!isAdmin(user.student_id)) {
     return NextResponse.json(
-      { success: false, error: 'Authorization failed' },
+      { success: false, error: 'Authorization failed: Admin access required' },
       { status: 403 }
     );
   }
+
+  return null;
 }
 
 export function createErrorResponse(message: string, status: number = 400) {
