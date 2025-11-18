@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import AdminGuard from '@/components/auth/AdminGuard';
 import { 
   Card, 
   CardHeader,
@@ -41,7 +42,7 @@ interface Activity {
   options: string[];
 }
 
-export default function AdminDashboard() {
+function AdminDashboardContent() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -286,5 +287,13 @@ export default function AdminDashboard() {
         </Card>
       </main>
     </div>
+  );
+}
+
+export default function AdminDashboard() {
+  return (
+    <AdminGuard>
+      <AdminDashboardContent />
+    </AdminGuard>
   );
 }

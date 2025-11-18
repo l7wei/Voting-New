@@ -3,11 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import AdminGuard from '@/components/auth/AdminGuard';
 import { Card, CardBody, CardHeader, Button, Input, Select, SelectItem } from '@heroui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowLeft, faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-export default function NewActivityPage() {
+function NewActivityPageContent() {
   const router = useRouter();
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -211,5 +212,13 @@ export default function NewActivityPage() {
         </Card>
       </main>
     </div>
+  );
+}
+
+export default function NewActivityPage() {
+  return (
+    <AdminGuard>
+      <NewActivityPageContent />
+    </AdminGuard>
   );
 }
