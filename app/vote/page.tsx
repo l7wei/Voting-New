@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import ErrorAlert from '@/components/ErrorAlert';
+import Card from '@/components/Card';
 
 interface Activity {
   _id: string;
@@ -28,7 +31,6 @@ export default function VotePage() {
       const data = await response.json();
 
       if (data.success) {
-        // Filter only active activities
         const now = new Date();
         const activeActivities = data.data.filter((activity: Activity) => {
           const openFrom = new Date(activity.open_from);
@@ -62,37 +64,19 @@ export default function VotePage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">載入中...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
-        {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            投票活動選擇
-          </h1>
-          <p className="text-lg text-gray-600">
-            選擇您要參與的投票活動
-          </p>
+          <h1 className="text-4xl font-bold text-gray-900 mb-4">投票活動選擇</h1>
+          <p className="text-lg text-gray-600">選擇您要參與的投票活動</p>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800">{error}</p>
-          </div>
-        )}
+        <ErrorAlert message={error} />
 
-        {/* Activities List */}
         {activities.length === 0 ? (
           <div className="text-center py-12">
             <div className="inline-block p-6 bg-white rounded-full shadow-lg mb-4">
@@ -102,25 +86,17 @@ export default function VotePage() {
             </div>
             <h3 className="text-xl font-semibold text-gray-700 mb-2">目前沒有進行中的投票活動</h3>
             <p className="text-gray-500 mb-6">請稍後再回來查看</p>
-            <Link
-              href="/"
-              className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition"
-            >
+            <Link href="/" className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition">
               返回首頁
             </Link>
           </div>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {activities.map((activity) => (
-              <div
-                key={activity._id}
-                className="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 overflow-hidden"
-              >
+              <Card key={activity._id} hover>
                 <div className="p-6">
                   <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-xl font-bold text-gray-900 flex-1">
-                      {activity.name}
-                    </h3>
+                    <h3 className="text-xl font-bold text-gray-900 flex-1">{activity.name}</h3>
                     {getStatusBadge(activity)}
                   </div>
 
@@ -161,17 +137,13 @@ export default function VotePage() {
                     開始投票
                   </Link>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         )}
 
-        {/* Back Button */}
         <div className="text-center mt-12">
-          <Link
-            href="/"
-            className="inline-block text-blue-600 hover:text-blue-800 font-medium transition"
-          >
+          <Link href="/" className="inline-block text-blue-600 hover:text-blue-800 font-medium transition">
             ← 返回首頁
           </Link>
         </div>

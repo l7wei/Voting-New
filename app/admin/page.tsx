@@ -2,6 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import LoadingSpinner from '@/components/LoadingSpinner';
+import ErrorAlert from '@/components/ErrorAlert';
+import Card from '@/components/Card';
 
 interface Activity {
   _id: string;
@@ -47,7 +50,6 @@ export default function AdminDashboard() {
     }
 
     try {
-      // TODO: Implement delete with auth token
       setError('請先實作管理員認證功能');
     } catch (err) {
       console.error('Error deleting activity:', err);
@@ -70,19 +72,11 @@ export default function AdminDashboard() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">載入中...</p>
-        </div>
-      </div>
-    );
+    return <LoadingSpinner />;
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-100">
-      {/* Header */}
       <header className="bg-white shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex justify-between items-center">
@@ -90,10 +84,7 @@ export default function AdminDashboard() {
               <h1 className="text-3xl font-bold text-gray-900">管理員後台</h1>
               <p className="text-gray-600 mt-1">投票系統管理控制台</p>
             </div>
-            <Link
-              href="/"
-              className="text-gray-600 hover:text-gray-900 font-medium transition"
-            >
+            <Link href="/" className="text-gray-600 hover:text-gray-900 font-medium transition">
               返回首頁
             </Link>
           </div>
@@ -101,101 +92,101 @@ export default function AdminDashboard() {
       </header>
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Stats Cards */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">總活動數</p>
-                <p className="text-3xl font-bold text-gray-900 mt-2">{activities.length}</p>
-              </div>
-              <div className="p-4 bg-blue-100 rounded-full">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
-                </svg>
+          <Card>
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">總活動數</p>
+                  <p className="text-3xl font-bold text-gray-900 mt-2">{activities.length}</p>
+                </div>
+                <div className="p-4 bg-blue-100 rounded-full">
+                  <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                  </svg>
+                </div>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">進行中</p>
-                <p className="text-3xl font-bold text-green-600 mt-2">
-                  {activities.filter(a => {
-                    const now = new Date();
-                    return now >= new Date(a.open_from) && now <= new Date(a.open_to);
-                  }).length}
-                </p>
-              </div>
-              <div className="p-4 bg-green-100 rounded-full">
-                <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+          <Card>
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">進行中</p>
+                  <p className="text-3xl font-bold text-green-600 mt-2">
+                    {activities.filter(a => {
+                      const now = new Date();
+                      return now >= new Date(a.open_from) && now <= new Date(a.open_to);
+                    }).length}
+                  </p>
+                </div>
+                <div className="p-4 bg-green-100 rounded-full">
+                  <svg className="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
               </div>
             </div>
-          </div>
+          </Card>
 
-          <div className="bg-white rounded-xl shadow-lg p-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-600">已結束</p>
-                <p className="text-3xl font-bold text-gray-500 mt-2">
-                  {activities.filter(a => new Date() > new Date(a.open_to)).length}
-                </p>
-              </div>
-              <div className="p-4 bg-gray-100 rounded-full">
-                <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
+          <Card>
+            <div className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-gray-600">已結束</p>
+                  <p className="text-3xl font-bold text-gray-500 mt-2">
+                    {activities.filter(a => new Date() > new Date(a.open_to)).length}
+                  </p>
+                </div>
+                <div className="p-4 bg-gray-100 rounded-full">
+                  <svg className="w-8 h-8 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
               </div>
             </div>
-          </div>
+          </Card>
         </div>
 
-        {/* Error Message */}
-        {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800">{error}</p>
-          </div>
-        )}
+        <ErrorAlert message={error} />
 
-        {/* Quick Actions */}
-        <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">快速操作</h2>
-          <div className="grid md:grid-cols-3 gap-4">
-            <Link
-              href="/admin/activities/new"
-              className="flex items-center justify-center p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition transform hover:scale-105"
-            >
-              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              新增投票活動
-            </Link>
-            <Link
-              href="/admin/voters"
-              className="flex items-center justify-center p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition transform hover:scale-105"
-            >
-              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-              </svg>
-              管理投票人名單
-            </Link>
-            <button
-              className="flex items-center justify-center p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition transform hover:scale-105"
-              onClick={() => window.location.reload()}
-            >
-              <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-              </svg>
-              重新整理
-            </button>
+        <Card className="mb-8">
+          <div className="p-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">快速操作</h2>
+            <div className="grid md:grid-cols-3 gap-4">
+              <Link
+                href="/admin/activities/new"
+                className="flex items-center justify-center p-4 bg-green-600 hover:bg-green-700 text-white rounded-lg transition transform hover:scale-105"
+              >
+                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                新增投票活動
+              </Link>
+              <Link
+                href="/admin/voters"
+                className="flex items-center justify-center p-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition transform hover:scale-105"
+              >
+                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                管理投票人名單
+              </Link>
+              <button
+                className="flex items-center justify-center p-4 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition transform hover:scale-105"
+                onClick={() => window.location.reload()}
+              >
+                <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+                重新整理
+              </button>
+            </div>
           </div>
-        </div>
+        </Card>
 
-        {/* Activities List */}
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+        <Card>
           <div className="px-6 py-4 border-b border-gray-200">
             <h2 className="text-xl font-bold text-gray-900">投票活動列表</h2>
           </div>
@@ -280,7 +271,7 @@ export default function AdminDashboard() {
               </table>
             </div>
           )}
-        </div>
+        </Card>
       </main>
     </div>
   );
