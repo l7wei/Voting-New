@@ -2,9 +2,9 @@
 
 import { useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Card from '@/components/Card';
-import Input from '@/components/Input';
-import Button from '@/components/Button';
+import { Card, CardHeader, CardBody, Input, Button, Select, SelectItem, Divider, Spinner } from '@heroui/react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faUserCircle, faIdCard, faUserTag, faKey, faBolt } from '@fortawesome/free-solid-svg-icons';
 
 function MockLoginForm() {
   const searchParams = useSearchParams();
@@ -73,83 +73,109 @@ function MockLoginForm() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <div className="text-center mb-6">
-          <div className="inline-block p-4 bg-primary-light rounded-full mb-4">
-            <svg className="w-12 h-12 text-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-            </svg>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
+      <Card className="w-full max-w-md" shadow="lg">
+        <CardHeader className="flex flex-col items-center pb-0 pt-8">
+          <div className="p-4 bg-gradient-to-br from-primary-500 to-secondary-500 rounded-full mb-4">
+            <FontAwesomeIcon icon={faUserCircle} className="text-5xl text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-neutral-dark mb-2">模擬 OAuth 登入</h1>
-          <p className="text-neutral">請輸入您的資訊以模擬 OAuth 認證</p>
-        </div>
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
+            模擬 OAuth 登入
+          </h1>
+          <p className="text-default-600">請輸入您的資訊以模擬 OAuth 認證</p>
+        </CardHeader>
+        
+        <Divider className="my-4" />
 
-        {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800 text-sm">{error}</p>
-          </div>
-        )}
+        <CardBody>
+          {error && (
+            <Card className="mb-4 border-danger" shadow="none">
+              <CardBody className="py-3">
+                <p className="text-danger text-sm">{error}</p>
+              </CardBody>
+            </Card>
+          )}
 
-        <form onSubmit={handleSubmit}>
-          <Input
-            label="學號 (userid)"
-            value={formData.userid}
-            onChange={(e) => setFormData({ ...formData, userid: e.target.value })}
-            placeholder="例如: 110000114"
-            required
-          />
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <Input
+              label="學號 (userid)"
+              placeholder="例如: 110000114"
+              value={formData.userid}
+              onValueChange={(value) => setFormData({ ...formData, userid: value })}
+              isRequired
+              variant="bordered"
+              startContent={<FontAwesomeIcon icon={faIdCard} className="text-default-400" />}
+            />
 
-          <Input
-            label="姓名 (name)"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-            placeholder="例如: 王小明"
-            required
-          />
+            <Input
+              label="姓名 (name)"
+              placeholder="例如: 王小明"
+              value={formData.name}
+              onValueChange={(value) => setFormData({ ...formData, name: value })}
+              isRequired
+              variant="bordered"
+              startContent={<FontAwesomeIcon icon={faUserTag} className="text-default-400" />}
+            />
 
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-neutral-dark mb-2">
-              在校狀態 (inschool) <span className="text-red-500 ml-1">*</span>
-            </label>
-            <select
-              value={formData.inschool}
-              onChange={(e) => setFormData({ ...formData, inschool: e.target.value })}
-              className="input"
+            <Select
+              label="在校狀態 (inschool)"
+              selectedKeys={[formData.inschool]}
+              onSelectionChange={(keys) => {
+                const value = Array.from(keys)[0] as string;
+                setFormData({ ...formData, inschool: value });
+              }}
+              isRequired
+              variant="bordered"
             >
-              <option value="true">在校 (true)</option>
-              <option value="false">離校 (false)</option>
-            </select>
-          </div>
+              <SelectItem key="true">在校 (true)</SelectItem>
+              <SelectItem key="false">離校 (false)</SelectItem>
+            </Select>
 
-          <Input
-            label="UUID (選填，留空自動生成)"
-            value={formData.uuid}
-            onChange={(e) => setFormData({ ...formData, uuid: e.target.value })}
-            placeholder="自動生成 UUID"
-          />
+            <Input
+              label="UUID (選填，留空自動生成)"
+              placeholder="自動生成 UUID"
+              value={formData.uuid}
+              onValueChange={(value) => setFormData({ ...formData, uuid: value })}
+              variant="bordered"
+              startContent={<FontAwesomeIcon icon={faKey} className="text-default-400" />}
+            />
 
-          <div className="flex flex-col gap-3 mt-6">
-            <Button type="submit" variant="primary" fullWidth disabled={loading}>
-              {loading ? '登入中...' : '登入'}
-            </Button>
-            
-            <Button type="button" variant="secondary" fullWidth onClick={handleAutoFill}>
-              快速填入測試資料
-            </Button>
-          </div>
-        </form>
+            <div className="flex flex-col gap-3 pt-4">
+              <Button 
+                type="submit" 
+                color="primary" 
+                size="lg"
+                isLoading={loading}
+                className="font-semibold"
+              >
+                {loading ? '登入中...' : '登入'}
+              </Button>
+              
+              <Button 
+                type="button" 
+                variant="flat" 
+                size="lg"
+                onPress={handleAutoFill}
+                startContent={<FontAwesomeIcon icon={faBolt} />}
+              >
+                快速填入測試資料
+              </Button>
+            </div>
+          </form>
 
-        <div className="mt-6 p-4 bg-primary-light rounded-lg">
-          <p className="text-sm text-neutral-dark mb-2">
-            <strong>說明：</strong>
-          </p>
-          <ul className="text-xs text-neutral space-y-1 list-disc list-inside">
-            <li>此頁面僅用於開發環境模擬 OAuth 登入</li>
-            <li>正式環境將使用真實的 OAuth 認證</li>
-            <li>UUID 會自動生成用於匿名投票</li>
-          </ul>
-        </div>
+          <Card className="mt-6 bg-primary-50" shadow="none">
+            <CardBody>
+              <p className="text-sm text-default-700 mb-2 font-semibold">
+                說明：
+              </p>
+              <ul className="text-xs text-default-600 space-y-1 list-disc list-inside">
+                <li>此頁面僅用於開發環境模擬 OAuth 登入</li>
+                <li>正式環境將使用真實的 OAuth 認證</li>
+                <li>UUID 會自動生成用於匿名投票</li>
+              </ul>
+            </CardBody>
+          </Card>
+        </CardBody>
       </Card>
     </div>
   );
@@ -158,12 +184,11 @@ function MockLoginForm() {
 export default function MockLoginPage() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center">
-        <Card className="w-full max-w-md">
-          <div className="text-center py-8">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-neutral">載入中...</p>
-          </div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
+        <Card className="w-full max-w-md" shadow="lg">
+          <CardBody className="text-center py-12">
+            <Spinner size="lg" label="載入中..." />
+          </CardBody>
         </Card>
       </div>
     }>
