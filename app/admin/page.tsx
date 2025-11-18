@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import AdminGuard from '@/components/auth/AdminGuard';
 import { 
   Card, 
   CardHeader,
@@ -27,7 +28,8 @@ import {
   faCheckCircle,
   faClock,
   faPencil,
-  faChartBar
+  faChartBar,
+  faClipboardCheck
 } from '@fortawesome/free-solid-svg-icons';
 
 interface Activity {
@@ -41,7 +43,7 @@ interface Activity {
   options: string[];
 }
 
-export default function AdminDashboard() {
+function AdminDashboardContent() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -91,7 +93,7 @@ export default function AdminDashboard() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
+      <div className="min-h-screen bg-neutral-100">
         <Header />
         <main className="container mx-auto max-w-7xl px-6 py-12">
           <div className="flex justify-center items-center py-20">
@@ -103,57 +105,57 @@ export default function AdminDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
+    <div className="min-h-screen bg-neutral-100">
       <Header />
 
       <main className="container mx-auto max-w-7xl px-6 py-8">
         {/* Title */}
         <div className="mb-8">
-          <h2 className="text-4xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent mb-2">
+          <h2 className="text-4xl font-bold text-neutral-900 mb-2">
             管理員後台
           </h2>
-          <p className="text-default-600">投票系統管理控制台</p>
+          <p className="text-neutral-600">投票系統管理控制台</p>
         </div>
 
         {/* Stats Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          <Card shadow="sm">
+          <Card shadow="sm" className="glass-card">
             <CardBody className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-default-600 mb-1">總活動數</p>
-                  <p className="text-4xl font-bold text-default-900">{activities.length}</p>
+                  <p className="text-sm font-medium text-neutral-600 mb-1">總活動數</p>
+                  <p className="text-4xl font-bold text-neutral-900">{activities.length}</p>
                 </div>
-                <div className="p-4 bg-primary-100 rounded-xl">
-                  <FontAwesomeIcon icon={faClipboardList} className="text-3xl text-primary-600" />
+                <div className="p-4 bg-neutral-100 rounded-xl">
+                  <FontAwesomeIcon icon={faClipboardList} className="text-3xl text-primary" />
                 </div>
               </div>
             </CardBody>
           </Card>
 
-          <Card shadow="sm">
+          <Card shadow="sm" className="glass-card">
             <CardBody className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-default-600 mb-1">進行中</p>
+                  <p className="text-sm font-medium text-neutral-600 mb-1">進行中</p>
                   <p className="text-4xl font-bold text-success-600">{activeCount}</p>
                 </div>
-                <div className="p-4 bg-success-100 rounded-xl">
+                <div className="p-4 bg-neutral-100 rounded-xl">
                   <FontAwesomeIcon icon={faCheckCircle} className="text-3xl text-success-600" />
                 </div>
               </div>
             </CardBody>
           </Card>
 
-          <Card shadow="sm">
+          <Card shadow="sm" className="glass-card">
             <CardBody className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-default-600 mb-1">已結束</p>
-                  <p className="text-4xl font-bold text-default-500">{completedCount}</p>
+                  <p className="text-sm font-medium text-neutral-600 mb-1">已結束</p>
+                  <p className="text-4xl font-bold text-neutral-500">{completedCount}</p>
                 </div>
-                <div className="p-4 bg-default-100 rounded-xl">
-                  <FontAwesomeIcon icon={faClock} className="text-3xl text-default-500" />
+                <div className="p-4 bg-neutral-100 rounded-xl">
+                  <FontAwesomeIcon icon={faClock} className="text-3xl text-neutral-500" />
                 </div>
               </div>
             </CardBody>
@@ -170,9 +172,9 @@ export default function AdminDashboard() {
         )}
 
         {/* Quick Actions */}
-        <Card shadow="sm" className="mb-8">
+        <Card shadow="sm" className="mb-8 glass-card">
           <CardHeader className="pb-4">
-            <h3 className="text-xl font-bold">快速操作</h3>
+            <h3 className="text-xl font-bold text-neutral-900">快速操作</h3>
           </CardHeader>
           <Divider />
           <CardBody className="pt-6">
@@ -189,7 +191,6 @@ export default function AdminDashboard() {
               <Button 
                 as={Link}
                 href="/admin/voters" 
-                color="secondary"
                 variant="flat"
                 size="lg"
                 startContent={<FontAwesomeIcon icon={faUsers} />}
@@ -209,18 +210,18 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Activities Table */}
-        <Card shadow="sm">
+        <Card shadow="sm" className="glass-card">
           <CardHeader className="pb-4">
-            <h3 className="text-xl font-bold">投票活動列表</h3>
+            <h3 className="text-xl font-bold text-neutral-900">投票活動列表</h3>
           </CardHeader>
           <Divider />
           <CardBody className="p-0">
             {activities.length === 0 ? (
               <div className="text-center py-16 px-4">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-primary-100 rounded-full mb-4">
-                  <FontAwesomeIcon icon={faClipboardList} className="text-4xl text-primary-600" />
+                <div className="inline-flex items-center justify-center w-20 h-20 bg-neutral-100 rounded-full mb-4">
+                  <FontAwesomeIcon icon={faClipboardList} className="text-4xl text-primary" />
                 </div>
-                <p className="text-default-600 mb-6 text-lg">目前沒有任何投票活動</p>
+                <p className="text-neutral-600 mb-6 text-lg">目前沒有任何投票活動</p>
                 <Button 
                   as={Link}
                   href="/admin/activities/new" 
@@ -271,11 +272,19 @@ export default function AdminDashboard() {
                             as={Link}
                             href={`/admin/activities/${activity._id}/results`}
                             size="sm"
-                            color="secondary"
                             variant="flat"
                             startContent={<FontAwesomeIcon icon={faChartBar} />}
                           >
                             統計
+                          </Button>
+                          <Button
+                            as={Link}
+                            href={`/admin/activities/${activity._id}/verification`}
+                            size="sm"
+                            variant="flat"
+                            startContent={<FontAwesomeIcon icon={faClipboardCheck} />}
+                          >
+                            驗票
                           </Button>
                         </div>
                       </TableCell>
@@ -288,5 +297,13 @@ export default function AdminDashboard() {
         </Card>
       </main>
     </div>
+  );
+}
+
+export default function AdminDashboard() {
+  return (
+    <AdminGuard>
+      <AdminDashboardContent />
+    </AdminGuard>
   );
 }

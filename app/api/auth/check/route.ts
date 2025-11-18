@@ -21,7 +21,7 @@ export async function GET(request: NextRequest) {
       authenticated: true,
       user: {
         student_id: payload.student_id,
-        name: payload.student_id, // We'll get the actual name from OAuth
+        name: payload.name || payload.student_id,
         isAdmin: isUserAdmin,
       }
     }, { status: 200 });

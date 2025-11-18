@@ -1,8 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { exchangeCodeForToken, getUserInfo } from '@/lib/oauth';
 import { generateToken } from '@/lib/auth';
-import { User } from '@/lib/models/User';
-import connectDB from '@/lib/db';
 
 export async function GET(request: NextRequest) {
   try {
@@ -19,33 +17,17 @@ export async function GET(request: NextRequest) {
     const tokenInfo = await exchangeCodeForToken(code);
     console.log('Callback: Got token info');
     
-    // Get user info
+    // Get user info from OAuth (Userid field maps to student_id)
     const userInfo = await getUserInfo(tokenInfo.access_token);
-    const studentId = userInfo.Userid;
-    console.log('Callback: Got user info for student ID:', studentId);
+    const studentId = userInfo.Userid; // OAuth returns "Userid", we map it to student_id
+    const userName = userInfo.name || studentId;
+    console.log('Callback: Got user info for student ID:', studentId, 'name:', userName);
 
-    // Connect to database
-    await connectDB();
-    console.log('Callback: Connected to DB');
-
-    // Find or create user
-    let user = await User.findOne({ student_id: studentId });
-    if (!user) {
-      user = await User.create({
-        student_id: studentId,
-        created_at: new Date(),
-        updated_at: new Date(),
-      });
-      console.log('Callback: Created new user');
-    } else {
-      console.log('Callback: Found existing user');
-    }
-
-    // Generate service token
+    // Generate service token with name included (no database lookup needed)
     const serviceToken = generateToken({
-      _id: user._id.toString(),
-      student_id: user.student_id,
-      remark: user.remark,
+      _id: studentId, // Use student_id as _id
+      student_id: studentId,
+      name: userName,
     });
 
     console.log('Callback: Generated service token, redirecting to /vote');

@@ -17,10 +17,10 @@ export interface OAuthTokenResponse {
 }
 
 export interface OAuthUserInfo {
-  Userid: string;
+  Userid: string; // Maps to student_id in our system
   name?: string;
   inschool?: string;
-  uuid?: string;
+  uuid?: string; // Used for anonymous voting
 }
 
 export function getAuthorizationURL(): string {

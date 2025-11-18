@@ -69,7 +69,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Check if user already voted
-    const hasVoted = activity.users.includes(user._id);
+    const hasVoted = activity.users.includes(user.student_id);
     if (hasVoted) {
       return createErrorResponse('User has already voted', 400);
     }
@@ -106,10 +106,10 @@ export async function POST(request: NextRequest) {
 
     const vote = await Vote.create(voteData);
 
-    // Add user to activity's voted users list
+    // Add student_id to activity's voted users list
     await Activity.updateOne(
       { _id: activity_id },
-      { $addToSet: { users: user._id } }
+      { $addToSet: { users: user.student_id } }
     );
 
     return createSuccessResponse(vote, 201);

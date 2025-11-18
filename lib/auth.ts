@@ -5,11 +5,12 @@ import adminsConfig from '@/config/admins.json';
 const TOKEN_SECRET = process.env.TOKEN_SECRET || 'mysecret';
 
 export function generateToken(user: AuthUser): string {
+  // _id is set to student_id since we don't use MongoDB User collection
   const payload: JWTPayload = {
     account: user.student_id,
-    _id: user._id,
+    _id: user.student_id, // Use student_id as _id (no User collection)
     student_id: user.student_id,
-    remark: user.remark,
+    name: user.name,
   };
 
   const options: jwt.SignOptions = {

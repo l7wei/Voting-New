@@ -14,7 +14,7 @@ export interface IActivity {
   name: string;
   type: string;
   rule: 'choose_all' | 'choose_one';
-  users: (Types.ObjectId | string)[]; // User IDs who have voted
+  users: string[]; // Student IDs who have voted
   options: (Types.ObjectId | string)[]; // Option IDs
   open_from: Date;
   open_to: Date;
@@ -70,6 +70,7 @@ export interface AuthUser {
   _id: string;
   student_id: string;
   remark?: string;
+  name?: string;
 }
 
 export interface JWTPayload extends AuthUser {

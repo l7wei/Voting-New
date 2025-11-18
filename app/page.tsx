@@ -3,14 +3,15 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
-import { Card, CardHeader, CardBody, Button, Chip, Divider } from '@heroui/react';
+import { Card, CardHeader, CardBody, Button, Chip } from '@heroui/react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { 
   faLock, 
   faUserSecret, 
   faBolt, 
   faCheckCircle,
-  faArrowRight
+  faArrowRight,
+  faClipboardCheck
 } from '@fortawesome/free-solid-svg-icons';
 
 interface Activity {
@@ -37,7 +38,6 @@ export default function HomePage() {
       const data = await response.json();
 
       if (data.success) {
-        // Filter active activities
         const now = new Date();
         const activeActivities = data.data.filter((activity: Activity) => {
           const openFrom = new Date(activity.open_from);
@@ -54,20 +54,22 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-cyan-50">
+    <div className="min-h-screen bg-neutral-100">
       <Header />
       
       <main className="container mx-auto max-w-7xl px-6 py-12">
         {/* Hero Section */}
         <div className="text-center mb-16 space-y-6">
-          <h1 className="text-6xl md:text-7xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+          <div className="flex justify-center mb-6">
+            <div className="p-6 bg-white/80 backdrop-blur-md rounded-full shadow-sm">
+              <FontAwesomeIcon icon={faClipboardCheck} className="text-6xl text-primary" />
+            </div>
+          </div>
+          <h1 className="text-5xl md:text-6xl font-bold text-neutral-900">
             清大投票系統
           </h1>
-          <p className="text-2xl text-default-600 max-w-3xl mx-auto">
+          <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
             National Tsing Hua University Voting System
-          </p>
-          <p className="text-lg text-default-500 max-w-2xl mx-auto">
-            安全、透明、便捷的線上投票平台，為清華大學學生會選舉提供專業的投票服務
           </p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
@@ -96,69 +98,68 @@ export default function HomePage() {
 
         {/* Features Section */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <Card shadow="sm" className="border-none bg-gradient-to-br from-primary-50 to-primary-100">
+          <Card shadow="sm" className="glass-card">
             <CardBody className="text-center p-8">
               <div className="flex justify-center mb-4">
-                <div className="p-4 bg-primary-100 rounded-full">
-                  <FontAwesomeIcon icon={faLock} className="text-4xl text-primary-600" />
+                <div className="p-4 bg-neutral-100 rounded-full">
+                  <FontAwesomeIcon icon={faLock} className="text-4xl text-primary" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">安全可靠</h3>
-              <p className="text-default-600">
-                採用業界標準的加密技術，確保每一票都安全可靠，無法被竄改
+              <h3 className="text-xl font-bold text-neutral-900 mb-3">安全可靠</h3>
+              <p className="text-neutral-600">
+                使用加密技術保護投票資料
               </p>
             </CardBody>
           </Card>
 
-          <Card shadow="sm" className="border-none bg-gradient-to-br from-success-50 to-success-100">
+          <Card shadow="sm" className="glass-card">
             <CardBody className="text-center p-8">
               <div className="flex justify-center mb-4">
-                <div className="p-4 bg-success-100 rounded-full">
-                  <FontAwesomeIcon icon={faUserSecret} className="text-4xl text-success-600" />
+                <div className="p-4 bg-neutral-100 rounded-full">
+                  <FontAwesomeIcon icon={faUserSecret} className="text-4xl text-primary" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">匿名投票</h3>
-              <p className="text-default-600">
-                完全匿名的投票機制，保護您的隱私，讓您自由表達意見
+              <h3 className="text-xl font-bold text-neutral-900 mb-3">匿名投票</h3>
+              <p className="text-neutral-600">
+                完全匿名機制保護隱私
               </p>
             </CardBody>
           </Card>
 
-          <Card shadow="sm" className="border-none bg-gradient-to-br from-secondary-50 to-secondary-100">
+          <Card shadow="sm" className="glass-card">
             <CardBody className="text-center p-8">
               <div className="flex justify-center mb-4">
-                <div className="p-4 bg-secondary-100 rounded-full">
-                  <FontAwesomeIcon icon={faBolt} className="text-4xl text-secondary-600" />
+                <div className="p-4 bg-neutral-100 rounded-full">
+                  <FontAwesomeIcon icon={faBolt} className="text-4xl text-primary" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">快速便捷</h3>
-              <p className="text-default-600">
-                簡潔直觀的界面設計，讓投票過程輕鬆快速，隨時隨地都能參與
+              <h3 className="text-xl font-bold text-neutral-900 mb-3">快速便捷</h3>
+              <p className="text-neutral-600">
+                簡潔介面，隨時隨地投票
               </p>
             </CardBody>
           </Card>
         </div>
 
         {/* How it works Section */}
-        <Card shadow="md">
-          <CardHeader className="flex flex-col items-center pb-4">
-            <h2 className="text-3xl font-bold">如何使用</h2>
+        <Card shadow="sm" className="glass-card-strong">
+          <CardHeader className="flex flex-col items-center pb-4 pt-8">
+            <h2 className="text-3xl font-bold text-neutral-900">使用流程</h2>
           </CardHeader>
-          <Divider/>
-          <CardBody className="p-8">
+          <CardBody className="p-8 pt-0">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
               {[
-                { num: '1', title: '登入系統', desc: '使用您的學號登入' },
-                { num: '2', title: '選擇活動', desc: '從進行中的活動選擇' },
-                { num: '3', title: '進行投票', desc: '審慎選擇並投下您的一票' },
-                { num: '4', title: '完成投票', desc: '取得投票證明憑證' },
+                { num: '1', title: '登入系統', desc: '使用學號登入' },
+                { num: '2', title: '選擇活動', desc: '選擇投票活動' },
+                { num: '3', title: '進行投票', desc: '投下您的一票' },
+                { num: '4', title: '完成投票', desc: '取得投票憑證' },
               ].map((step) => (
                 <div key={step.num} className="text-center">
-                  <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-secondary-500 text-white flex items-center justify-center text-2xl font-bold mb-4 mx-auto shadow-lg">
+                  <div className="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center text-2xl font-bold mb-4 mx-auto shadow-sm">
                     {step.num}
                   </div>
-                  <h4 className="font-bold text-lg mb-2">{step.title}</h4>
-                  <p className="text-sm text-default-500">{step.desc}</p>
+                  <h4 className="font-bold text-lg text-neutral-900 mb-2">{step.title}</h4>
+                  <p className="text-sm text-neutral-600">{step.desc}</p>
                 </div>
               ))}
             </div>
@@ -166,10 +167,10 @@ export default function HomePage() {
         </Card>
       </main>
 
-      <footer className="border-t border-divider mt-20 py-8 bg-default-50">
+      <footer className="border-t border-neutral-200 mt-20 py-8 bg-white/50 backdrop-blur-sm">
         <div className="container mx-auto max-w-7xl px-6">
-          <p className="text-center text-default-500">
-            © 2024 清華大學學生會 投票系統. All rights reserved.
+          <p className="text-center text-neutral-500">
+            © 2024 清華大學學生會投票系統
           </p>
         </div>
       </footer>
