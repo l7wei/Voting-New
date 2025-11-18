@@ -26,7 +26,13 @@ function MockLoginForm() {
       ...formData,
       uuid,
     };
-    document.cookie = `mockOAuthData=${encodeURIComponent(JSON.stringify(mockData))}; path=/; max-age=300`;
+    
+    // Set cookie with secure flag in production
+    // NOTE: This is for development/mock OAuth only. In production, use server-side cookies.
+    const isProduction = window.location.protocol === 'https:';
+    const secureFlag = isProduction ? '; secure' : '';
+    // codeql[js/clear-text-cookie] - Mock OAuth development cookie, secure flag added for production
+    document.cookie = `mockOAuthData=${encodeURIComponent(JSON.stringify(mockData))}; path=/; max-age=300; samesite=lax${secureFlag}`;
     
     // Generate mock code and redirect
     const code = 'mock_code_' + Date.now();
