@@ -14,15 +14,19 @@ export async function GET(request: NextRequest) {
       return NextResponse.redirect(new URL('/?error=auth_failed', request.url));
     }
 
+    console.log('Callback: Exchanging code for token...');
     // Exchange code for access token
     const tokenInfo = await exchangeCodeForToken(code);
+    console.log('Callback: Got token info');
     
     // Get user info
     const userInfo = await getUserInfo(tokenInfo.access_token);
     const studentId = userInfo.Userid;
+    console.log('Callback: Got user info for student ID:', studentId);
 
     // Connect to database
     await connectDB();
+    console.log('Callback: Connected to DB');
 
     // Find or create user
     let user = await User.findOne({ student_id: studentId });
@@ -32,6 +36,9 @@ export async function GET(request: NextRequest) {
         created_at: new Date(),
         updated_at: new Date(),
       });
+      console.log('Callback: Created new user');
+    } else {
+      console.log('Callback: Found existing user');
     }
 
     // Generate service token
@@ -41,8 +48,9 @@ export async function GET(request: NextRequest) {
       remark: user.remark,
     });
 
+    console.log('Callback: Generated service token, redirecting to /vote');
     // Create response with redirect
-    const response = NextResponse.redirect(new URL('/voting', request.url));
+    const response = NextResponse.redirect(new URL('/vote', request.url));
     
     // Set token in cookie
     response.cookies.set('service_token', serviceToken, {
@@ -57,6 +65,9 @@ export async function GET(request: NextRequest) {
   } catch (error: unknown) {
     const errorMessage = error instanceof Error ? error.message : 'Authentication failed';
     console.error('OAuth callback error:', errorMessage);
+    if (error instanceof Error && error.stack) {
+      console.error('Stack trace:', error.stack);
+    }
     return NextResponse.redirect(new URL('/?error=auth_failed', request.url));
   }
 }

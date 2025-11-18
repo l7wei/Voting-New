@@ -1,17 +1,23 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-export async function POST(_request: NextRequest) {
-  // Mock user resource - use student ID from query or default
+export async function POST(request: NextRequest) {
+  // Try to get mock data from cookie
+  const mockDataCookie = request.cookies.get('mock_oauth_data');
   
-  // In development, you can customize this student ID
-  const mockStudentId = process.env.MOCK_STUDENT_ID || '110000114';
-  
-  const response = {
-    Userid: mockStudentId,
+  let mockData = {
+    Userid: process.env.MOCK_STUDENT_ID || '110000114',
     name: '測試學生',
     inschool: 'true',
     uuid: 'mock-uuid-' + Date.now(),
   };
+  
+  if (mockDataCookie) {
+    try {
+      mockData = JSON.parse(mockDataCookie.value);
+    } catch {
+      // Use default if parsing fails
+    }
+  }
 
-  return NextResponse.json(response);
+  return NextResponse.json(mockData);
 }
