@@ -8,16 +8,24 @@ export interface AuthenticatedRequest extends NextRequest {
 }
 
 export async function requireAuth(request: NextRequest): Promise<JWTPayload | NextResponse> {
+  // Try to get token from Authorization header first
   const authHeader = request.headers.get('authorization');
+  let token: string | undefined;
   
-  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    token = authHeader.substring(7);
+  } else {
+    // Fallback to cookie if no Authorization header
+    token = request.cookies.get('service_token')?.value;
+  }
+  
+  if (!token) {
     return NextResponse.json(
       { success: false, error: 'Authentication failed: No token provided' },
       { status: 401 }
     );
   }
 
-  const token = authHeader.substring(7);
   const decoded = verifyToken(token);
 
   if (!decoded) {
