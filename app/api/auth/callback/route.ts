@@ -22,7 +22,8 @@ export async function GET(request: NextRequest) {
     // Get user info
     const userInfo = await getUserInfo(tokenInfo.access_token);
     const studentId = userInfo.Userid;
-    console.log('Callback: Got user info for student ID:', studentId);
+    const userName = userInfo.name || studentId;
+    console.log('Callback: Got user info for student ID:', studentId, 'name:', userName);
 
     // Connect to database
     await connectDB();
@@ -41,11 +42,12 @@ export async function GET(request: NextRequest) {
       console.log('Callback: Found existing user');
     }
 
-    // Generate service token
+    // Generate service token with name included
     const serviceToken = generateToken({
       _id: user._id.toString(),
       student_id: user.student_id,
       remark: user.remark,
+      name: userName,
     });
 
     console.log('Callback: Generated service token, redirecting to /vote');

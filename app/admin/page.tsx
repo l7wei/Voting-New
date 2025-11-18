@@ -28,7 +28,8 @@ import {
   faCheckCircle,
   faClock,
   faPencil,
-  faChartBar
+  faChartBar,
+  faClipboardCheck
 } from '@fortawesome/free-solid-svg-icons';
 
 interface Activity {
@@ -275,6 +276,15 @@ function AdminDashboardContent() {
                             startContent={<FontAwesomeIcon icon={faChartBar} />}
                           >
                             統計
+                          </Button>
+                          <Button
+                            as={Link}
+                            href={`/admin/activities/${activity._id}/verification`}
+                            size="sm"
+                            variant="flat"
+                            startContent={<FontAwesomeIcon icon={faClipboardCheck} />}
+                          >
+                            驗票
                           </Button>
                         </div>
                       </TableCell>

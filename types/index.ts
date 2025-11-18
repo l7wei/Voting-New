@@ -70,6 +70,7 @@ export interface AuthUser {
   _id: string;
   student_id: string;
   remark?: string;
+  name?: string;
 }
 
 export interface JWTPayload extends AuthUser {

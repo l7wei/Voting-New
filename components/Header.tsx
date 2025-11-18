@@ -63,8 +63,13 @@ export default function Header() {
     }
   };
 
+  const getUserRole = () => {
+    if (!user) return '';
+    return user.isAdmin ? '管理者' : '學生';
+  };
+
   return (
-    <Navbar isBordered maxWidth="xl" position="sticky">
+    <Navbar isBordered maxWidth="xl" position="sticky" className="glass-card-strong">
       <NavbarBrand>
         <Link href="/" className="flex items-center gap-2">
           <FontAwesomeIcon icon={faClipboardCheck} className="text-primary text-2xl" />
@@ -97,22 +102,23 @@ export default function Header() {
                 <DropdownTrigger>
                   <User   
                     as="button"
-                    name={user.name || user.student_id}
-                    description="學生"
+                    name={user.name}
+                    description={getUserRole()}
                     className="transition-transform"
                     avatarProps={{
                       icon: <FontAwesomeIcon icon={faUserCircle} />,
                       classNames: {
-                        base: "bg-gradient-to-br from-primary-400 to-primary-600",
+                        base: user.isAdmin ? "bg-primary" : "bg-neutral-400",
                         icon: "text-white"
                       }
                     }}
                   />
                 </DropdownTrigger>
                 <DropdownMenu aria-label="User actions" variant="flat">
-                  <DropdownItem key="profile" className="h-14 gap-2">
+                  <DropdownItem key="profile" className="h-14 gap-2" textValue="Profile info">
                     <p className="font-semibold">登入為</p>
-                    <p className="font-semibold">{user.name || user.student_id}</p>
+                    <p className="font-semibold">{user.name}</p>
+                    <p className="text-sm text-neutral-500">{getUserRole()}</p>
                   </DropdownItem>
                   <DropdownItem 
                     key="logout" 
