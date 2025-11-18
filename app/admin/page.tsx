@@ -74,14 +74,27 @@ export default function AdminDashboard() {
   };
 
   if (loading) {
-    return <Loading />;
+    return (
+      <div className="min-h-screen">
+        <Header />
+        <main className="max-w-7xl mx-auto px-4 py-8">
+          <Loading />
+        </main>
+      </div>
+    );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 to-teal-100">
-      <Header title="管理員後台" subtitle="投票系統管理控制台" />
+    <div className="min-h-screen">
+      <Header />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        {/* Title */}
+        <div className="mb-8">
+          <h2 className="text-3xl font-bold text-neutral-dark mb-2">管理員後台</h2>
+          <p className="text-neutral">投票系統管理控制台</p>
+        </div>
+
         {/* Stats Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
           <Card>
@@ -90,8 +103,8 @@ export default function AdminDashboard() {
                 <p className="text-sm font-medium text-gray-600">總活動數</p>
                 <p className="text-3xl font-bold text-gray-900 mt-2">{activities.length}</p>
               </div>
-              <div className="p-4 bg-blue-100 rounded-full">
-                <svg className="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <div className="p-4 bg-primary-100 rounded-full">
+                <svg className="w-8 h-8 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
@@ -143,9 +156,9 @@ export default function AdminDashboard() {
 
         {/* Quick Actions */}
         <Card className="mb-6 sm:mb-8">
-          <h2 className="text-xl font-bold text-gray-900 mb-4">快速操作</h2>
+          <h2 className="text-xl font-bold text-neutral-dark mb-4">快速操作</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <Button href="/admin/activities/new" variant="success" className="flex items-center justify-center">
+            <Button href="/admin/activities/new" variant="primary" className="flex items-center justify-center">
               <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
               </svg>
@@ -157,7 +170,7 @@ export default function AdminDashboard() {
               </svg>
               管理投票人名單
             </Button>
-            <Button onClick={() => window.location.reload()} className="flex items-center justify-center bg-purple-600 hover:bg-purple-700">
+            <Button onClick={() => window.location.reload()} variant="secondary" className="flex items-center justify-center">
               <svg className="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
               </svg>
@@ -167,15 +180,15 @@ export default function AdminDashboard() {
         </Card>
 
         {/* Activities List */}
-        <Card padding="none">
+        <Card className="!p-0">
           <div className="px-6 py-4 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">投票活動列表</h2>
+            <h2 className="text-xl font-bold text-neutral-dark">投票活動列表</h2>
           </div>
 
           {activities.length === 0 ? (
             <div className="text-center py-12 px-4">
-              <p className="text-gray-500 mb-4">目前沒有任何投票活動</p>
-              <Button href="/admin/activities/new" variant="success">
+              <p className="text-neutral mb-4">目前沒有任何投票活動</p>
+              <Button href="/admin/activities/new" variant="primary">
                 新增第一個活動
               </Button>
             </div>
@@ -226,7 +239,7 @@ export default function AdminDashboard() {
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
                         <Link
                           href={`/admin/activities/${activity._id}`}
-                          className="text-blue-600 hover:text-blue-900"
+                          className="text-primary-600 hover:text-primary-900"
                         >
                           管理
                         </Link>

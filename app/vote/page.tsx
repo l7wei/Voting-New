@@ -69,7 +69,7 @@ export default function VotePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-purple-100 py-6 sm:py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-8 sm:mb-12">
@@ -157,7 +157,7 @@ export default function VotePage() {
         <div className="text-center mt-8 sm:mt-12">
           <Link
             href="/"
-            className="inline-block text-blue-600 hover:text-blue-800 font-medium transition text-sm sm:text-base"
+            className="inline-block text-primary-600 hover:text-primary-800 font-medium transition text-sm sm:text-base"
           >
             ← 返回首頁
           </Link>

@@ -148,38 +148,59 @@ export default function VotingPage() {
 
   const renderCandidate = (candidate: Candidate, role: string) => {
     return (
-      <div className="mb-4">
-        <div className="flex items-center mb-2">
+      <div className="mb-6 p-4 bg-gradient-to-r from-primary-50 to-purple-50 rounded-lg border border-primary-200">
+        <div className="flex items-start gap-4 mb-3">
           {candidate.avatar_url && (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={candidate.avatar_url}
               alt={candidate.name}
-              className="w-16 h-16 rounded-full mr-4 object-cover"
+              className="w-20 h-20 rounded-full object-cover border-4 border-white shadow-lg flex-shrink-0"
             />
           )}
-          <div>
-            <h4 className="font-semibold text-lg">{role}: {candidate.name}</h4>
-            <p className="text-sm text-gray-600">{candidate.department}</p>
-            <p className="text-sm text-gray-500">{candidate.college}</p>
+          <div className="flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <span className="px-2 py-1 bg-primary-500 text-white text-xs font-semibold rounded">{role}</span>
+            </div>
+            <h4 className="font-bold text-xl text-gray-900 mb-1">{candidate.name}</h4>
+            <p className="text-sm text-primary-700 font-medium">{candidate.department}</p>
+            <p className="text-sm text-gray-600">{candidate.college}</p>
           </div>
         </div>
+        
         {candidate.personal_experiences && candidate.personal_experiences.length > 0 && (
-          <div className="mb-2">
-            <p className="text-sm font-medium text-gray-700">經歷：</p>
-            <ul className="list-disc list-inside text-sm text-gray-600">
+          <div className="mb-3 bg-white rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+              </svg>
+              <p className="text-sm font-bold text-gray-900">經歷</p>
+            </div>
+            <ul className="space-y-1">
               {candidate.personal_experiences.map((exp, idx) => (
-                <li key={idx}>{exp}</li>
+                <li key={idx} className="text-sm text-gray-700 flex items-start">
+                  <span className="text-primary-500 mr-2">•</span>
+                  <span>{exp}</span>
+                </li>
               ))}
             </ul>
           </div>
         )}
+        
         {candidate.political_opinions && candidate.political_opinions.length > 0 && (
-          <div>
-            <p className="text-sm font-medium text-gray-700">政見：</p>
-            <ul className="list-disc list-inside text-sm text-gray-600">
+          <div className="bg-white rounded-lg p-3">
+            <div className="flex items-center gap-2 mb-2">
+              <svg className="w-4 h-4 text-primary-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              <p className="text-sm font-bold text-gray-900">政見</p>
+            </div>
+            <ul className="space-y-1">
               {candidate.political_opinions.map((opinion, idx) => (
-                <li key={idx}>{opinion}</li>
+                <li key={idx} className="text-sm text-gray-700 flex items-start">
+                  <span className="text-primary-500 mr-2">•</span>
+                  <span>{opinion}</span>
+                </li>
               ))}
             </ul>
           </div>
@@ -192,7 +213,7 @@ export default function VotingPage() {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary-600 mx-auto mb-4"></div>
           <p className="text-gray-600">載入中...</p>
         </div>
       </div>
@@ -206,7 +227,7 @@ export default function VotingPage() {
           <h2 className="text-2xl font-bold text-gray-900 mb-4">找不到投票活動</h2>
           <button
             onClick={() => router.push('/vote')}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-lg transition"
+            className="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-2 px-6 rounded-lg transition"
           >
             返回投票列表
           </button>
@@ -228,9 +249,9 @@ export default function VotingPage() {
             <h2 className="text-3xl font-bold text-gray-900 mb-4">投票成功！</h2>
             <p className="text-lg text-gray-600 mb-8">感謝您的參與，您的投票已成功送出</p>
 
-            <div className="bg-blue-50 border-2 border-blue-200 rounded-xl p-6 mb-8">
-              <h3 className="text-lg font-semibold text-blue-900 mb-2">投票證明 UUID</h3>
-              <div className="font-mono text-sm text-blue-700 bg-white p-4 rounded-lg border border-blue-200 break-all">
+            <div className="bg-primary-50 border-2 border-primary-200 rounded-xl p-6 mb-8">
+              <h3 className="text-lg font-semibold text-primary-900 mb-2">投票證明 UUID</h3>
+              <div className="font-mono text-sm text-primary-700 bg-white p-4 rounded-lg border border-primary-200 break-all">
                 {voteToken}
               </div>
               <p className="text-sm text-gray-600 mt-4">
@@ -240,7 +261,7 @@ export default function VotingPage() {
 
             <button
               onClick={() => router.push('/vote')}
-              className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-8 rounded-lg transition transform hover:scale-105"
+              className="bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 px-8 rounded-lg transition transform hover:scale-105"
             >
               返回投票列表
             </button>
@@ -251,7 +272,7 @@ export default function VotingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 py-8 px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-primary-50 to-purple-100 py-8 px-4 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
@@ -272,8 +293,8 @@ export default function VotingPage() {
           </div>
 
           {activity.rule === 'choose_all' && (
-            <div className="mt-4 p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-900">
+            <div className="mt-4 p-4 bg-primary-50 rounded-lg border border-primary-200">
+              <p className="text-sm text-primary-900">
                 <strong>投票說明：</strong> 請對每位候選人表達您的意見（支持、反對或無意見）
               </p>
             </div>
@@ -342,8 +363,8 @@ export default function VotingPage() {
                     onClick={() => setChooseOneVote(option._id)}
                     className={`w-full py-3 px-4 rounded-lg font-medium transition ${
                       chooseOneVote === option._id
-                        ? 'bg-blue-600 text-white shadow-lg transform scale-105'
-                        : 'bg-gray-100 text-gray-700 hover:bg-blue-100'
+                        ? 'bg-primary-600 text-white shadow-lg transform scale-105'
+                        : 'bg-gray-100 text-gray-700 hover:bg-primary-100'
                     }`}
                   >
                     {chooseOneVote === option._id ? '✓ 已選擇' : '選擇此候選人'}
@@ -365,7 +386,7 @@ export default function VotingPage() {
           <button
             onClick={handleSubmitVote}
             disabled={submitting}
-            className="flex-1 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-semibold py-4 px-6 rounded-xl transition transform hover:scale-105 disabled:transform-none"
+            className="flex-1 bg-primary-600 hover:bg-primary-700 disabled:bg-gray-400 text-white font-semibold py-4 px-6 rounded-xl transition transform hover:scale-105 disabled:transform-none"
           >
             {submitting ? '提交中...' : '確認投票'}
           </button>
