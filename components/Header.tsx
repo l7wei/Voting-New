@@ -2,21 +2,17 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
-import { 
-  Navbar, 
-  NavbarBrand, 
-  NavbarContent, 
-  NavbarItem,
-  Button, 
-  Dropdown, 
-  DropdownTrigger, 
-  DropdownMenu, 
-  DropdownItem,
-  User,
-  Skeleton 
-} from '@heroui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faClipboardCheck, faUserCircle, faRightFromBracket, faUserShield } from '@fortawesome/free-solid-svg-icons';
+import { Button } from '@/components/ui/button';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { User, Shield, LogOut, Vote } from 'lucide-react';
 
 interface UserData {
   student_id: string;
@@ -63,88 +59,73 @@ export default function Header() {
     }
   };
 
-  const getUserRole = () => {
-    if (!user) return '';
-    return user.isAdmin ? '管理者' : '學生';
-  };
-
   return (
-    <Navbar isBordered maxWidth="xl" position="sticky" className="glass-card-strong">
-      <NavbarBrand>
+    <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-sm">
+      <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link href="/" className="flex items-center gap-2">
-          <FontAwesomeIcon icon={faClipboardCheck} className="text-primary text-2xl" />
-          <p className="font-bold text-xl text-inherit">清大投票系統</p>
+          <Vote className="h-6 w-6 text-primary" />
+          <span className="text-xl font-bold">清大投票系統</span>
         </Link>
-      </NavbarBrand>
 
-      <NavbarContent justify="end">
-        {loading ? (
-          <NavbarItem>
-            <Skeleton className="h-10 w-24 rounded-lg" />
-          </NavbarItem>
-        ) : user ? (
-          <>
-            {user.isAdmin && (
-              <NavbarItem>
-                <Button
-                  as={Link}
-                  href="/admin"
-                  color="primary"
-                  variant="flat"
-                  startContent={<FontAwesomeIcon icon={faUserShield} />}
-                >
-                  管理後台
+        <div className="flex items-center gap-4">
+          {loading ? (
+            <div className="h-10 w-24 animate-pulse rounded-xl bg-muted" />
+          ) : user ? (
+            <>
+              {user.isAdmin && (
+                <Button variant="outline" asChild>
+                  <Link href="/admin">
+                    <Shield className="mr-2 h-4 w-4" />
+                    管理後台
+                  </Link>
                 </Button>
-              </NavbarItem>
-            )}
-            <NavbarItem>
-              <Dropdown placement="bottom-end">
-                <DropdownTrigger>
-                  <User   
-                    as="button"
-                    name={user.name}
-                    description={getUserRole()}
-                    className="transition-transform"
-                    avatarProps={{
-                      icon: <FontAwesomeIcon icon={faUserCircle} />,
-                      classNames: {
-                        base: user.isAdmin ? "bg-primary" : "bg-neutral-400",
-                        icon: "text-white"
-                      }
-                    }}
-                  />
-                </DropdownTrigger>
-                <DropdownMenu aria-label="User actions" variant="flat">
-                  <DropdownItem key="profile" className="h-14 gap-2" textValue="Profile info">
-                    <p className="font-semibold">登入為</p>
-                    <p className="font-semibold">{user.name}</p>
-                    <p className="text-sm text-neutral-500">{getUserRole()}</p>
-                  </DropdownItem>
-                  <DropdownItem 
-                    key="logout" 
-                    color="danger"
-                    startContent={<FontAwesomeIcon icon={faRightFromBracket} />}
-                    onClick={handleLogout}
-                  >
+              )}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="gap-2">
+                    <Avatar className="h-8 w-8">
+                      <AvatarFallback className={user.isAdmin ? "bg-primary text-primary-foreground" : "bg-muted"}>
+                        <User className="h-4 w-4" />
+                      </AvatarFallback>
+                    </Avatar>
+                    <span className="hidden sm:inline">{user.name}</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuLabel>
+                    <div className="flex flex-col space-y-1">
+                      <p className="text-sm font-medium leading-none">{user.name}</p>
+                      <p className="text-xs leading-none text-muted-foreground">
+                        {user.student_id}
+                      </p>
+                    </div>
+                  </DropdownMenuLabel>
+                  <DropdownMenuSeparator />
+                  {user.isAdmin && (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link href="/admin">
+                          <Shield className="mr-2 h-4 w-4" />
+                          管理後台
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+                    <LogOut className="mr-2 h-4 w-4" />
                     登出
-                  </DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </NavbarItem>
-          </>
-        ) : (
-          <NavbarItem>
-            <Button
-              as={Link}
-              href="/login"
-              color="primary"
-              variant="flat"
-            >
-              登入
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : (
+            <Button asChild>
+              <Link href="/login">登入</Link>
             </Button>
-          </NavbarItem>
-        )}
-      </NavbarContent>
-    </Navbar>
+          )}
+        </div>
+      </div>
+    </header>
   );
 }

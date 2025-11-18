@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Spinner } from '@heroui/react';
+import { Loading } from '@/components/ui/loader';
 
 interface User {
   student_id: string;
@@ -60,8 +60,8 @@ export default function AdminGuard({ children, loadingComponent }: AdminGuardPro
     }
     
     return (
-      <div className="min-h-screen bg-neutral-100 flex items-center justify-center">
-        <Spinner size="lg" label="驗證中..." />
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <Loading text="驗證中..." />
       </div>
     );
   }

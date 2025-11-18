@@ -3,16 +3,10 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
-import { Card, CardHeader, CardBody, Button, Chip } from '@heroui/react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { 
-  faLock, 
-  faUserSecret, 
-  faBolt, 
-  faCheckCircle,
-  faArrowRight,
-  faClipboardCheck
-} from '@fortawesome/free-solid-svg-icons';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Lock, UserCheck, Zap, ArrowRight, CheckCircle2, Vote } from 'lucide-react';
 
 interface Activity {
   _id: string;
@@ -54,100 +48,98 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-100">
+    <div className="min-h-screen bg-background">
       <Header />
       
       <main className="container mx-auto max-w-7xl px-6 py-12">
         {/* Hero Section */}
-        <div className="text-center mb-16 space-y-6">
-          <div className="flex justify-center mb-6">
-            <div className="p-6 bg-white/80 backdrop-blur-md rounded-full shadow-sm">
-              <FontAwesomeIcon icon={faClipboardCheck} className="text-6xl text-primary" />
+        <div className="mb-16 space-y-6 text-center">
+          <div className="mb-6 flex justify-center">
+            <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+              <Vote className="h-10 w-10 text-primary" />
             </div>
           </div>
-          <h1 className="text-5xl md:text-6xl font-bold text-neutral-900">
+          <h1 className="text-5xl font-bold tracking-tight md:text-6xl">
             清大投票系統
           </h1>
-          <p className="text-xl text-neutral-600 max-w-2xl mx-auto">
+          <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
             National Tsing Hua University Voting System
           </p>
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
-            <Button 
-              as={Link}
-              href="/vote" 
-              color="primary"
-              size="lg"
-              endContent={<FontAwesomeIcon icon={faArrowRight} />}
-              className="font-semibold"
-            >
-              前往投票
+          <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
+            <Button size="lg" asChild>
+              <Link href="/vote">
+                前往投票
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Link>
             </Button>
             {!loading && activities.length > 0 && (
-              <Chip 
-                color="success" 
-                variant="flat" 
-                size="lg"
-                startContent={<FontAwesomeIcon icon={faCheckCircle} />}
-              >
+              <Badge variant="success" className="flex items-center gap-2 px-4 py-2 text-sm">
+                <CheckCircle2 className="h-4 w-4" />
                 {activities.length} 個投票活動進行中
-              </Chip>
+              </Badge>
             )}
           </div>
         </div>
 
         {/* Features Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
-          <Card shadow="sm" className="glass-card">
-            <CardBody className="text-center p-8">
-              <div className="flex justify-center mb-4">
-                <div className="p-4 bg-neutral-100 rounded-full">
-                  <FontAwesomeIcon icon={faLock} className="text-4xl text-primary" />
+        <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-3">
+          <Card>
+            <CardHeader>
+              <div className="mb-4 flex justify-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  <Lock className="h-6 w-6 text-primary" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-neutral-900 mb-3">安全可靠</h3>
-              <p className="text-neutral-600">
+              <CardTitle className="text-center">安全可靠</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-center text-muted-foreground">
                 使用加密技術保護投票資料
               </p>
-            </CardBody>
+            </CardContent>
           </Card>
 
-          <Card shadow="sm" className="glass-card">
-            <CardBody className="text-center p-8">
-              <div className="flex justify-center mb-4">
-                <div className="p-4 bg-neutral-100 rounded-full">
-                  <FontAwesomeIcon icon={faUserSecret} className="text-4xl text-primary" />
+          <Card>
+            <CardHeader>
+              <div className="mb-4 flex justify-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  <UserCheck className="h-6 w-6 text-primary" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-neutral-900 mb-3">匿名投票</h3>
-              <p className="text-neutral-600">
+              <CardTitle className="text-center">匿名投票</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-center text-muted-foreground">
                 完全匿名機制保護隱私
               </p>
-            </CardBody>
+            </CardContent>
           </Card>
 
-          <Card shadow="sm" className="glass-card">
-            <CardBody className="text-center p-8">
-              <div className="flex justify-center mb-4">
-                <div className="p-4 bg-neutral-100 rounded-full">
-                  <FontAwesomeIcon icon={faBolt} className="text-4xl text-primary" />
+          <Card>
+            <CardHeader>
+              <div className="mb-4 flex justify-center">
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  <Zap className="h-6 w-6 text-primary" />
                 </div>
               </div>
-              <h3 className="text-xl font-bold text-neutral-900 mb-3">快速便捷</h3>
-              <p className="text-neutral-600">
+              <CardTitle className="text-center">快速便捷</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-center text-muted-foreground">
                 簡潔介面，隨時隨地投票
               </p>
-            </CardBody>
+            </CardContent>
           </Card>
         </div>
 
         {/* How it works Section */}
-        <Card shadow="sm" className="glass-card-strong">
-          <CardHeader className="flex flex-col items-center pb-4 pt-8">
-            <h2 className="text-3xl font-bold text-neutral-900">使用流程</h2>
+        <Card>
+          <CardHeader className="pb-8 text-center">
+            <CardTitle className="text-3xl">使用流程</CardTitle>
           </CardHeader>
-          <CardBody className="p-8 pt-0">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+          <CardContent className="pb-8">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
               {[
                 { num: '1', title: '登入系統', desc: '使用學號登入' },
                 { num: '2', title: '選擇活動', desc: '選擇投票活動' },
@@ -155,21 +147,21 @@ export default function HomePage() {
                 { num: '4', title: '完成投票', desc: '取得投票憑證' },
               ].map((step) => (
                 <div key={step.num} className="text-center">
-                  <div className="w-16 h-16 rounded-full bg-primary text-white flex items-center justify-center text-2xl font-bold mb-4 mx-auto shadow-sm">
+                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-foreground shadow-sm">
                     {step.num}
                   </div>
-                  <h4 className="font-bold text-lg text-neutral-900 mb-2">{step.title}</h4>
-                  <p className="text-sm text-neutral-600">{step.desc}</p>
+                  <h4 className="mb-2 text-lg font-bold">{step.title}</h4>
+                  <p className="text-sm text-muted-foreground">{step.desc}</p>
                 </div>
               ))}
             </div>
-          </CardBody>
+          </CardContent>
         </Card>
       </main>
 
-      <footer className="border-t border-neutral-200 mt-20 py-8 bg-white/50 backdrop-blur-sm">
+      <footer className="mt-20 border-t py-8">
         <div className="container mx-auto max-w-7xl px-6">
-          <p className="text-center text-neutral-500">
+          <p className="text-center text-muted-foreground">
             © 2024 清華大學學生會投票系統
           </p>
         </div>
