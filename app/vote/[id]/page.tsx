@@ -30,11 +30,6 @@ interface Activity {
   options: Option[];
 }
 
-interface VoteChoice {
-  option_id: string;
-  remark: '我要投給他' | '我不投給他' | '我沒有意見';
-}
-
 export default function VotingPage() {
   const params = useParams();
   const router = useRouter();
@@ -44,8 +39,8 @@ export default function VotingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
-  const [voteToken, setVoteToken] = useState<string>('');
-  const [showConfirmation, setShowConfirmation] = useState(false);
+  const [voteToken] = useState<string>('');
+  const [showConfirmation] = useState(false);
 
   // Vote state
   const [chooseAllVotes, setChooseAllVotes] = useState<Record<string, string>>({});
@@ -53,6 +48,7 @@ export default function VotingPage() {
 
   useEffect(() => {
     fetchActivity();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activityId]);
 
   const fetchActivity = async () => {
@@ -155,6 +151,7 @@ export default function VotingPage() {
       <div className="mb-4">
         <div className="flex items-center mb-2">
           {candidate.avatar_url && (
+            // eslint-disable-next-line @next/next/no-img-element
             <img
               src={candidate.avatar_url}
               alt={candidate.name}

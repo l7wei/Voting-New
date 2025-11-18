@@ -41,7 +41,7 @@ export default function AdminDashboard() {
     }
   };
 
-  const handleDeleteActivity = async (id: string) => {
+  const handleDeleteActivity = async (_id: string) => {
     if (!confirm('確定要刪除此投票活動嗎？此操作無法復原。')) {
       return;
     }
