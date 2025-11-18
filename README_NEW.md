@@ -267,7 +267,6 @@ npm run lint
 
 ```env
 # 資料庫
-MONGODB_URI=mongodb://username:password@host:27017/database
 MONGO_HOST=127.0.0.1
 MONGO_USERNAME=root
 MONGO_PASSWORD=password
