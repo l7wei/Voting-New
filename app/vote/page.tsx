@@ -13,6 +13,8 @@ interface Activity {
   _id: string;
   name: string;
   type: string;
+  subtitle?: string;
+  description?: string;
   rule: 'choose_all' | 'choose_one';
   open_from: string;
   open_to: string;
@@ -125,13 +127,24 @@ export default function VotePage() {
               <Card key={activity._id} className="transition-shadow hover:shadow-lg">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="flex-1 text-xl">
-                      {activity.name}
-                    </CardTitle>
+                    <div className="flex-1">
+                      <CardTitle className="text-xl">
+                        {activity.name}
+                      </CardTitle>
+                      {activity.subtitle && (
+                        <p className="mt-1 text-sm text-muted-foreground">{activity.subtitle}</p>
+                      )}
+                    </div>
                     {getStatusBadge(activity)}
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
+                  {activity.description && (
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {activity.description}
+                    </p>
+                  )}
+                  
                   <div className="flex items-center text-sm">
                     <Tag className="mr-2 h-4 w-4 flex-shrink-0 text-primary" />
                     <span className="font-medium">類型：</span>

@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Loading } from '@/components/ui/loader';
 import { Separator } from '@/components/ui/separator';
 import Link from 'next/link';
@@ -16,6 +17,8 @@ interface Activity {
   _id: string;
   name: string;
   type: string;
+  subtitle?: string;
+  description?: string;
   rule: 'choose_one' | 'choose_all';
   open_from: string;
   open_to: string;
@@ -71,6 +74,8 @@ function ActivityDetailPageContent() {
   const [formData, setFormData] = useState({
     name: '',
     type: '',
+    subtitle: '',
+    description: '',
     rule: 'choose_one' as 'choose_one' | 'choose_all',
     open_from: '',
     open_to: '',
@@ -107,6 +112,8 @@ function ActivityDetailPageContent() {
         setFormData({
           name: data.data.name,
           type: data.data.type,
+          subtitle: data.data.subtitle || '',
+          description: data.data.description || '',
           rule: data.data.rule,
           open_from: new Date(data.data.open_from).toISOString().slice(0, 16),
           open_to: new Date(data.data.open_to).toISOString().slice(0, 16),
@@ -386,6 +393,29 @@ function ActivityDetailPageContent() {
                     disabled={saving}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="subtitle">活動副標題</Label>
+                <Input
+                  id="subtitle"
+                  value={formData.subtitle}
+                  onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+                  disabled={saving}
+                  placeholder="選填，將顯示在投票頁面作為副標題"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">活動說明</Label>
+                <Textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  disabled={saving}
+                  placeholder="選填，將顯示在投票頁面作為活動說明"
+                  rows={4}
+                />
               </div>
 
               <div className="space-y-2">

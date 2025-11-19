@@ -31,6 +31,8 @@ interface Activity {
   _id: string;
   name: string;
   type: string;
+  subtitle?: string;
+  description?: string;
   rule: 'choose_all' | 'choose_one';
   open_from: string;
   open_to: string;
@@ -267,7 +269,15 @@ export default function VotingPage() {
           <CardHeader>
             <div className="flex flex-col gap-2">
               <CardTitle className="text-3xl">{activity.name}</CardTitle>
-              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+              {activity.subtitle && (
+                <p className="text-lg text-muted-foreground">{activity.subtitle}</p>
+              )}
+              {activity.description && (
+                <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
+                  {activity.description}
+                </p>
+              )}
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground mt-2">
                 <div className="flex items-center">
                   <Tag className="mr-2 h-4 w-4 text-primary" />
                   <span>類型：{activity.type}</span>
