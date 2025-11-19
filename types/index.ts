@@ -13,7 +13,6 @@ export interface IActivity {
   _id: Types.ObjectId | string;
   name: string;
   type: string; // Kept for backward compatibility
-  subtitle?: string; // New field for activity subtitle
   description?: string; // New field for activity description
   rule: "choose_all" | "choose_one";
   users: string[]; // Student IDs who have voted
@@ -27,7 +26,7 @@ export interface IActivity {
 export interface IOption {
   _id: Types.ObjectId | string;
   activity_id: Types.ObjectId | string;
-  type: string;
+  label?: string; // Optional label for the candidate
   candidate?: ICandidate;
   vice1?: ICandidate;
   vice2?: ICandidate;
@@ -37,8 +36,8 @@ export interface IOption {
 
 export interface ICandidate {
   name: string;
-  department: string;
-  college: string;
+  department?: string; // Optional
+  college?: string; // Optional
   avatar_url?: string;
   personal_experiences?: string[];
   political_opinions?: string[];
@@ -85,7 +84,6 @@ export interface JWTPayload extends AuthUser {
 export interface CreateActivityRequest {
   name: string;
   type: string;
-  subtitle?: string;
   description?: string;
   rule: "choose_all" | "choose_one";
   open_from: string;
@@ -94,7 +92,7 @@ export interface CreateActivityRequest {
 
 export interface CreateOptionRequest {
   activity_id: string;
-  type: string;
+  label?: string;
   candidate?: ICandidate;
   vice1?: ICandidate;
   vice2?: ICandidate;
