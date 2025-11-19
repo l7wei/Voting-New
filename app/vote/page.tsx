@@ -15,18 +15,11 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { getVotedActivityIds } from "@/lib/votingHistory";
-
-interface Activity {
-  _id: string;
-  name: string;
-  type: string;
-  subtitle?: string;
-  description?: string;
-  rule: "choose_all" | "choose_one";
-  open_from: string;
-  open_to: string;
-  users: string[];
-}
+import {
+  fetchActiveActivities,
+  Activity,
+  getActivityStatus,
+} from "@/lib/activities";
 
 export default function VotePage() {
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -35,27 +28,15 @@ export default function VotePage() {
   const [votedActivityIds, setVotedActivityIds] = useState<string[]>([]);
 
   useEffect(() => {
-    fetchActivities();
+    fetchActivitiesData();
     setVotedActivityIds(getVotedActivityIds());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchActivities = async () => {
+  const fetchActivitiesData = async () => {
     try {
-      const response = await fetch("/api/activities");
-      const data = await response.json();
-
-      if (data.success) {
-        // Filter only active activities
-        const now = new Date();
-        const activeActivities = data.data.filter((activity: Activity) => {
-          const openFrom = new Date(activity.open_from);
-          const openTo = new Date(activity.open_to);
-          return now >= openFrom && now <= openTo;
-        });
-        setActivities(activeActivities);
-      } else {
-        setError(data.error || "無法載入投票活動");
-      }
+      const activeActivities = await fetchActiveActivities();
+      setActivities(activeActivities);
     } catch (err) {
       console.error("Error fetching activities:", err);
       setError("載入投票活動時發生錯誤");
@@ -65,16 +46,15 @@ export default function VotePage() {
   };
 
   const getStatusBadge = (activity: Activity) => {
-    const now = new Date();
-    const openFrom = new Date(activity.open_from);
-    const openTo = new Date(activity.open_to);
+    const status = getActivityStatus(activity);
 
-    if (now < openFrom) {
-      return <Badge variant="warning">即將開始</Badge>;
-    } else if (now > openTo) {
-      return <Badge variant="secondary">已結束</Badge>;
-    } else {
-      return <Badge variant="success">進行中</Badge>;
+    switch (status) {
+      case "upcoming":
+        return <Badge variant="warning">即將開始</Badge>;
+      case "ended":
+        return <Badge variant="secondary">已結束</Badge>;
+      case "active":
+        return <Badge variant="success">進行中</Badge>;
     }
   };
 

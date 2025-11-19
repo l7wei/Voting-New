@@ -20,34 +20,13 @@ import {
   getVotedActivityIds,
   saveVotingRecord,
 } from "@/lib/votingHistory";
-
-interface Candidate {
-  name: string;
-  department?: string;
-  college?: string;
-  avatar_url?: string;
-  personal_experiences?: string[];
-  political_opinions?: string[];
-}
-
-interface Option {
-  _id: string;
-  label?: string;
-  candidate?: Candidate;
-  vice1?: Candidate;
-  vice2?: Candidate;
-}
-
-interface Activity {
-  _id: string;
-  name: string;
-  type: string;
-  description?: string;
-  rule: "choose_all" | "choose_one";
-  open_from: string;
-  open_to: string;
-  options: Option[];
-}
+import {
+  fetchActivity,
+  fetchActiveActivities,
+  Activity,
+  ActivityWithOptions,
+  Candidate,
+} from "@/lib/activities";
 
 interface UserData {
   student_id: string;
@@ -59,7 +38,7 @@ export default function VotingPage() {
   const router = useRouter();
   const activityId = params.id as string;
 
-  const [activity, setActivity] = useState<Activity | null>(null);
+  const [activity, setActivity] = useState<ActivityWithOptions | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -76,7 +55,7 @@ export default function VotingPage() {
   const [chooseOneVote, setChooseOneVote] = useState<string>("");
 
   useEffect(() => {
-    fetchActivity();
+    fetchActivityData();
     setVotedActivityIds(getVotedActivityIds());
     fetchUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -103,44 +82,25 @@ export default function VotingPage() {
 
   const fetchAllActivities = async () => {
     try {
-      const response = await fetch("/api/activities");
-      const data = await response.json();
-
-      if (data.success) {
-        // Filter only active activities
-        const now = new Date();
-        const activeActivities = data.data.filter((act: Activity) => {
-          const openFrom = new Date(act.open_from);
-          const openTo = new Date(act.open_to);
-          return now >= openFrom && now <= openTo;
-        });
-        setAllActivities(activeActivities);
-      }
+      const activeActivities = await fetchActiveActivities();
+      setAllActivities(activeActivities);
     } catch (err) {
       console.error("Error fetching activities:", err);
     }
   };
 
-  const fetchActivity = async () => {
+  const fetchActivityData = async () => {
     try {
-      const response = await fetch(
-        `/api/activities/${activityId}?include_options=true`,
-      );
-      const data = await response.json();
+      const activityData = await fetchActivity(activityId, true);
+      setActivity(activityData);
 
-      if (data.success) {
-        setActivity(data.data);
-
-        // Initialize vote state for choose_all
-        if (data.data.rule === "choose_all") {
-          const initialVotes: Record<string, string> = {};
-          data.data.options.forEach((option: Option) => {
-            initialVotes[option._id] = "我沒有意見";
-          });
-          setChooseAllVotes(initialVotes);
-        }
-      } else {
-        setError(data.error || "無法載入投票活動");
+      // Initialize vote state for choose_all
+      if (activityData.rule === "choose_all") {
+        const initialVotes: Record<string, string> = {};
+        activityData.options.forEach((option) => {
+          initialVotes[option._id] = "我沒有意見";
+        });
+        setChooseAllVotes(initialVotes);
       }
     } catch (err) {
       console.error("Error fetching activity:", err);
@@ -264,7 +224,7 @@ export default function VotingPage() {
                   <p className="text-sm font-bold">經歷</p>
                 </div>
                 <ul className="space-y-1">
-                  {candidate.personal_experiences.map((exp, idx) => (
+                  {candidate.personal_experiences.map((exp: string, idx: number) => (
                     <li key={idx} className="flex items-start text-sm">
                       <span className="mr-2 text-primary">•</span>
                       <span>{exp}</span>
@@ -282,7 +242,7 @@ export default function VotingPage() {
                   <p className="text-sm font-bold">政見</p>
                 </div>
                 <ul className="space-y-1">
-                  {candidate.political_opinions.map((opinion, idx) => (
+                  {candidate.political_opinions.map((opinion: string, idx: number) => (
                     <li key={idx} className="flex items-start text-sm">
                       <span className="mr-2 text-primary">•</span>
                       <span>{opinion}</span>
