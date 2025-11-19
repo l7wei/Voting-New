@@ -38,7 +38,6 @@ interface Activity {
   _id: string;
   name: string;
   type: string;
-  subtitle?: string;
   description?: string;
   rule: "choose_all" | "choose_one";
   open_from: string;
@@ -393,11 +392,6 @@ export default function VotingPage() {
                     <p className="text-sm text-blue-700 mb-1 font-medium">
                       {nextActivity.name}
                     </p>
-                    {nextActivity.subtitle && (
-                      <p className="text-xs text-blue-600">
-                        {nextActivity.subtitle}
-                      </p>
-                    )}
                   </CardContent>
                 </Card>
                 <div className="flex gap-3">
@@ -437,11 +431,6 @@ export default function VotingPage() {
           <CardHeader>
             <div className="flex flex-col gap-2">
               <CardTitle className="text-3xl">{activity.name}</CardTitle>
-              {activity.subtitle && (
-                <p className="text-lg text-muted-foreground">
-                  {activity.subtitle}
-                </p>
-              )}
               {activity.description && (
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                   {activity.description}

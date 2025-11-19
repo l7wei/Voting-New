@@ -19,7 +19,6 @@ function NewActivityPageContent() {
   const [formData, setFormData] = useState({
     name: "",
     type: "",
-    subtitle: "",
     description: "",
     rule: "choose_one" as "choose_one" | "choose_all",
     open_from: "",
@@ -121,22 +120,6 @@ function NewActivityPageContent() {
                   required
                   disabled={loading}
                 />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="subtitle">活動副標題</Label>
-                <Input
-                  id="subtitle"
-                  name="subtitle"
-                  type="text"
-                  value={formData.subtitle}
-                  onChange={handleChange}
-                  placeholder="例：第52屆學生會會長選舉"
-                  disabled={loading}
-                />
-                <p className="text-xs text-muted-foreground">
-                  選填，將顯示在投票頁面作為副標題
-                </p>
               </div>
 
               <div className="space-y-2">

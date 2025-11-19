@@ -64,7 +64,7 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { name, type, subtitle, description, rule, open_from, open_to } =
+    const { name, type, description, rule, open_from, open_to } =
       body;
 
     // Validate rule if provided
@@ -92,7 +92,6 @@ export async function PUT(
 
     if (name) updateData.name = name;
     if (type) updateData.type = type;
-    if (subtitle !== undefined) updateData.subtitle = subtitle;
     if (description !== undefined) updateData.description = description;
     if (rule) updateData.rule = rule;
     if (open_from) updateData.open_from = new Date(open_from);
