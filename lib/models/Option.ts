@@ -9,11 +9,11 @@ const CandidateSchema = new Schema<ICandidate>(
     },
     department: {
       type: String,
-      required: true,
+      required: false,
     },
     college: {
       type: String,
-      required: true,
+      required: false,
     },
     avatar_url: {
       type: String,
@@ -39,9 +39,9 @@ const OptionSchema = new Schema<IOption>({
     required: true,
     ref: "Activity",
   },
-  type: {
+  label: {
     type: String,
-    required: true,
+    required: false,
   },
   candidate: {
     type: CandidateSchema,

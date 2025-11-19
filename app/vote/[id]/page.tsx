@@ -19,8 +19,8 @@ import { cn } from "@/lib/utils";
 
 interface Candidate {
   name: string;
-  department: string;
-  college: string;
+  department?: string;
+  college?: string;
   avatar_url?: string;
   personal_experiences?: string[];
   political_opinions?: string[];
@@ -28,7 +28,7 @@ interface Candidate {
 
 interface Option {
   _id: string;
-  type: string;
+  label?: string;
   candidate?: Candidate;
   vice1?: Candidate;
   vice2?: Candidate;
@@ -227,7 +227,7 @@ export default function VotingPage() {
     }
   };
 
-  const renderCandidate = (candidate: Candidate, role: string) => {
+  const renderCandidate = (candidate: Candidate, role?: string) => {
     return (
       <Card className="mb-4 border-primary/20 bg-gradient-to-br from-primary/5 to-purple-50">
         <CardContent className="p-4">
@@ -241,16 +241,26 @@ export default function VotingPage() {
               />
             )}
             <div className="flex-1">
-              <Badge variant="default" className="mb-2">
-                {role}
-              </Badge>
+              {role && (
+                <Badge variant="default" className="mb-2">
+                  {role}
+                </Badge>
+              )}
               <h4 className="mb-1 text-xl font-bold">{candidate.name}</h4>
-              <p className="text-sm font-medium text-primary">
-                {candidate.department}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                {candidate.college}
-              </p>
+              {(candidate.department || candidate.college) && (
+                <>
+                  {candidate.department && (
+                    <p className="text-sm font-medium text-primary">
+                      {candidate.department}
+                    </p>
+                  )}
+                  {candidate.college && (
+                    <p className="text-sm text-muted-foreground">
+                      {candidate.college}
+                    </p>
+                  )}
+                </>
+              )}
             </div>
           </div>
 
@@ -482,13 +492,15 @@ export default function VotingPage() {
           {activity.options.map((option, index) => (
             <Card key={option._id}>
               <CardHeader>
-                <CardTitle className="text-xl">候選人 {index + 1}</CardTitle>
+                <CardTitle className="text-xl">
+                  {option.label || `候選人 ${index + 1}`}
+                </CardTitle>
               </CardHeader>
               <Separator />
               <CardContent className="pt-6">
-                {option.candidate && renderCandidate(option.candidate, "會長")}
-                {option.vice1 && renderCandidate(option.vice1, "副會長一")}
-                {option.vice2 && renderCandidate(option.vice2, "副會長二")}
+                {option.candidate && renderCandidate(option.candidate)}
+                {option.vice1 && renderCandidate(option.vice1)}
+                {option.vice2 && renderCandidate(option.vice2)}
 
                 {/* Vote Selection */}
                 <div className="mt-6 border-t pt-6">

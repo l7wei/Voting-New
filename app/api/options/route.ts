@@ -50,11 +50,11 @@ export async function POST(request: NextRequest) {
     await connectDB();
 
     const body = await request.json();
-    const { activity_id, type, candidate, vice1, vice2 } = body;
+    const { activity_id, label, candidate, vice1, vice2 } = body;
 
     // Validate required fields
-    if (!activity_id || !type) {
-      return createErrorResponse("Missing required fields");
+    if (!activity_id) {
+      return createErrorResponse("Missing required field: activity_id");
     }
 
     // Check if activity exists
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
 
     const option = await Option.create({
       activity_id,
-      type,
+      label,
       candidate,
       vice1,
       vice2,

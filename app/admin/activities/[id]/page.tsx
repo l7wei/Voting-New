@@ -36,35 +36,47 @@ interface Activity {
 
 interface Option {
   _id: string;
-  type: string;
+  label?: string;
   candidate?: {
     name: string;
-    department: string;
-    college: string;
+    department?: string;
+    college?: string;
+    personal_experiences?: string[];
+    political_opinions?: string[];
   };
   vice1?: {
     name: string;
-    department: string;
-    college: string;
+    department?: string;
+    college?: string;
+    personal_experiences?: string[];
+    political_opinions?: string[];
   };
   vice2?: {
     name: string;
-    department: string;
-    college: string;
+    department?: string;
+    college?: string;
+    personal_experiences?: string[];
+    political_opinions?: string[];
   };
 }
 
 interface NewOptionForm {
-  type: string;
+  label: string;
   candidate_name: string;
   candidate_department: string;
   candidate_college: string;
+  candidate_experiences: string;
+  candidate_opinions: string;
   vice1_name: string;
   vice1_department: string;
   vice1_college: string;
+  vice1_experiences: string;
+  vice1_opinions: string;
   vice2_name: string;
   vice2_department: string;
   vice2_college: string;
+  vice2_experiences: string;
+  vice2_opinions: string;
 }
 
 function ActivityDetailPageContent() {
@@ -91,16 +103,22 @@ function ActivityDetailPageContent() {
   // New option form
   const [showNewOption, setShowNewOption] = useState(false);
   const [newOption, setNewOption] = useState<NewOptionForm>({
-    type: "候選人",
+    label: "",
     candidate_name: "",
     candidate_department: "",
     candidate_college: "",
+    candidate_experiences: "",
+    candidate_opinions: "",
     vice1_name: "",
     vice1_department: "",
     vice1_college: "",
+    vice1_experiences: "",
+    vice1_opinions: "",
     vice2_name: "",
     vice2_department: "",
     vice2_college: "",
+    vice2_experiences: "",
+    vice2_opinions: "",
   });
 
   useEffect(() => {
@@ -179,31 +197,68 @@ function ActivityDetailPageContent() {
     try {
       const optionData: Record<string, unknown> = {
         activity_id: activityId,
-        type: newOption.type,
+        label: newOption.label || undefined,
       };
 
       if (newOption.candidate_name) {
-        optionData.candidate = {
+        const candidate: Record<string, unknown> = {
           name: newOption.candidate_name,
-          department: newOption.candidate_department,
-          college: newOption.candidate_college,
         };
+        if (newOption.candidate_department)
+          candidate.department = newOption.candidate_department;
+        if (newOption.candidate_college)
+          candidate.college = newOption.candidate_college;
+        if (newOption.candidate_experiences) {
+          candidate.personal_experiences = newOption.candidate_experiences
+            .split("\n")
+            .filter((e) => e.trim());
+        }
+        if (newOption.candidate_opinions) {
+          candidate.political_opinions = newOption.candidate_opinions
+            .split("\n")
+            .filter((e) => e.trim());
+        }
+        optionData.candidate = candidate;
       }
 
       if (newOption.vice1_name) {
-        optionData.vice1 = {
+        const vice1: Record<string, unknown> = {
           name: newOption.vice1_name,
-          department: newOption.vice1_department,
-          college: newOption.vice1_college,
         };
+        if (newOption.vice1_department)
+          vice1.department = newOption.vice1_department;
+        if (newOption.vice1_college) vice1.college = newOption.vice1_college;
+        if (newOption.vice1_experiences) {
+          vice1.personal_experiences = newOption.vice1_experiences
+            .split("\n")
+            .filter((e) => e.trim());
+        }
+        if (newOption.vice1_opinions) {
+          vice1.political_opinions = newOption.vice1_opinions
+            .split("\n")
+            .filter((e) => e.trim());
+        }
+        optionData.vice1 = vice1;
       }
 
       if (newOption.vice2_name) {
-        optionData.vice2 = {
+        const vice2: Record<string, unknown> = {
           name: newOption.vice2_name,
-          department: newOption.vice2_department,
-          college: newOption.vice2_college,
         };
+        if (newOption.vice2_department)
+          vice2.department = newOption.vice2_department;
+        if (newOption.vice2_college) vice2.college = newOption.vice2_college;
+        if (newOption.vice2_experiences) {
+          vice2.personal_experiences = newOption.vice2_experiences
+            .split("\n")
+            .filter((e) => e.trim());
+        }
+        if (newOption.vice2_opinions) {
+          vice2.political_opinions = newOption.vice2_opinions
+            .split("\n")
+            .filter((e) => e.trim());
+        }
+        optionData.vice2 = vice2;
       }
 
       const response = await fetch("/api/options", {
@@ -221,16 +276,22 @@ function ActivityDetailPageContent() {
         setSuccessMessage("候選人已新增");
         setShowNewOption(false);
         setNewOption({
-          type: "候選人",
+          label: "",
           candidate_name: "",
           candidate_department: "",
           candidate_college: "",
+          candidate_experiences: "",
+          candidate_opinions: "",
           vice1_name: "",
           vice1_department: "",
           vice1_college: "",
+          vice1_experiences: "",
+          vice1_opinions: "",
           vice2_name: "",
           vice2_department: "",
           vice2_college: "",
+          vice2_experiences: "",
+          vice2_opinions: "",
         });
         fetchActivity();
       } else {
@@ -515,16 +576,18 @@ function ActivityDetailPageContent() {
                 <CardContent>
                   <form onSubmit={handleAddOption} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="type">類型</Label>
+                      <Label htmlFor="label">標籤（選填）</Label>
                       <Input
-                        id="type"
-                        value={newOption.type}
+                        id="label"
+                        value={newOption.label}
                         onChange={(e) =>
-                          setNewOption({ ...newOption, type: e.target.value })
+                          setNewOption({ ...newOption, label: e.target.value })
                         }
-                        placeholder="例：候選人"
-                        required
+                        placeholder="例：候選人組合、會長候選人"
                       />
+                      <p className="text-xs text-muted-foreground">
+                        標籤將顯示在投票頁面，若不填寫則不顯示
+                      </p>
                     </div>
 
                     <div className="space-y-3">
@@ -542,7 +605,7 @@ function ActivityDetailPageContent() {
                           required
                         />
                         <Input
-                          placeholder="系所"
+                          placeholder="系所（選填）"
                           value={newOption.candidate_department}
                           onChange={(e) =>
                             setNewOption({
@@ -552,7 +615,7 @@ function ActivityDetailPageContent() {
                           }
                         />
                         <Input
-                          placeholder="學院"
+                          placeholder="學院（選填）"
                           value={newOption.candidate_college}
                           onChange={(e) =>
                             setNewOption({
@@ -562,6 +625,28 @@ function ActivityDetailPageContent() {
                           }
                         />
                       </div>
+                      <Textarea
+                        placeholder="個人經歷（選填，一行一項）"
+                        value={newOption.candidate_experiences}
+                        onChange={(e) =>
+                          setNewOption({
+                            ...newOption,
+                            candidate_experiences: e.target.value,
+                          })
+                        }
+                        rows={3}
+                      />
+                      <Textarea
+                        placeholder="政見（選填，一行一項）"
+                        value={newOption.candidate_opinions}
+                        onChange={(e) =>
+                          setNewOption({
+                            ...newOption,
+                            candidate_opinions: e.target.value,
+                          })
+                        }
+                        rows={3}
+                      />
                     </div>
 
                     <div className="space-y-3">
@@ -578,7 +663,7 @@ function ActivityDetailPageContent() {
                           }
                         />
                         <Input
-                          placeholder="系所"
+                          placeholder="系所（選填）"
                           value={newOption.vice1_department}
                           onChange={(e) =>
                             setNewOption({
@@ -588,7 +673,7 @@ function ActivityDetailPageContent() {
                           }
                         />
                         <Input
-                          placeholder="學院"
+                          placeholder="學院（選填）"
                           value={newOption.vice1_college}
                           onChange={(e) =>
                             setNewOption({
@@ -598,6 +683,28 @@ function ActivityDetailPageContent() {
                           }
                         />
                       </div>
+                      <Textarea
+                        placeholder="個人經歷（選填，一行一項）"
+                        value={newOption.vice1_experiences}
+                        onChange={(e) =>
+                          setNewOption({
+                            ...newOption,
+                            vice1_experiences: e.target.value,
+                          })
+                        }
+                        rows={3}
+                      />
+                      <Textarea
+                        placeholder="政見（選填，一行一項）"
+                        value={newOption.vice1_opinions}
+                        onChange={(e) =>
+                          setNewOption({
+                            ...newOption,
+                            vice1_opinions: e.target.value,
+                          })
+                        }
+                        rows={3}
+                      />
                     </div>
 
                     <div className="space-y-3">
@@ -614,7 +721,7 @@ function ActivityDetailPageContent() {
                           }
                         />
                         <Input
-                          placeholder="系所"
+                          placeholder="系所（選填）"
                           value={newOption.vice2_department}
                           onChange={(e) =>
                             setNewOption({
@@ -624,7 +731,7 @@ function ActivityDetailPageContent() {
                           }
                         />
                         <Input
-                          placeholder="學院"
+                          placeholder="學院（選填）"
                           value={newOption.vice2_college}
                           onChange={(e) =>
                             setNewOption({
@@ -634,6 +741,28 @@ function ActivityDetailPageContent() {
                           }
                         />
                       </div>
+                      <Textarea
+                        placeholder="個人經歷（選填，一行一項）"
+                        value={newOption.vice2_experiences}
+                        onChange={(e) =>
+                          setNewOption({
+                            ...newOption,
+                            vice2_experiences: e.target.value,
+                          })
+                        }
+                        rows={3}
+                      />
+                      <Textarea
+                        placeholder="政見（選填，一行一項）"
+                        value={newOption.vice2_opinions}
+                        onChange={(e) =>
+                          setNewOption({
+                            ...newOption,
+                            vice2_opinions: e.target.value,
+                          })
+                        }
+                        rows={3}
+                      />
                     </div>
 
                     <div className="flex gap-2">
@@ -666,9 +795,11 @@ function ActivityDetailPageContent() {
                             <span className="rounded-full bg-primary px-3 py-1 text-sm font-bold text-primary-foreground">
                               {index + 1}
                             </span>
-                            <span className="text-sm text-muted-foreground">
-                              {option.type}
-                            </span>
+                            {option.label && (
+                              <span className="text-sm text-muted-foreground">
+                                {option.label}
+                              </span>
+                            )}
                           </div>
 
                           {option.candidate && (
@@ -676,10 +807,17 @@ function ActivityDetailPageContent() {
                               <p className="font-semibold">
                                 {option.candidate.name}
                               </p>
-                              <p className="text-sm text-muted-foreground">
-                                {option.candidate.department} |{" "}
-                                {option.candidate.college}
-                              </p>
+                              {(option.candidate.department ||
+                                option.candidate.college) && (
+                                <p className="text-sm text-muted-foreground">
+                                  {[
+                                    option.candidate.department,
+                                    option.candidate.college,
+                                  ]
+                                    .filter(Boolean)
+                                    .join(" | ")}
+                                </p>
+                              )}
                             </div>
                           )}
 
@@ -689,10 +827,12 @@ function ActivityDetailPageContent() {
                                 副選 1:{" "}
                               </span>
                               <span>{option.vice1.name}</span>
-                              <span className="text-muted-foreground">
-                                {" "}
-                                ({option.vice1.department})
-                              </span>
+                              {option.vice1.department && (
+                                <span className="text-muted-foreground">
+                                  {" "}
+                                  ({option.vice1.department})
+                                </span>
+                              )}
                             </div>
                           )}
 
@@ -702,10 +842,12 @@ function ActivityDetailPageContent() {
                                 副選 2:{" "}
                               </span>
                               <span>{option.vice2.name}</span>
-                              <span className="text-muted-foreground">
-                                {" "}
-                                ({option.vice2.department})
-                              </span>
+                              {option.vice2.department && (
+                                <span className="text-muted-foreground">
+                                  {" "}
+                                  ({option.vice2.department})
+                                </span>
+                              )}
                             </div>
                           )}
                         </div>
