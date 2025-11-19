@@ -64,7 +64,7 @@ export default function Header() {
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link href="/" className="flex items-center gap-2">
           <Vote className="h-6 w-6 text-primary" />
-          <span className="text-xl font-bold">清大投票系統</span>
+          <span className="text-xl font-bold">學生會投票系統</span>
         </Link>
 
         <div className="flex items-center gap-4">

@@ -14,6 +14,7 @@ import {
   ArrowRight,
   CheckCircle2,
   Vote,
+  TrendingUp
 } from "lucide-react";
 
 interface Activity {
@@ -68,10 +69,10 @@ export default function HomePage() {
             </div>
           </div>
           <h1 className="text-5xl font-bold tracking-tight md:text-6xl">
-            清大投票系統
+            學生會投票系統
           </h1>
           <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
-            National Tsing Hua University Voting System
+            NTHUSA Voting System
           </p>
 
           <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
@@ -82,89 +83,129 @@ export default function HomePage() {
               </Link>
             </Button>
             {!loading && activities.length > 0 && (
-              <Badge
-                variant="success"
-                className="flex items-center gap-2 px-4 py-2 text-sm"
-              >
-                <CheckCircle2 className="h-4 w-4" />
-                {activities.length} 個投票活動進行中
-              </Badge>
+<Button variant="secondary" size="lg" className="flex items-center gap-2">
+  <CheckCircle2 className="h-4 w-4" />
+  {activities.length} 個投票活動進行中
+</Button>
+
             )}
           </div>
         </div>
 
         {/* Features Section */}
-        <div className="mb-16 grid grid-cols-1 gap-6 md:grid-cols-3">
-          <Card>
-            <CardHeader>
-              <div className="mb-4 flex justify-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                  <Lock className="h-6 w-6 text-primary" />
+        <div className="mb-16">
+          <div className="mb-8 text-center">
+            <h2 className="mb-2 text-3xl font-bold">為什麼選擇我們</h2>
+            <p className="text-muted-foreground">
+              專為學生會設計的投票系統
+            </p>
+          </div>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            <Card className="group transition-all hover:shadow-lg">
+              <CardHeader>
+                <div className="mb-4 flex justify-center">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/20">
+                    <Lock className="h-8 w-8 text-primary" />
+                  </div>
                 </div>
-              </div>
-              <CardTitle className="text-center">安全可靠</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-center text-muted-foreground">
-                使用加密技術保護投票資料
-              </p>
-            </CardContent>
-          </Card>
+                <CardTitle className="text-center text-xl">安全可靠</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-center text-muted-foreground">
+                  採用 OAuth + JWT 驗證，確保沒有人能冒用您的身份投票
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <div className="mb-4 flex justify-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                  <UserCheck className="h-6 w-6 text-primary" />
+            <Card className="group transition-all hover:shadow-lg">
+              <CardHeader>
+                <div className="mb-4 flex justify-center">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/20">
+                    <UserCheck className="h-8 w-8 text-primary" />
+                  </div>
                 </div>
-              </div>
-              <CardTitle className="text-center">匿名投票</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-center text-muted-foreground">
-                完全匿名機制保護隱私
-              </p>
-            </CardContent>
-          </Card>
+                <CardTitle className="text-center text-xl">完全匿名</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-center text-muted-foreground">
+                  投票資料轉換為 UUID 匿名記錄，保護選票的隱私權益
+                </p>
+              </CardContent>
+            </Card>
 
-          <Card>
-            <CardHeader>
-              <div className="mb-4 flex justify-center">
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
-                  <Zap className="h-6 w-6 text-primary" />
+            <Card className="group transition-all hover:shadow-lg">
+              <CardHeader>
+                <div className="mb-4 flex justify-center">
+                  <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-primary/10 transition-colors group-hover:bg-primary/20">
+                    <Zap className="h-8 w-8 text-primary" />
+                  </div>
                 </div>
-              </div>
-              <CardTitle className="text-center">快速便捷</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p className="text-center text-muted-foreground">
-                簡潔介面，隨時隨地投票
-              </p>
-            </CardContent>
-          </Card>
+                <CardTitle className="text-center text-xl">快速便捷</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-center text-muted-foreground">
+                  直覺的使用介面，無論何時何地都能輕鬆完成投票，並節省大量人力物力
+                </p>
+              </CardContent>
+            </Card>
+          </div>
         </div>
 
         {/* How it works Section */}
-        <Card>
-          <CardHeader className="pb-8 text-center">
-            <CardTitle className="text-3xl">使用流程</CardTitle>
+        <Card className="overflow-hidden">
+          <CardHeader className="bg-gradient-to-r from-primary/10 to-primary/5 pb-8 text-center">
+            <CardTitle className="text-3xl">投票流程</CardTitle>
+            <p className="mt-2 text-muted-foreground">
+              四個簡單步驟，輕鬆完成投票
+            </p>
           </CardHeader>
-          <CardContent className="pb-8">
-            <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
+          <CardContent className="pb-12 pt-12">
+            <div className="grid grid-cols-1 gap-12 md:grid-cols-4">
               {[
-                { num: "1", title: "登入系統", desc: "使用學號登入" },
-                { num: "2", title: "選擇活動", desc: "選擇投票活動" },
-                { num: "3", title: "進行投票", desc: "投下您的一票" },
-                { num: "4", title: "完成投票", desc: "取得投票憑證" },
-              ].map((step) => (
-                <div key={step.num} className="text-center">
-                  <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-foreground shadow-sm">
-                    {step.num}
+                {
+                  num: "1",
+                  title: "登入系統",
+                  desc: "使用校務資訊系統 OAuth 登入，我們不會儲存您的任何資料",
+                  icon: UserCheck,
+                },
+                {
+                  num: "2",
+                  title: "選擇活動",
+                  desc: "選擇您要參與的投票活動，查看候選人政見",
+                  icon: Vote,
+                },
+                {
+                  num: "3",
+                  title: "進行投票",
+                  desc: "投下您的一票，您的選票將被轉換為 UUID 匿名紀錄",
+                  icon: CheckCircle2,
+                },
+                {
+                  num: "4",
+                  title: "完成投票",
+                  desc: "取得投票憑證，確認您的投票已成功記錄",
+                  icon: TrendingUp,
+                },
+              ].map((step, index) => {
+                const Icon = step.icon;
+                return (
+                  <div key={step.num} className="relative text-center">
+                    {index < 3 && (
+                      <div className="absolute left-1/2 top-8 hidden h-0.5 w-full bg-gradient-to-r from-primary to-primary/20 md:block" />
+                    )}
+                    <div className="relative mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-foreground shadow-lg">
+                      {step.num}
+                    </div>
+                    <div className="mb-4 flex justify-center">
+                      <Icon className="h-8 w-8 text-primary" />
+                    </div>
+                    <h4 className="mb-3 text-lg font-bold">{step.title}</h4>
+                    <p className="text-sm leading-relaxed text-muted-foreground">
+                      {step.desc}
+                    </p>
                   </div>
-                  <h4 className="mb-2 text-lg font-bold">{step.title}</h4>
-                  <p className="text-sm text-muted-foreground">{step.desc}</p>
-                </div>
-              ))}
+                );
+              })}
             </div>
           </CardContent>
         </Card>

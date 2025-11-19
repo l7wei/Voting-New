@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "清大投票系統",
+  title: "學生會投票系統",
   description: "National Tsing Hua University Voting System",
 };
 
