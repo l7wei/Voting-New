@@ -20,6 +20,7 @@ import {
   Edit,
   BarChart3,
   ClipboardCheck,
+  Eye,
 } from "lucide-react";
 
 interface Activity {
@@ -143,8 +144,27 @@ function ActivityDetailPageContent() {
   });
 
   useEffect(() => {
-    fetchActivity();
+    checkAdminAccess();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activityId]);
+
+  const checkAdminAccess = async () => {
+    try {
+      const response = await fetch("/api/auth/check");
+      const data = await response.json();
+
+      if (!data.authenticated || !data.user?.isAdmin) {
+        // Not authenticated or not an admin, redirect to home
+        router.push("/?error=admin_required");
+        return;
+      }
+
+      fetchActivity();
+    } catch (err) {
+      console.error("Error checking admin access:", err);
+      router.push("/?error=auth_failed");
+    }
+  };
 
   const fetchActivity = async () => {
     try {
@@ -158,13 +178,28 @@ function ActivityDetailPageContent() {
 
       if (data.success) {
         setActivity(data.data);
+        // Convert to local datetime format for datetime-local input
+        // by removing timezone offset adjustment
+        const openFromDate = new Date(data.data.open_from);
+        const openToDate = new Date(data.data.open_to);
+        
+        // Format as YYYY-MM-DDTHH:MM in local time
+        const formatLocalDateTime = (date: Date) => {
+          const year = date.getFullYear();
+          const month = String(date.getMonth() + 1).padStart(2, '0');
+          const day = String(date.getDate()).padStart(2, '0');
+          const hours = String(date.getHours()).padStart(2, '0');
+          const minutes = String(date.getMinutes()).padStart(2, '0');
+          return `${year}-${month}-${day}T${hours}:${minutes}`;
+        };
+
         setFormData({
           name: data.data.name,
           type: data.data.type,
           description: data.data.description || "",
           rule: data.data.rule,
-          open_from: new Date(data.data.open_from).toISOString().slice(0, 16),
-          open_to: new Date(data.data.open_to).toISOString().slice(0, 16),
+          open_from: formatLocalDateTime(openFromDate),
+          open_to: formatLocalDateTime(openToDate),
         });
       } else {
         setError(data.error || "無法載入活動資訊");
@@ -197,7 +232,8 @@ function ActivityDetailPageContent() {
 
       if (data.success) {
         setSuccessMessage("活動資訊已更新");
-        fetchActivity();
+        // Don't refetch to avoid datetime jumping - just update activity
+        setActivity(data.data);
       } else {
         setError(data.error || "更新活動失敗");
       }
@@ -545,6 +581,12 @@ function ActivityDetailPageContent() {
 
           <div className="flex gap-2">
             <Button variant="outline" asChild>
+              <Link href={`/vote/${activityId}`}>
+                <Eye className="mr-2 h-4 w-4" />
+                預覽活動
+              </Link>
+            </Button>
+            <Button variant="outline" asChild>
               <Link href={`/admin/activities/${activityId}/results`}>
                 <BarChart3 className="mr-2 h-4 w-4" />
                 查看統計
@@ -675,11 +717,7 @@ function ActivityDetailPageContent() {
                 </div>
               </div>
 
-              <div className="flex gap-4">
-                <Button type="submit" disabled={saving}>
-                  <Save className="mr-2 h-4 w-4" />
-                  儲存變更
-                </Button>
+              <div className="flex justify-end gap-4">
                 <Button
                   type="button"
                   variant="destructive"
@@ -688,6 +726,10 @@ function ActivityDetailPageContent() {
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
                   刪除活動
+                </Button>
+                <Button type="submit" disabled={saving}>
+                  <Save className="mr-2 h-4 w-4" />
+                  儲存變更
                 </Button>
               </div>
             </form>
@@ -910,17 +952,17 @@ function ActivityDetailPageContent() {
                       />
                     </div>
 
-                    <div className="flex gap-2">
-                      <Button type="submit" disabled={saving}>
-                        <Plus className="mr-2 h-4 w-4" />
-                        新增
-                      </Button>
+                    <div className="flex justify-end gap-2">
                       <Button
                         type="button"
                         variant="outline"
                         onClick={() => setShowNewOption(false)}
                       >
                         取消
+                      </Button>
+                      <Button type="submit" disabled={saving}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        新增
                       </Button>
                     </div>
                   </form>
@@ -1134,17 +1176,17 @@ function ActivityDetailPageContent() {
                             />
                           </div>
 
-                          <div className="flex gap-2">
-                            <Button type="submit" disabled={saving}>
-                              <Save className="mr-2 h-4 w-4" />
-                              儲存
-                            </Button>
+                          <div className="flex justify-end gap-2">
                             <Button
                               type="button"
                               variant="outline"
                               onClick={() => setEditingOptionId(null)}
                             >
                               取消
+                            </Button>
+                            <Button type="submit" disabled={saving}>
+                              <Save className="mr-2 h-4 w-4" />
+                              儲存
                             </Button>
                           </div>
                         </form>

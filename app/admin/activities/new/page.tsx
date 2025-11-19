@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -59,6 +59,26 @@ function NewActivityWizard() {
     vice1: { name: "", department: "", college: "", experiences: "", opinions: "" },
     vice2: { name: "", department: "", college: "", experiences: "", opinions: "" },
   });
+
+  // Check admin access on mount
+  useEffect(() => {
+    const checkAdminAccess = async () => {
+      try {
+        const response = await fetch("/api/auth/check");
+        const data = await response.json();
+
+        if (!data.authenticated || !data.user?.isAdmin) {
+          router.push("/?error=admin_required");
+          return;
+        }
+      } catch (err) {
+        console.error("Error checking admin access:", err);
+        router.push("/?error=auth_failed");
+      }
+    };
+    checkAdminAccess();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const handleActivityChange = (
     e: React.ChangeEvent<
