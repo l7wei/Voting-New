@@ -7,7 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Loading } from '@/components/ui/loader';
-import { Calendar, Tag, CheckCircle, ArrowLeft, AlertCircle } from 'lucide-react';
+import { Calendar, CheckCircle, ArrowLeft, AlertCircle } from 'lucide-react';
 
 interface Activity {
   _id: string;

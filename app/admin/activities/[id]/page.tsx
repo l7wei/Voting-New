@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Header from '@/components/Header';
-import AdminGuard from '@/components/auth/AdminGuard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,7 +15,8 @@ import { ArrowLeft, Save, Trash2, Plus, AlertCircle, Edit, BarChart3, ClipboardC
 interface Activity {
   _id: string;
   name: string;
-  type: string;
+  subtitle?: string;
+  description?: string;
   rule: 'choose_one' | 'choose_all';
   open_from: string;
   open_to: string;
@@ -26,35 +26,13 @@ interface Activity {
 
 interface Option {
   _id: string;
-  type: string;
-  candidate?: {
-    name: string;
-    department: string;
-    college: string;
-  };
-  vice1?: {
-    name: string;
-    department: string;
-    college: string;
-  };
-  vice2?: {
-    name: string;
-    department: string;
-    college: string;
-  };
+  title: string;
+  description?: string;
 }
 
 interface NewOptionForm {
-  type: string;
-  candidate_name: string;
-  candidate_department: string;
-  candidate_college: string;
-  vice1_name: string;
-  vice1_department: string;
-  vice1_college: string;
-  vice2_name: string;
-  vice2_department: string;
-  vice2_college: string;
+  title: string;
+  description: string;
 }
 
 function ActivityDetailPageContent() {
@@ -71,7 +49,8 @@ function ActivityDetailPageContent() {
   // Edit form state
   const [formData, setFormData] = useState({
     name: '',
-    type: '',
+    subtitle: '',
+    description: '',
     rule: 'choose_one' as 'choose_one' | 'choose_all',
     open_from: '',
     open_to: '',
@@ -80,20 +59,13 @@ function ActivityDetailPageContent() {
   // New option form
   const [showNewOption, setShowNewOption] = useState(false);
   const [newOption, setNewOption] = useState<NewOptionForm>({
-    type: '候選人',
-    candidate_name: '',
-    candidate_department: '',
-    candidate_college: '',
-    vice1_name: '',
-    vice1_department: '',
-    vice1_college: '',
-    vice2_name: '',
-    vice2_department: '',
-    vice2_college: '',
+    title: '',
+    description: '',
   });
 
   useEffect(() => {
     fetchActivity();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activityId]);
 
   const fetchActivity = async () => {
@@ -107,7 +79,8 @@ function ActivityDetailPageContent() {
         setActivity(data.data);
         setFormData({
           name: data.data.name,
-          type: data.data.type,
+          subtitle: data.data.subtitle || '',
+          description: data.data.description || '',
           rule: data.data.rule,
           open_from: new Date(data.data.open_from).toISOString().slice(0, 16),
           open_to: new Date(data.data.open_to).toISOString().slice(0, 16),
@@ -162,34 +135,11 @@ function ActivityDetailPageContent() {
     setSuccessMessage('');
 
     try {
-      const optionData: Record<string, unknown> = {
+      const optionData = {
         activity_id: activityId,
-        type: newOption.type,
+        title: newOption.title,
+        description: newOption.description,
       };
-
-      if (newOption.candidate_name) {
-        optionData.candidate = {
-          name: newOption.candidate_name,
-          department: newOption.candidate_department,
-          college: newOption.candidate_college,
-        };
-      }
-
-      if (newOption.vice1_name) {
-        optionData.vice1 = {
-          name: newOption.vice1_name,
-          department: newOption.vice1_department,
-          college: newOption.vice1_college,
-        };
-      }
-
-      if (newOption.vice2_name) {
-        optionData.vice2 = {
-          name: newOption.vice2_name,
-          department: newOption.vice2_department,
-          college: newOption.vice2_college,
-        };
-      }
 
       const response = await fetch('/api/options', {
         method: 'POST',
@@ -203,34 +153,26 @@ function ActivityDetailPageContent() {
       const data = await response.json();
 
       if (data.success) {
-        setSuccessMessage('候選人已新增');
+        setSuccessMessage('選項已新增');
         setShowNewOption(false);
         setNewOption({
-          type: '候選人',
-          candidate_name: '',
-          candidate_department: '',
-          candidate_college: '',
-          vice1_name: '',
-          vice1_department: '',
-          vice1_college: '',
-          vice2_name: '',
-          vice2_department: '',
-          vice2_college: '',
+          title: '',
+          description: '',
         });
         fetchActivity();
       } else {
-        setError(data.error || '新增候選人失敗');
+        setError(data.error || '新增選項失敗');
       }
     } catch (err) {
       console.error('Error adding option:', err);
-      setError('新增候選人時發生錯誤');
+      setError('新增選項時發生錯誤');
     } finally {
       setSaving(false);
     }
   };
 
   const handleDeleteOption = async (optionId: string) => {
-    if (!confirm('確定要刪除此候選人嗎？')) return;
+    if (!confirm('確定要刪除此選項嗎？')) return;
 
     setSaving(true);
     setError('');
@@ -245,14 +187,14 @@ function ActivityDetailPageContent() {
       const data = await response.json();
 
       if (data.success) {
-        setSuccessMessage('候選人已刪除');
+        setSuccessMessage('選項已刪除');
         fetchActivity();
       } else {
-        setError(data.error || '刪除候選人失敗');
+        setError(data.error || '刪除選項失敗');
       }
     } catch (err) {
       console.error('Error deleting option:', err);
-      setError('刪除候選人時發生錯誤');
+      setError('刪除選項時發生錯誤');
     } finally {
       setSaving(false);
     }
@@ -379,14 +321,25 @@ function ActivityDetailPageContent() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="type">活動類型</Label>
+                  <Label htmlFor="subtitle">活動小標</Label>
                   <Input
-                    id="type"
-                    value={formData.type}
-                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                    id="subtitle"
+                    value={formData.subtitle}
+                    onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
                     disabled={saving}
                   />
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">活動說明</Label>
+                <textarea
+                  id="description"
+                  value={formData.description}
+                  onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                  className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                  disabled={saving}
+                />
               </div>
 
               <div className="space-y-2">
@@ -450,10 +403,10 @@ function ActivityDetailPageContent() {
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
-              <CardTitle>候選人管理 ({activity.options?.length || 0})</CardTitle>
+              <CardTitle>選項管理 ({activity.options?.length || 0})</CardTitle>
               <Button onClick={() => setShowNewOption(!showNewOption)} size="sm">
                 <Plus className="mr-2 h-4 w-4" />
-                新增候選人
+                新增選項
               </Button>
             </div>
           </CardHeader>
@@ -463,83 +416,30 @@ function ActivityDetailPageContent() {
             {showNewOption && (
               <Card className="mb-6 border-primary/20 bg-primary/5">
                 <CardHeader>
-                  <CardTitle className="text-lg">新增候選人</CardTitle>
+                  <CardTitle className="text-lg">新增選項</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleAddOption} className="space-y-4">
                     <div className="space-y-2">
-                      <Label htmlFor="type">類型</Label>
+                      <Label htmlFor="title">選項標題 *</Label>
                       <Input
-                        id="type"
-                        value={newOption.type}
-                        onChange={(e) => setNewOption({ ...newOption, type: e.target.value })}
-                        placeholder="例：候選人"
+                        id="title"
+                        value={newOption.title}
+                        onChange={(e) => setNewOption({ ...newOption, title: e.target.value })}
+                        placeholder="例：選項一"
                         required
                       />
                     </div>
 
-                    <div className="space-y-3">
-                      <h4 className="font-semibold">正選候選人</h4>
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                        <Input
-                          placeholder="姓名 *"
-                          value={newOption.candidate_name}
-                          onChange={(e) => setNewOption({ ...newOption, candidate_name: e.target.value })}
-                          required
-                        />
-                        <Input
-                          placeholder="系所"
-                          value={newOption.candidate_department}
-                          onChange={(e) => setNewOption({ ...newOption, candidate_department: e.target.value })}
-                        />
-                        <Input
-                          placeholder="學院"
-                          value={newOption.candidate_college}
-                          onChange={(e) => setNewOption({ ...newOption, candidate_college: e.target.value })}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <h4 className="font-semibold">副選候選人 1（選填）</h4>
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                        <Input
-                          placeholder="姓名"
-                          value={newOption.vice1_name}
-                          onChange={(e) => setNewOption({ ...newOption, vice1_name: e.target.value })}
-                        />
-                        <Input
-                          placeholder="系所"
-                          value={newOption.vice1_department}
-                          onChange={(e) => setNewOption({ ...newOption, vice1_department: e.target.value })}
-                        />
-                        <Input
-                          placeholder="學院"
-                          value={newOption.vice1_college}
-                          onChange={(e) => setNewOption({ ...newOption, vice1_college: e.target.value })}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <h4 className="font-semibold">副選候選人 2（選填）</h4>
-                      <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                        <Input
-                          placeholder="姓名"
-                          value={newOption.vice2_name}
-                          onChange={(e) => setNewOption({ ...newOption, vice2_name: e.target.value })}
-                        />
-                        <Input
-                          placeholder="系所"
-                          value={newOption.vice2_department}
-                          onChange={(e) => setNewOption({ ...newOption, vice2_department: e.target.value })}
-                        />
-                        <Input
-                          placeholder="學院"
-                          value={newOption.vice2_college}
-                          onChange={(e) => setNewOption({ ...newOption, vice2_college: e.target.value })}
-                        />
-                      </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="option-description">選項說明</Label>
+                      <textarea
+                        id="option-description"
+                        value={newOption.description}
+                        onChange={(e) => setNewOption({ ...newOption, description: e.target.value })}
+                        placeholder="例：詳細的選項說明..."
+                        className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      />
                     </div>
 
                     <div className="flex gap-2">
@@ -572,33 +472,16 @@ function ActivityDetailPageContent() {
                             <span className="rounded-full bg-primary px-3 py-1 text-sm font-bold text-primary-foreground">
                               {index + 1}
                             </span>
-                            <span className="text-sm text-muted-foreground">{option.type}</span>
                           </div>
                           
-                          {option.candidate && (
-                            <div className="mb-2">
-                              <p className="font-semibold">{option.candidate.name}</p>
-                              <p className="text-sm text-muted-foreground">
-                                {option.candidate.department} | {option.candidate.college}
+                          <div className="mb-2">
+                            <p className="font-semibold text-lg">{option.title}</p>
+                            {option.description && (
+                              <p className="mt-1 text-sm text-muted-foreground">
+                                {option.description}
                               </p>
-                            </div>
-                          )}
-
-                          {option.vice1 && (
-                            <div className="ml-4 mb-1 text-sm">
-                              <span className="text-muted-foreground">副選 1: </span>
-                              <span>{option.vice1.name}</span>
-                              <span className="text-muted-foreground"> ({option.vice1.department})</span>
-                            </div>
-                          )}
-
-                          {option.vice2 && (
-                            <div className="ml-4 text-sm">
-                              <span className="text-muted-foreground">副選 2: </span>
-                              <span>{option.vice2.name}</span>
-                              <span className="text-muted-foreground"> ({option.vice2.department})</span>
-                            </div>
-                          )}
+                            )}
+                          </div>
                         </div>
 
                         <Button
@@ -616,7 +499,7 @@ function ActivityDetailPageContent() {
               </div>
             ) : (
               <p className="py-8 text-center text-muted-foreground">
-                尚未新增任何候選人
+                尚未新增任何選項
               </p>
             )}
           </CardContent>
@@ -627,9 +510,5 @@ function ActivityDetailPageContent() {
 }
 
 export default function ActivityDetailPage() {
-  return (
-    <AdminGuard>
-      <ActivityDetailPageContent />
-    </AdminGuard>
-  );
+  return <ActivityDetailPageContent />;
 }

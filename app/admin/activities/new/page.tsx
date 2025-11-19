@@ -3,7 +3,6 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
-import AdminGuard from '@/components/auth/AdminGuard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -211,9 +210,5 @@ function NewActivityPageContent() {
 }
 
 export default function NewActivityPage() {
-  return (
-    <AdminGuard>
-      <NewActivityPageContent />
-    </AdminGuard>
-  );
+  return <NewActivityPageContent />;
 }

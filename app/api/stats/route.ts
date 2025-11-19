@@ -59,11 +59,11 @@ export async function GET(request: NextRequest) {
     const options = await Option.find({ activity_id });
     options.forEach(option => {
       const optionId = option._id.toString();
-      const candidateName = option.candidate?.name || 'Unknown';
+      const optionName = option.title || 'Unknown';
       
       optionStats[optionId] = {
         option_id: optionId,
-        name: candidateName,
+        name: optionName,
         support: 0,
         oppose: 0,
         neutral: 0,
@@ -105,7 +105,8 @@ export async function GET(request: NextRequest) {
       activity: {
         id: activity._id,
         name: activity.name,
-        type: activity.type,
+        subtitle: activity.subtitle,
+        description: activity.description,
         rule: activity.rule,
         open_from: activity.open_from,
         open_to: activity.open_to,

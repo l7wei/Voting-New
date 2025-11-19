@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@/components/Header';
-import AdminGuard from '@/components/auth/AdminGuard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Loading } from '@/components/ui/loader';
@@ -45,6 +44,7 @@ function ResultsPageContent() {
 
   useEffect(() => {
     fetchStats();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activityId]);
 
   const fetchStats = async () => {
@@ -321,8 +321,8 @@ function ResultsPageContent() {
 
 export default function ResultsPage() {
   return (
-    <AdminGuard>
+    
       <ResultsPageContent />
-    </AdminGuard>
+    
   );
 }

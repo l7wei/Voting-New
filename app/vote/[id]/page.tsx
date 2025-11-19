@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Loading } from '@/components/ui/loader';
-import { CheckCircle2, Tag, ArrowLeft, AlertCircle, Copy, Check } from 'lucide-react';
+import { CheckCircle2, ArrowLeft, AlertCircle, Copy, Check } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Option {
