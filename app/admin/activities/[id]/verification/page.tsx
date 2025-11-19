@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@/components/Header';
-import AdminGuard from '@/components/auth/AdminGuard';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -262,9 +261,5 @@ function VerificationPageContent() {
 }
 
 export default function VerificationPage() {
-  return (
-    <AdminGuard>
-      <VerificationPageContent />
-    </AdminGuard>
-  );
+  return <VerificationPageContent />;
 }
