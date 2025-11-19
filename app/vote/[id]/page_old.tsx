@@ -7,20 +7,30 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { Loading } from '@/components/ui/loader';
-import { CheckCircle2, Tag, ArrowLeft, AlertCircle, Copy, Check } from 'lucide-react';
+import { CheckCircle2, Tag, Briefcase, FileText, ArrowLeft, AlertCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+interface Candidate {
+  name: string;
+  department: string;
+  college: string;
+  avatar_url?: string;
+  personal_experiences?: string[];
+  political_opinions?: string[];
+}
 
 interface Option {
   _id: string;
-  title: string;
-  description?: string;
+  type: string;
+  candidate?: Candidate;
+  vice1?: Candidate;
+  vice2?: Candidate;
 }
 
 interface Activity {
   _id: string;
   name: string;
-  subtitle?: string;
-  description?: string;
+  type: string;
   rule: 'choose_all' | 'choose_one';
   open_from: string;
   open_to: string;
@@ -38,7 +48,6 @@ export default function VotingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [voteToken, setVoteToken] = useState<string>('');
   const [showConfirmation, setShowConfirmation] = useState(false);
-  const [copied, setCopied] = useState(false);
 
   // Vote state
   const [chooseAllVotes, setChooseAllVotes] = useState<Record<string, string>>({});
@@ -134,12 +143,63 @@ export default function VotingPage() {
     }
   };
 
-  const handleCopyToken = async () => {
-    if (voteToken) {
-      await navigator.clipboard.writeText(voteToken);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
+  const renderCandidate = (candidate: Candidate, role: string) => {
+    return (
+      <Card className="mb-4 border-primary/20 bg-gradient-to-br from-primary/5 to-purple-50">
+        <CardContent className="p-4">
+          <div className="mb-3 flex items-start gap-4">
+            {candidate.avatar_url && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={candidate.avatar_url}
+                alt={candidate.name}
+                className="h-20 w-20 flex-shrink-0 rounded-full border-4 border-white object-cover shadow-lg"
+              />
+            )}
+            <div className="flex-1">
+              <Badge variant="default" className="mb-2">{role}</Badge>
+              <h4 className="mb-1 text-xl font-bold">{candidate.name}</h4>
+              <p className="text-sm font-medium text-primary">{candidate.department}</p>
+              <p className="text-sm text-muted-foreground">{candidate.college}</p>
+            </div>
+          </div>
+          
+          {candidate.personal_experiences && candidate.personal_experiences.length > 0 && (
+            <div className="mb-3 rounded-lg bg-white/80 p-3">
+              <div className="mb-2 flex items-center gap-2">
+                <Briefcase className="h-4 w-4 text-primary" />
+                <p className="text-sm font-bold">經歷</p>
+              </div>
+              <ul className="space-y-1">
+                {candidate.personal_experiences.map((exp, idx) => (
+                  <li key={idx} className="flex items-start text-sm">
+                    <span className="mr-2 text-primary">•</span>
+                    <span>{exp}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+          
+          {candidate.political_opinions && candidate.political_opinions.length > 0 && (
+            <div className="rounded-lg bg-white/80 p-3">
+              <div className="mb-2 flex items-center gap-2">
+                <FileText className="h-4 w-4 text-primary" />
+                <p className="text-sm font-bold">政見</p>
+              </div>
+              <ul className="space-y-1">
+                {candidate.political_opinions.map((opinion, idx) => (
+                  <li key={idx} className="flex items-start text-sm">
+                    <span className="mr-2 text-primary">•</span>
+                    <span>{opinion}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    );
   };
 
   if (loading) {
@@ -181,18 +241,8 @@ export default function VotingPage() {
             <Card className="mb-8 border-primary bg-primary/5">
               <CardContent className="p-6">
                 <h3 className="mb-2 text-lg font-semibold text-primary">投票證明 UUID</h3>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 break-all rounded-lg border border-primary/20 bg-white p-4 font-mono text-sm text-primary">
-                    {voteToken}
-                  </div>
-                  <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={handleCopyToken}
-                    className="flex-shrink-0"
-                  >
-                    {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
-                  </Button>
+                <div className="break-all rounded-lg border border-primary/20 bg-white p-4 font-mono text-sm text-primary">
+                  {voteToken}
                 </div>
                 <p className="mt-4 text-sm text-muted-foreground">
                   請妥善保存此 UUID，這是您投票的唯一證明。系統採用匿名投票機制，無法追溯您的投票內容。
@@ -200,14 +250,9 @@ export default function VotingPage() {
               </CardContent>
             </Card>
 
-            <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
-              <Button size="lg" onClick={() => router.push('/vote')} className="sm:w-auto">
-                投下一個活動
-              </Button>
-              <Button size="lg" variant="outline" onClick={() => router.push('/')} className="sm:w-auto">
-                返回首頁
-              </Button>
-            </div>
+            <Button size="lg" onClick={() => router.push('/vote')}>
+              返回投票列表
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -222,13 +267,11 @@ export default function VotingPage() {
           <CardHeader>
             <div className="flex flex-col gap-2">
               <CardTitle className="text-3xl">{activity.name}</CardTitle>
-              {activity.subtitle && (
-                <p className="text-lg font-medium text-primary">{activity.subtitle}</p>
-              )}
-              {activity.description && (
-                <p className="mt-2 text-sm text-muted-foreground">{activity.description}</p>
-              )}
-              <div className="mt-3 flex flex-wrap gap-4 text-sm text-muted-foreground">
+              <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
+                <div className="flex items-center">
+                  <Tag className="mr-2 h-4 w-4 text-primary" />
+                  <span>類型：{activity.type}</span>
+                </div>
                 <div className="flex items-center">
                   <CheckCircle2 className="mr-2 h-4 w-4 text-primary" />
                   <span>投票方式：{activity.rule === 'choose_all' ? '多選評分' : '單選'}</span>
@@ -242,7 +285,7 @@ export default function VotingPage() {
               <CardContent className="pt-4">
                 <Badge variant="outline" className="w-full justify-start text-sm">
                   <strong className="mr-2">投票說明：</strong>
-                  請對每個選項表達您的意見（支持、反對或無意見）
+                  請對每位候選人表達您的意見（支持、反對或無意見）
                 </Badge>
               </CardContent>
             </>
@@ -259,22 +302,23 @@ export default function VotingPage() {
           </Card>
         )}
 
-        {/* Options */}
+        {/* Options/Candidates */}
         <div className="mb-8 space-y-6">
           {activity.options.map((option, index) => (
             <Card key={option._id}>
               <CardHeader>
                 <CardTitle className="text-xl">
-                  選項 {index + 1}: {option.title}
+                  候選人 {index + 1}
                 </CardTitle>
-                {option.description && (
-                  <p className="mt-2 text-sm text-muted-foreground">{option.description}</p>
-                )}
               </CardHeader>
               <Separator />
               <CardContent className="pt-6">
+                {option.candidate && renderCandidate(option.candidate, '會長')}
+                {option.vice1 && renderCandidate(option.vice1, '副會長一')}
+                {option.vice2 && renderCandidate(option.vice2, '副會長二')}
+
                 {/* Vote Selection */}
-                <div>
+                <div className="mt-6 border-t pt-6">
                   <p className="mb-3 text-sm font-semibold">您的選擇：</p>
                   {activity.rule === 'choose_all' ? (
                     <div className="grid grid-cols-3 gap-2">
@@ -286,14 +330,14 @@ export default function VotingPage() {
                           chooseAllVotes[option._id] === '我要投給他' && "bg-green-600 hover:bg-green-700 text-white border-green-600"
                         )}
                       >
-                        支持
+                        我要投給他
                       </Button>
                       <Button
                         onClick={() => handleChooseAllChange(option._id, '我不投給他')}
                         variant={chooseAllVotes[option._id] === '我不投給他' ? 'destructive' : 'outline'}
                         className="flex-1"
                       >
-                        反對
+                        我不投給他
                       </Button>
                       <Button
                         onClick={() => handleChooseAllChange(option._id, '我沒有意見')}
@@ -303,7 +347,7 @@ export default function VotingPage() {
                           chooseAllVotes[option._id] === '我沒有意見' && "bg-gray-500 hover:bg-gray-600 text-white"
                         )}
                       >
-                        無意見
+                        我沒有意見
                       </Button>
                     </div>
                   ) : (
@@ -313,7 +357,7 @@ export default function VotingPage() {
                       className="w-full"
                       size="lg"
                     >
-                      {chooseOneVote === option._id ? '✓ 已選擇' : '選擇此選項'}
+                      {chooseOneVote === option._id ? '✓ 已選擇' : '選擇此候選人'}
                     </Button>
                   )}
                 </div>

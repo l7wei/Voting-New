@@ -12,7 +12,8 @@ export interface IUser {
 export interface IActivity {
   _id: Types.ObjectId | string;
   name: string;
-  type: string;
+  subtitle?: string; // Activity subtitle
+  description?: string; // Activity description
   rule: 'choose_all' | 'choose_one';
   users: string[]; // Student IDs who have voted
   options: (Types.ObjectId | string)[]; // Option IDs
@@ -25,21 +26,10 @@ export interface IActivity {
 export interface IOption {
   _id: Types.ObjectId | string;
   activity_id: Types.ObjectId | string;
-  type: string;
-  candidate?: ICandidate;
-  vice1?: ICandidate;
-  vice2?: ICandidate;
+  title: string; // Option title
+  description?: string; // Option description
   created_at: Date;
   updated_at: Date;
-}
-
-export interface ICandidate {
-  name: string;
-  department: string;
-  college: string;
-  avatar_url?: string;
-  personal_experiences?: string[];
-  political_opinions?: string[];
 }
 
 export interface IVote {
@@ -82,7 +72,8 @@ export interface JWTPayload extends AuthUser {
 // Request Types
 export interface CreateActivityRequest {
   name: string;
-  type: string;
+  subtitle?: string;
+  description?: string;
   rule: 'choose_all' | 'choose_one';
   open_from: string;
   open_to: string;
@@ -90,10 +81,8 @@ export interface CreateActivityRequest {
 
 export interface CreateOptionRequest {
   activity_id: string;
-  type: string;
-  candidate?: ICandidate;
-  vice1?: ICandidate;
-  vice2?: ICandidate;
+  title: string;
+  description?: string;
 }
 
 export interface CreateVoteRequest {

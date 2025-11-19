@@ -1,30 +1,5 @@
 import mongoose, { Schema, Model } from 'mongoose';
-import { IOption, ICandidate } from '@/types';
-
-const CandidateSchema = new Schema<ICandidate>({
-  name: {
-    type: String,
-    required: true,
-  },
-  department: {
-    type: String,
-    required: true,
-  },
-  college: {
-    type: String,
-    required: true,
-  },
-  avatar_url: {
-    type: String,
-    required: false,
-  },
-  personal_experiences: [{
-    type: String,
-  }],
-  political_opinions: [{
-    type: String,
-  }],
-}, { _id: false });
+import { IOption } from '@/types';
 
 const OptionSchema = new Schema<IOption>({
   activity_id: {
@@ -32,20 +7,12 @@ const OptionSchema = new Schema<IOption>({
     required: true,
     ref: 'Activity',
   },
-  type: {
+  title: {
     type: String,
     required: true,
   },
-  candidate: {
-    type: CandidateSchema,
-    required: false,
-  },
-  vice1: {
-    type: CandidateSchema,
-    required: false,
-  },
-  vice2: {
-    type: CandidateSchema,
+  description: {
+    type: String,
     required: false,
   },
   created_at: {

@@ -45,10 +45,10 @@ export async function POST(request: NextRequest) {
     await connectDB();
 
     const body = await request.json();
-    const { name, type, rule, open_from, open_to } = body;
+    const { name, subtitle, description, rule, open_from, open_to } = body;
 
     // Validate required fields
-    if (!name || !type || !rule || !open_from || !open_to) {
+    if (!name || !rule || !open_from || !open_to) {
       return createErrorResponse('Missing required fields');
     }
 
@@ -72,7 +72,8 @@ export async function POST(request: NextRequest) {
 
     const activity = await Activity.create({
       name,
-      type,
+      subtitle,
+      description,
       rule,
       open_from: openFrom,
       open_to: openTo,

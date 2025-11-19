@@ -58,7 +58,7 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { name, type, rule, open_from, open_to } = body;
+    const { name, subtitle, description, rule, open_from, open_to } = body;
 
     // Validate rule if provided
     if (rule && !['choose_all', 'choose_one'].includes(rule)) {
@@ -84,7 +84,8 @@ export async function PUT(
     };
 
     if (name) updateData.name = name;
-    if (type) updateData.type = type;
+    if (subtitle !== undefined) updateData.subtitle = subtitle;
+    if (description !== undefined) updateData.description = description;
     if (rule) updateData.rule = rule;
     if (open_from) updateData.open_from = new Date(open_from);
     if (open_to) updateData.open_to = new Date(open_to);

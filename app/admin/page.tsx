@@ -32,7 +32,8 @@ import {
 interface Activity {
   _id: string;
   name: string;
-  type: string;
+  subtitle?: string;
+  description?: string;
   rule: 'choose_all' | 'choose_one';
   open_from: string;
   open_to: string;
@@ -224,7 +225,7 @@ function AdminDashboardContent() {
                     <TableHead>活動名稱</TableHead>
                     <TableHead>狀態</TableHead>
                     <TableHead>投票方式</TableHead>
-                    <TableHead>候選人數</TableHead>
+                    <TableHead>選項數</TableHead>
                     <TableHead>已投票</TableHead>
                     <TableHead>操作</TableHead>
                   </TableRow>
@@ -235,7 +236,9 @@ function AdminDashboardContent() {
                       <TableCell>
                         <div>
                           <div className="font-semibold">{activity.name}</div>
-                          <div className="text-xs text-muted-foreground">{activity.type}</div>
+                          {activity.subtitle && (
+                            <div className="text-xs text-muted-foreground">{activity.subtitle}</div>
+                          )}
                         </div>
                       </TableCell>
                       <TableCell>{getStatusBadge(activity)}</TableCell>

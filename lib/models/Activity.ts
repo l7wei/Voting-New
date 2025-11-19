@@ -6,9 +6,13 @@ const ActivitySchema = new Schema<IActivity>({
     type: String,
     required: true,
   },
-  type: {
+  subtitle: {
     type: String,
-    required: true,
+    required: false,
+  },
+  description: {
+    type: String,
+    required: false,
   },
   rule: {
     type: String,

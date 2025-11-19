@@ -54,10 +54,8 @@ export async function PUT(
       updated_at: new Date(),
     };
 
-    if (body.type !== undefined) updateData.type = body.type;
-    if (body.candidate !== undefined) updateData.candidate = body.candidate;
-    if (body.vice1 !== undefined) updateData.vice1 = body.vice1;
-    if (body.vice2 !== undefined) updateData.vice2 = body.vice2;
+    if (body.title !== undefined) updateData.title = body.title;
+    if (body.description !== undefined) updateData.description = body.description;
 
     const option = await Option.findByIdAndUpdate(
       id,

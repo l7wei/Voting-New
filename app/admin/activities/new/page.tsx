@@ -18,7 +18,8 @@ function NewActivityPageContent() {
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
     name: '',
-    type: '',
+    subtitle: '',
+    description: '',
     rule: 'choose_one' as 'choose_one' | 'choose_all',
     open_from: '',
     open_to: '',
@@ -56,7 +57,7 @@ function NewActivityPageContent() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -106,15 +107,27 @@ function NewActivityPageContent() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="type">活動類型 *</Label>
+                <Label htmlFor="subtitle">活動小標</Label>
                 <Input
-                  id="type"
-                  name="type"
+                  id="subtitle"
+                  name="subtitle"
                   type="text"
-                  value={formData.type}
+                  value={formData.subtitle}
                   onChange={handleChange}
-                  placeholder="例：學生會選舉"
-                  required
+                  placeholder="例：選出你心中的最佳候選人"
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">活動說明</Label>
+                <textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="例：這次選舉將選出下一屆學生會會長，請仔細閱讀各候選人的政見後再投票..."
+                  className="flex min-h-[100px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
                   disabled={loading}
                 />
               </div>
@@ -130,8 +143,8 @@ function NewActivityPageContent() {
                   required
                   disabled={loading}
                 >
-                  <option value="choose_one">單選（選擇一個候選人）</option>
-                  <option value="choose_all">多選評分（對所有候選人表態）</option>
+                  <option value="choose_one">單選（選擇一個選項）</option>
+                  <option value="choose_all">多選評分（對所有選項表態）</option>
                 </select>
                 <p className="text-xs text-muted-foreground">
                   單選：投票者只能選擇一個選項 | 多選評分：投票者需對每個選項表態（支持/反對/無意見）

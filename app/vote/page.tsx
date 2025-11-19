@@ -12,7 +12,8 @@ import { Calendar, Tag, CheckCircle, ArrowLeft, AlertCircle } from 'lucide-react
 interface Activity {
   _id: string;
   name: string;
-  type: string;
+  subtitle?: string;
+  description?: string;
   rule: 'choose_all' | 'choose_one';
   open_from: string;
   open_to: string;
@@ -132,11 +133,17 @@ export default function VotePage() {
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
-                  <div className="flex items-center text-sm">
-                    <Tag className="mr-2 h-4 w-4 flex-shrink-0 text-primary" />
-                    <span className="font-medium">類型：</span>
-                    <span className="ml-1 text-muted-foreground">{activity.type}</span>
-                  </div>
+                  {activity.subtitle && (
+                    <div className="mb-3">
+                      <p className="text-sm font-semibold text-primary">{activity.subtitle}</p>
+                    </div>
+                  )}
+                  
+                  {activity.description && (
+                    <div className="mb-3 rounded-lg bg-muted/50 p-3">
+                      <p className="text-sm text-muted-foreground">{activity.description}</p>
+                    </div>
+                  )}
 
                   <div className="flex items-center text-sm">
                     <CheckCircle className="mr-2 h-4 w-4 flex-shrink-0 text-primary" />
