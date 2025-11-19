@@ -46,7 +46,7 @@ export async function exchangeCodeForToken(code: string): Promise<OAuthTokenResp
       grant_type: 'authorization_code',
       client_id: OAUTH_CLIENT_ID,
       client_secret: OAUTH_CLIENT_SECRET,
-      redirect_uri: encodeURIComponent(OAUTH_CALLBACK_URL),
+      redirect_uri: OAUTH_CALLBACK_URL, // Should NOT be encoded - must match authorization request
       code,
     });
 
