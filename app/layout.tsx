@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "學生會投票系統",
   description: "National Tsing Hua University Voting System",
+  icons: {
+    icon: "/favicon.png",
+  },
 };
 
 export default function RootLayout({
