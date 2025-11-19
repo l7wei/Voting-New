@@ -50,6 +50,8 @@ export default function VotingPage() {
   const [submitting, setSubmitting] = useState(false);
   const [voteToken, setVoteToken] = useState<string>('');
   const [showConfirmation, setShowConfirmation] = useState(false);
+  const [allActivities, setAllActivities] = useState<Activity[]>([]);
+  const [votedActivityIds, setVotedActivityIds] = useState<string[]>([]);
 
   // Vote state
   const [chooseAllVotes, setChooseAllVotes] = useState<Record<string, string>>({});
@@ -57,8 +59,66 @@ export default function VotingPage() {
 
   useEffect(() => {
     fetchActivity();
+    loadVotingHistory();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activityId]);
+
+  const loadVotingHistory = () => {
+    try {
+      const history = localStorage.getItem('voting_history');
+      if (history) {
+        const parsed = JSON.parse(history);
+        setVotedActivityIds(parsed.votedActivityIds || []);
+      }
+    } catch (err) {
+      console.error('Error loading voting history:', err);
+    }
+  };
+
+  const saveVotingRecord = (activityId: string, token: string, activityName: string) => {
+    try {
+      const history = localStorage.getItem('voting_history');
+      const parsed = history ? JSON.parse(history) : { votedActivityIds: [], votes: [] };
+      
+      // Add activity ID if not already present
+      if (!parsed.votedActivityIds.includes(activityId)) {
+        parsed.votedActivityIds.push(activityId);
+      }
+      
+      // Add vote record
+      parsed.votes.push({
+        activityId,
+        activityName,
+        token,
+        timestamp: new Date().toISOString(),
+      });
+      
+      localStorage.setItem('voting_history', JSON.stringify(parsed));
+      setVotedActivityIds(parsed.votedActivityIds);
+    } catch (err) {
+      console.error('Error saving voting record:', err);
+    }
+  };
+
+  const fetchAllActivities = async () => {
+    try {
+      const response = await fetch('/api/activities');
+      const data = await response.json();
+
+      if (data.success) {
+        // Filter only active activities
+        const now = new Date();
+        const activeActivities = data.data.filter((act: Activity) => {
+          const openFrom = new Date(act.open_from);
+          const openTo = new Date(act.open_to);
+          return now >= openFrom && now <= openTo;
+        });
+        setAllActivities(activeActivities);
+      }
+    } catch (err) {
+      console.error('Error fetching activities:', err);
+    }
+  };
 
   const fetchActivity = async () => {
     try {
@@ -133,6 +193,8 @@ export default function VotingPage() {
 
       if (data.success) {
         setVoteToken(data.data.token);
+        saveVotingRecord(activityId, data.data.token, activity.name);
+        await fetchAllActivities();
         setShowConfirmation(true);
       } else {
         setError(data.error || '投票失敗');
@@ -228,6 +290,13 @@ export default function VotingPage() {
   }
 
   if (showConfirmation) {
+    // Find next unvoted activity
+    const nextActivity = allActivities.find(act => 
+      act._id !== activityId && !votedActivityIds.includes(act._id)
+    );
+    const allVoted = allActivities.length > 0 && 
+      allActivities.every(act => votedActivityIds.includes(act._id));
+
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
         <Card className="w-full max-w-2xl">
@@ -252,9 +321,57 @@ export default function VotingPage() {
               </CardContent>
             </Card>
 
-            <Button size="lg" onClick={() => router.push('/vote')}>
-              返回投票列表
-            </Button>
+            {allVoted ? (
+              <div className="space-y-4">
+                <Card className="border-green-500 bg-green-50">
+                  <CardContent className="p-6">
+                    <CheckCircle2 className="mx-auto mb-3 h-12 w-12 text-green-600" />
+                    <h3 className="mb-2 text-xl font-bold text-green-800">
+                      🎉 恭喜！您已完成所有投票活動
+                    </h3>
+                    <p className="text-sm text-green-700">
+                      您已經投完所有開放中的投票活動，感謝您的參與！
+                    </p>
+                  </CardContent>
+                </Card>
+                <div className="flex gap-3">
+                  <Button size="lg" variant="outline" className="flex-1" onClick={() => router.push('/vote')}>
+                    返回投票列表
+                  </Button>
+                  <Button size="lg" className="flex-1" onClick={() => router.push('/vote/completion')}>
+                    查看投票證明
+                  </Button>
+                </div>
+              </div>
+            ) : nextActivity ? (
+              <div className="space-y-4">
+                <Card className="border-blue-500 bg-blue-50">
+                  <CardContent className="p-6">
+                    <h3 className="mb-2 text-lg font-semibold text-blue-800">
+                      下一個投票活動
+                    </h3>
+                    <p className="text-sm text-blue-700 mb-1 font-medium">
+                      {nextActivity.name}
+                    </p>
+                    {nextActivity.subtitle && (
+                      <p className="text-xs text-blue-600">{nextActivity.subtitle}</p>
+                    )}
+                  </CardContent>
+                </Card>
+                <div className="flex gap-3">
+                  <Button size="lg" variant="outline" className="flex-1" onClick={() => router.push('/vote')}>
+                    返回投票列表
+                  </Button>
+                  <Button size="lg" className="flex-1" onClick={() => router.push(`/vote/${nextActivity._id}`)}>
+                    繼續投票
+                  </Button>
+                </div>
+              </div>
+            ) : (
+              <Button size="lg" onClick={() => router.push('/vote')}>
+                返回投票列表
+              </Button>
+            )}
           </CardContent>
         </Card>
       </div>
