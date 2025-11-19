@@ -89,9 +89,6 @@ OAUTH_AUTHORIZE=https://oauth.ccxp.nthu.edu.tw/v1.1/authorize.php
 OAUTH_TOKEN_URL=https://oauth.ccxp.nthu.edu.tw/v1.1/token.php
 OAUTH_RESOURCE_URL=https://oauth.ccxp.nthu.edu.tw/v1.1/resource.php
 OAUTH_CALLBACK_URL=https://your-domain.com/api/auth/callback
-
-# Mock OAuth (Development - leave OAuth URLs commented out to use defaults)
-MOCK_STUDENT_ID=110000114
 ```
 
 ## System Design

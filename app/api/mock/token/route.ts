@@ -19,17 +19,9 @@ export async function POST(request: NextRequest) {
         console.log('[Mock Token] No data found for code:', code, 'using fallback');
       }
     }
-    
-    // Fallback to default data
     if (!mockData) {
-      mockData = {
-        Userid: process.env.MOCK_STUDENT_ID || '110000114',
-        name: '測試學生',
-        inschool: 'true',
-        uuid: 'mock-uuid-' + Date.now(),
-        timestamp: Date.now(),
-      };
-    }
+      throw new Error('No mock data found for the provided code');
+    } 
     
     // Generate access token
     const accessToken = 'mock_access_token_' + Date.now();

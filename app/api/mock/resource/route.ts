@@ -18,14 +18,6 @@ export async function POST(request: NextRequest) {
     }
   }
   
-  // Fallback to default data
-  mockData = {
-    Userid: process.env.MOCK_STUDENT_ID || '110000114',
-    name: '測試學生',
-    inschool: 'true',
-    uuid: 'mock-uuid-' + Date.now(),
-  };
-  
   console.log('[Mock Resource] Using fallback data');
   return NextResponse.json(mockData);
 }
