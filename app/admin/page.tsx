@@ -159,10 +159,10 @@ function AdminDashboardContent() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="mb-1 text-sm font-medium text-muted-foreground">進行中</p>
-                  <p className="text-4xl font-bold text-green-600">{activeCount}</p>
+                  <p className="text-4xl font-bold text-primary">{activeCount}</p>
                 </div>
-                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100">
-                  <CheckCircle className="h-6 w-6 text-green-600" />
+                <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
+                  <CheckCircle className="h-6 w-6 text-primary" />
                 </div>
               </div>
             </CardContent>

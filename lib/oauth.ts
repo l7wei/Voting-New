@@ -23,13 +23,19 @@ export interface OAuthUserInfo {
   uuid?: string; // Used for anonymous voting
 }
 
-export function getAuthorizationURL(): string {
+export function getAuthorizationURL(redirect?: string): string {
   const params = new URLSearchParams({
     client_id: OAUTH_CLIENT_ID,
     response_type: 'code',
     redirect_uri: OAUTH_CALLBACK_URL,
     scope: OAUTH_SCOPE,
   });
+  
+  // Add state parameter to preserve redirect URL through OAuth flow
+  if (redirect) {
+    const state = Buffer.from(JSON.stringify({ redirect })).toString('base64');
+    params.set('state', state);
+  }
 
   return `${OAUTH_AUTHORIZE}?${params.toString()}`;
 }
@@ -40,7 +46,7 @@ export async function exchangeCodeForToken(code: string): Promise<OAuthTokenResp
       grant_type: 'authorization_code',
       client_id: OAUTH_CLIENT_ID,
       client_secret: OAUTH_CLIENT_SECRET,
-      redirect_uri: encodeURIComponent(OAUTH_CALLBACK_URL),
+      redirect_uri: OAUTH_CALLBACK_URL, // Should NOT be encoded - must match authorization request
       code,
     });
 
