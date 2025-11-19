@@ -1,10 +1,29 @@
 import mongoose from "mongoose";
 
-const MONGODB_URI = `mongodb://${process.env.MONGO_USERNAME}:${process.env.MONGO_PASSWORD}@${process.env.MONGO_HOST}:${process.env.MONGO_PORT}/${process.env.MONGO_NAME}?authSource=admin`;
+// Support both MONGODB_URI and individual parameters
+function getMongoDBURI(): string {
+  // If MONGODB_URI is provided, use it directly
+  if (process.env.MONGODB_URI) {
+    return process.env.MONGODB_URI;
+  }
 
-if (!MONGODB_URI) {
-  throw new Error("Please define the MONGODB_URI environment variable");
+  // Otherwise, build URI from individual parameters
+  const host = process.env.MONGO_HOST;
+  const port = process.env.MONGO_PORT || "27017";
+  const username = process.env.MONGO_USERNAME;
+  const password = process.env.MONGO_PASSWORD;
+  const database = process.env.MONGO_NAME;
+
+  if (!host || !username || !password || !database) {
+    throw new Error(
+      "Missing MongoDB configuration. Either provide MONGODB_URI or all of: MONGO_HOST, MONGO_USERNAME, MONGO_PASSWORD, MONGO_NAME",
+    );
+  }
+
+  return `mongodb://${username}:${password}@${host}:${port}/${database}?authSource=admin`;
 }
+
+const MONGODB_URI = getMongoDBURI();
 
 interface MongooseCache {
   conn: typeof mongoose | null;

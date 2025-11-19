@@ -41,7 +41,6 @@ const VoteSchema = new Schema<IVote>({
     type: String,
     required: true,
     unique: true,
-    index: true,
   },
   created_at: {
     type: Date,
@@ -55,6 +54,7 @@ const VoteSchema = new Schema<IVote>({
   },
 } as const);
 
+// Add indexes (without duplicate)
 VoteSchema.index({ activity_id: 1 });
 VoteSchema.index({ token: 1 });
 

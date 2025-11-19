@@ -1,26 +1,12 @@
 import axios from "axios";
 
-if (
-  !process.env.OAUTH_CLIENT_ID ||
-  !process.env.OAUTH_CLIENT_SECRET ||
-  !process.env.OAUTH_AUTHORIZE ||
-  !process.env.OAUTH_TOKEN_URL ||
-  !process.env.OAUTH_RESOURCE_URL ||
-  !process.env.OAUTH_CALLBACK_URL ||
-  !process.env.OAUTH_SCOPE
-) {
-  throw new Error(
-    "One or more OAuth environment variables are required but not set",
-  );
+function getRequiredEnvVar(name: string): string {
+  const value = process.env[name];
+  if (!value) {
+    throw new Error(`${name} environment variable is required but not set`);
+  }
+  return value;
 }
-
-const OAUTH_CLIENT_ID = process.env.OAUTH_CLIENT_ID;
-const OAUTH_CLIENT_SECRET = process.env.OAUTH_CLIENT_SECRET;
-const OAUTH_AUTHORIZE = process.env.OAUTH_AUTHORIZE;
-const OAUTH_TOKEN_URL = process.env.OAUTH_TOKEN_URL;
-const OAUTH_RESOURCE_URL = process.env.OAUTH_RESOURCE_URL;
-const OAUTH_CALLBACK_URL = process.env.OAUTH_CALLBACK_URL;
-const OAUTH_SCOPE = process.env.OAUTH_SCOPE;
 
 export interface OAuthTokenResponse {
   access_token: string;
@@ -38,6 +24,11 @@ export interface OAuthUserInfo {
 }
 
 export function getAuthorizationURL(redirect?: string): string {
+  const OAUTH_CLIENT_ID = getRequiredEnvVar("OAUTH_CLIENT_ID");
+  const OAUTH_CALLBACK_URL = getRequiredEnvVar("OAUTH_CALLBACK_URL");
+  const OAUTH_SCOPE = getRequiredEnvVar("OAUTH_SCOPE");
+  const OAUTH_AUTHORIZE = getRequiredEnvVar("OAUTH_AUTHORIZE");
+
   const params = new URLSearchParams({
     client_id: OAUTH_CLIENT_ID,
     response_type: "code",
@@ -58,6 +49,11 @@ export async function exchangeCodeForToken(
   code: string,
 ): Promise<OAuthTokenResponse> {
   try {
+    const OAUTH_CLIENT_ID = getRequiredEnvVar("OAUTH_CLIENT_ID");
+    const OAUTH_CLIENT_SECRET = getRequiredEnvVar("OAUTH_CLIENT_SECRET");
+    const OAUTH_CALLBACK_URL = getRequiredEnvVar("OAUTH_CALLBACK_URL");
+    const OAUTH_TOKEN_URL = getRequiredEnvVar("OAUTH_TOKEN_URL");
+
     const response = await axios.post(OAUTH_TOKEN_URL, {
       grant_type: "authorization_code",
       client_id: OAUTH_CLIENT_ID,
@@ -79,6 +75,8 @@ export async function exchangeCodeForToken(
 
 export async function getUserInfo(accessToken: string): Promise<OAuthUserInfo> {
   try {
+    const OAUTH_RESOURCE_URL = getRequiredEnvVar("OAUTH_RESOURCE_URL");
+
     const response = await axios.post(
       OAUTH_RESOURCE_URL,
       {},
