@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { verifyToken } from '@/lib/auth';
-import { isAdmin } from '@/lib/auth';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Public paths that don't require authentication
@@ -32,7 +31,7 @@ export function middleware(request: NextRequest) {
     return NextResponse.redirect(loginUrl);
   }
   
-  // Admin routes require additional permission check
+  // Admin routes require authentication (admin permission check moved to server-side routes)
   if (pathname.startsWith('/admin')) {
     if (!token) {
       const loginUrl = new URL('/login', request.url);
@@ -40,7 +39,7 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
     
-    // Verify token and check admin permission
+    // Verify token
     const decoded = verifyToken(token);
     if (!decoded) {
       // Invalid token, redirect to login
@@ -50,13 +49,8 @@ export function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
     
-    // Check if user is admin
-    if (!isAdmin(decoded.student_id)) {
-      // Not an admin, redirect to home with error
-      const homeUrl = new URL('/', request.url);
-      homeUrl.searchParams.set('error', 'admin_required');
-      return NextResponse.redirect(homeUrl);
-    }
+    // Admin permission check is now handled in individual admin API routes and pages
+    // This allows us to avoid Edge runtime limitations with fs/csv reading
   }
   
   return NextResponse.next();

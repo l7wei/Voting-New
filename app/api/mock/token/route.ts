@@ -13,6 +13,8 @@ export async function POST(request: NextRequest) {
       mockData = mockAuthStore.get(code);
       if (mockData) {
         console.log('[Mock Token] Found custom mock data for code:', code, 'data:', mockData);
+        // Delete the code after use (one-time use)
+        mockAuthStore.delete(code);
       } else {
         console.log('[Mock Token] No data found for code:', code, 'using fallback');
       }
@@ -25,32 +27,29 @@ export async function POST(request: NextRequest) {
         name: '測試學生',
         inschool: 'true',
         uuid: 'mock-uuid-' + Date.now(),
+        timestamp: Date.now(),
       };
     }
     
+    // Generate access token
+    const accessToken = 'mock_access_token_' + Date.now();
+    
+    // Store mock data by access token for the resource endpoint
+    mockAuthStore.set(accessToken, mockData);
+    
     // Create response with token
-    const response = NextResponse.json({
-      access_token: 'mock_access_token_' + Date.now(),
+    return NextResponse.json({
+      access_token: accessToken,
       expires_in: 3600,
       token_type: 'Bearer',
       scope: 'userid name inschool uuid',
       refresh_token: 'mock_refresh_token',
     });
-    
-    // Store mock OAuth data in cookie for resource endpoint
-    response.cookies.set('mock_oauth_data', JSON.stringify(mockData), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 300, // 5 minutes
-      path: '/',
-    });
-    
-    return response;
   } catch (error) {
     console.error('Token route error:', error);
+    const fallbackToken = 'mock_access_token_' + Date.now();
     return NextResponse.json({
-      access_token: 'mock_access_token_' + Date.now(),
+      access_token: fallbackToken,
       expires_in: 3600,
       token_type: 'Bearer',
       scope: 'userid name inschool uuid',

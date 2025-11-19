@@ -45,8 +45,27 @@ function AdminDashboardContent() {
   const [error, setError] = useState('');
 
   useEffect(() => {
-    fetchActivities();
+    checkAdminAccess();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const checkAdminAccess = async () => {
+    try {
+      const response = await fetch('/api/auth/check');
+      const data = await response.json();
+      
+      if (!data.authenticated || !data.user?.isAdmin) {
+        // Not authenticated or not an admin, redirect to home
+        window.location.href = '/?error=admin_required';
+        return;
+      }
+      
+      fetchActivities();
+    } catch (err) {
+      console.error('Error checking admin access:', err);
+      window.location.href = '/?error=auth_failed';
+    }
+  };
 
   const fetchActivities = async () => {
     try {
