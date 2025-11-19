@@ -122,6 +122,20 @@ export default function VotingPage() {
 
       if (data.success) {
         setVoteToken(data.data.token);
+        
+        // Store certificate in localStorage
+        const certificate = {
+          activityId: activityId,
+          activityName: activity.name,
+          token: data.data.token,
+          timestamp: new Date().toISOString(),
+        };
+        
+        const stored = localStorage.getItem('votingCertificates');
+        const certificates = stored ? JSON.parse(stored) : [];
+        certificates.push(certificate);
+        localStorage.setItem('votingCertificates', JSON.stringify(certificates));
+        
         setShowConfirmation(true);
       } else {
         setError(data.error || '投票失敗');
@@ -140,6 +154,10 @@ export default function VotingPage() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
+  };
+
+  const handleViewAllCertificates = () => {
+    router.push('/vote/completion');
   };
 
   if (loading) {
@@ -203,6 +221,9 @@ export default function VotingPage() {
             <div className="flex flex-col gap-3 sm:flex-row sm:justify-center">
               <Button size="lg" onClick={() => router.push('/vote')} className="sm:w-auto">
                 投下一個活動
+              </Button>
+              <Button size="lg" variant="outline" onClick={handleViewAllCertificates} className="sm:w-auto">
+                查看所有證明
               </Button>
               <Button size="lg" variant="outline" onClick={() => router.push('/')} className="sm:w-auto">
                 返回首頁
