@@ -19,7 +19,6 @@ import {
 } from '@/components/ui/table';
 import {
   Plus,
-  Users,
   RefreshCw,
   ClipboardList,
   CheckCircle,
@@ -183,17 +182,11 @@ function AdminDashboardContent() {
           </CardHeader>
           <Separator />
           <CardContent className="pt-6">
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <Button size="lg" asChild>
                 <Link href="/admin/activities/new">
                   <Plus className="mr-2 h-4 w-4" />
                   新增投票活動
-                </Link>
-              </Button>
-              <Button size="lg" variant="outline" asChild>
-                <Link href="/admin/voters">
-                  <Users className="mr-2 h-4 w-4" />
-                  管理投票人名單
                 </Link>
               </Button>
               <Button size="lg" variant="outline" onClick={() => window.location.reload()}>

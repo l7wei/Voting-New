@@ -3,7 +3,6 @@ import fs from 'fs/promises';
 import path from 'path';
 
 const VOTER_LIST_PATH = path.join(process.cwd(), 'data', 'voterList.csv');
-const VOTER_LIST_BACKUP_PATH = path.join(process.cwd(), 'data', 'voterList.csv.backup');
 
 let cachedVoterList: string[] | null = null;
 
@@ -35,51 +34,6 @@ export function parseVoterList(csvContent: string): string[] {
   } catch (error) {
     console.error('Failed to parse voter list:', error);
     return [];
-  }
-}
-
-export async function saveVoterList(csvContent: string): Promise<void> {
-  // Validate CSV format
-  const studentIds = parseVoterList(csvContent);
-  
-  if (studentIds.length === 0) {
-    throw new Error('Invalid CSV format or empty voter list');
-  }
-
-  // Validate student IDs (alphanumeric only)
-  const invalidIds = studentIds.filter(id => !/^[A-Za-z0-9]+$/.test(id));
-  if (invalidIds.length > 0) {
-    throw new Error(`Invalid student IDs found: ${invalidIds.join(', ')}`);
-  }
-
-  // Create data directory if it doesn't exist
-  const dataDir = path.dirname(VOTER_LIST_PATH);
-  await fs.mkdir(dataDir, { recursive: true });
-
-  // Backup current list if it exists
-  try {
-    await fs.access(VOTER_LIST_PATH);
-    await fs.copyFile(VOTER_LIST_PATH, VOTER_LIST_BACKUP_PATH);
-  } catch {
-    // No existing file to backup
-  }
-
-  // Save new list
-  await fs.writeFile(VOTER_LIST_PATH, csvContent, 'utf-8');
-  
-  // Clear cache
-  cachedVoterList = null;
-}
-
-export async function restoreVoterListBackup(): Promise<void> {
-  try {
-    await fs.access(VOTER_LIST_BACKUP_PATH);
-    await fs.copyFile(VOTER_LIST_BACKUP_PATH, VOTER_LIST_PATH);
-    
-    // Clear cache
-    cachedVoterList = null;
-  } catch {
-    throw new Error('No backup found to restore');
   }
 }
 

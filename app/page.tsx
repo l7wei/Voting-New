@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -159,13 +160,7 @@ export default function HomePage() {
         </Card>
       </main>
 
-      <footer className="mt-20 border-t py-8">
-        <div className="container mx-auto max-w-7xl px-6">
-          <p className="text-center text-muted-foreground">
-            © 2025 清華大學學生會投票系統
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

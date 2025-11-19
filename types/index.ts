@@ -102,7 +102,3 @@ export interface CreateVoteRequest {
   choose_all?: IChoiceAll[];
   choose_one?: string;
 }
-
-export interface UploadVoterListRequest {
-  csv_content: string;
-}
