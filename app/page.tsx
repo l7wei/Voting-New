@@ -113,7 +113,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <p className="text-center text-muted-foreground">
-                  採用 OAuth + JWT 驗證，確保沒有人能冒用您的身份投票
+                  採用 OAuth + JWT 驗證，沒有人能冒用您的身份投票
                 </p>
               </CardContent>
             </Card>
@@ -145,7 +145,7 @@ export default function HomePage() {
               </CardHeader>
               <CardContent>
                 <p className="text-center text-muted-foreground">
-                  直覺的使用介面，無論何時何地都能輕鬆完成投票，並節省大量人力物力
+                  無論何時何地都能輕鬆完成投票，並節省大量人力物力
                 </p>
               </CardContent>
             </Card>

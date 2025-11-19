@@ -222,7 +222,7 @@ export default function CompletionPage() {
 
         {/* Print Footer */}
         <div className="hidden print:block mt-12 text-center text-sm text-muted-foreground">
-          <p>清華大學學生會投票系統</p>
+          <p>國立清華大學學生會投票系統</p>
           <p>列印時間：{new Date().toLocaleString("zh-TW")}</p>
         </div>
       </main>

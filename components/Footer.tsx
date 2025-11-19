@@ -12,7 +12,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           {/* About Section */}
           <div className="md:col-span-2">
-            <h3 className="mb-4 text-xl font-bold">清華大學投票系統</h3>
+            <h3 className="mb-4 text-xl font-bold">國立清華大學學生會投票系統</h3>
             <p className="text-sm text-muted-foreground leading-relaxed mb-4">
               由國立清華大學學生會資訊處開發的現代化線上投票平台，提供安全、透明、便捷的投票體驗。
             </p>
