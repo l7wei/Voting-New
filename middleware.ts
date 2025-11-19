@@ -23,11 +23,12 @@ export async function middleware(request: NextRequest) {
     return pathname.startsWith(path);
   });
 
-  // Allow public paths and Next.js internals
+  // Allow public paths, Next.js internals, and public static assets
   if (
     isPublicPath ||
     pathname.startsWith("/_next") ||
-    pathname.startsWith("/static")
+    pathname.startsWith("/static") ||
+    /\.(png|jpg|jpeg|gif|svg|ico|webp)$/i.test(pathname)
   ) {
     return addSecurityHeaders(NextResponse.next());
   }
