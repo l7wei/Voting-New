@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { mockAuthStore } from '@/lib/mockAuthStore';
 
 export async function POST(request: NextRequest) {
   try {
@@ -7,21 +8,13 @@ export async function POST(request: NextRequest) {
     
     let mockData = null;
     
-    // Try to fetch mock data from the store
+    // Try to get mock data from the in-memory store
     if (code) {
-      try {
-        const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
-        const storeResponse = await fetch(`${baseUrl}/api/mock/store?code=${encodeURIComponent(code)}`, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        if (storeResponse.ok) {
-          mockData = await storeResponse.json();
-        }
-      } catch (error) {
-        console.error('Error fetching from mock store:', error);
+      mockData = mockAuthStore.get(code);
+      if (mockData) {
+        console.log('[Mock Token] Found custom mock data for code:', code, 'data:', mockData);
+      } else {
+        console.log('[Mock Token] No data found for code:', code, 'using fallback');
       }
     }
     

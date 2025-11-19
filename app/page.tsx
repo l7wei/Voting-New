@@ -162,7 +162,7 @@ export default function HomePage() {
       <footer className="mt-20 border-t py-8">
         <div className="container mx-auto max-w-7xl px-6">
           <p className="text-center text-muted-foreground">
-            © 2024 清華大學學生會投票系統
+            © 2025 清華大學學生會投票系統
           </p>
         </div>
       </footer>
