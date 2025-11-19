@@ -1,5 +1,6 @@
 import { readFile } from 'fs/promises';
 import { join } from 'path';
+import { parse } from 'csv-parse/sync';
 
 let adminCache: string[] = [];
 let lastLoadTime = 0;
@@ -14,16 +15,20 @@ export async function loadAdmins(): Promise<string[]> {
   }
   
   try {
-    const filePath = join(process.cwd(), 'config', 'admins.json');
+    const filePath = join(process.cwd(), 'data', 'adminList.csv');
     const fileContent = await readFile(filePath, 'utf-8');
-    const data = JSON.parse(fileContent);
+    const records = parse(fileContent, {
+      columns: true,
+      skip_empty_lines: true,
+      trim: true,
+    });
     
-    adminCache = data.admins || [];
+    adminCache = records.map((record: { student_id: string }) => record.student_id);
     lastLoadTime = now;
     
     return adminCache;
   } catch (error) {
-    console.error('Error loading admins.json:', error);
+    console.error('Error loading adminList.csv:', error);
     return [];
   }
 }

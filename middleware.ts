@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { isAdmin } from '@/lib/auth';
 
-export function middleware(request: NextRequest) {
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Public paths that don't require authentication
@@ -51,7 +51,8 @@ export function middleware(request: NextRequest) {
     }
     
     // Check if user is admin
-    if (!isAdmin(decoded.student_id)) {
+    const isUserAdmin = await isAdmin(decoded.student_id);
+    if (!isUserAdmin) {
       // Not an admin, redirect to home with error
       const homeUrl = new URL('/', request.url);
       homeUrl.searchParams.set('error', 'admin_required');
