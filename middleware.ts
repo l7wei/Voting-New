@@ -5,10 +5,15 @@ export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
   // Public paths that don't require authentication
-  const publicPaths = ['/login', '/api/auth/login', '/api/auth/callback', '/api/mock'];
+  const publicPaths = ['/', '/login', '/api/auth/login', '/api/auth/callback', '/api/mock', '/api/activities'];
   
   // Check if the current path is public
-  const isPublicPath = publicPaths.some(path => pathname.startsWith(path));
+  const isPublicPath = publicPaths.some(path => {
+    if (path === '/') {
+      return pathname === '/';
+    }
+    return pathname.startsWith(path);
+  });
   
   // API routes and public paths are allowed
   if (isPublicPath || pathname.startsWith('/_next') || pathname.startsWith('/static')) {
