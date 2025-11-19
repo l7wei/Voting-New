@@ -121,6 +121,27 @@ function ActivityDetailPageContent() {
     vice2_opinions: "",
   });
 
+  // Edit option form
+  const [editingOptionId, setEditingOptionId] = useState<string | null>(null);
+  const [editOption, setEditOption] = useState<NewOptionForm>({
+    label: "",
+    candidate_name: "",
+    candidate_department: "",
+    candidate_college: "",
+    candidate_experiences: "",
+    candidate_opinions: "",
+    vice1_name: "",
+    vice1_department: "",
+    vice1_college: "",
+    vice1_experiences: "",
+    vice1_opinions: "",
+    vice2_name: "",
+    vice2_department: "",
+    vice2_college: "",
+    vice2_experiences: "",
+    vice2_opinions: "",
+  });
+
   useEffect(() => {
     fetchActivity();
   }, [activityId]);
@@ -329,6 +350,130 @@ function ActivityDetailPageContent() {
     } catch (err) {
       console.error("Error deleting option:", err);
       setError("刪除候選人時發生錯誤");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleStartEdit = (option: Option) => {
+    setEditingOptionId(option._id);
+    setEditOption({
+      label: option.label || "",
+      candidate_name: option.candidate?.name || "",
+      candidate_department: option.candidate?.department || "",
+      candidate_college: option.candidate?.college || "",
+      candidate_experiences:
+        option.candidate?.personal_experiences?.join("\n") || "",
+      candidate_opinions:
+        option.candidate?.political_opinions?.join("\n") || "",
+      vice1_name: option.vice1?.name || "",
+      vice1_department: option.vice1?.department || "",
+      vice1_college: option.vice1?.college || "",
+      vice1_experiences: option.vice1?.personal_experiences?.join("\n") || "",
+      vice1_opinions: option.vice1?.political_opinions?.join("\n") || "",
+      vice2_name: option.vice2?.name || "",
+      vice2_department: option.vice2?.department || "",
+      vice2_college: option.vice2?.college || "",
+      vice2_experiences: option.vice2?.personal_experiences?.join("\n") || "",
+      vice2_opinions: option.vice2?.political_opinions?.join("\n") || "",
+    });
+  };
+
+  const handleUpdateOption = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingOptionId) return;
+
+    setSaving(true);
+    setError("");
+    setSuccessMessage("");
+
+    try {
+      const optionData: Record<string, unknown> = {
+        label: editOption.label || undefined,
+      };
+
+      if (editOption.candidate_name) {
+        const candidate: Record<string, unknown> = {
+          name: editOption.candidate_name,
+        };
+        if (editOption.candidate_department)
+          candidate.department = editOption.candidate_department;
+        if (editOption.candidate_college)
+          candidate.college = editOption.candidate_college;
+        if (editOption.candidate_experiences) {
+          candidate.personal_experiences = editOption.candidate_experiences
+            .split("\n")
+            .filter((e) => e.trim());
+        }
+        if (editOption.candidate_opinions) {
+          candidate.political_opinions = editOption.candidate_opinions
+            .split("\n")
+            .filter((e) => e.trim());
+        }
+        optionData.candidate = candidate;
+      }
+
+      if (editOption.vice1_name) {
+        const vice1: Record<string, unknown> = {
+          name: editOption.vice1_name,
+        };
+        if (editOption.vice1_department)
+          vice1.department = editOption.vice1_department;
+        if (editOption.vice1_college) vice1.college = editOption.vice1_college;
+        if (editOption.vice1_experiences) {
+          vice1.personal_experiences = editOption.vice1_experiences
+            .split("\n")
+            .filter((e) => e.trim());
+        }
+        if (editOption.vice1_opinions) {
+          vice1.political_opinions = editOption.vice1_opinions
+            .split("\n")
+            .filter((e) => e.trim());
+        }
+        optionData.vice1 = vice1;
+      }
+
+      if (editOption.vice2_name) {
+        const vice2: Record<string, unknown> = {
+          name: editOption.vice2_name,
+        };
+        if (editOption.vice2_department)
+          vice2.department = editOption.vice2_department;
+        if (editOption.vice2_college) vice2.college = editOption.vice2_college;
+        if (editOption.vice2_experiences) {
+          vice2.personal_experiences = editOption.vice2_experiences
+            .split("\n")
+            .filter((e) => e.trim());
+        }
+        if (editOption.vice2_opinions) {
+          vice2.political_opinions = editOption.vice2_opinions
+            .split("\n")
+            .filter((e) => e.trim());
+        }
+        optionData.vice2 = vice2;
+      }
+
+      const response = await fetch(`/api/options/${editingOptionId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify(optionData),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        setSuccessMessage("候選人已更新");
+        setEditingOptionId(null);
+        fetchActivity();
+      } else {
+        setError(data.error || "更新候選人失敗");
+      }
+    } catch (err) {
+      console.error("Error updating option:", err);
+      setError("更新候選人時發生錯誤");
     } finally {
       setSaving(false);
     }
@@ -789,78 +934,305 @@ function ActivityDetailPageContent() {
                 {activity.options.map((option, index) => (
                   <Card key={option._id}>
                     <CardContent className="pt-6">
-                      <div className="flex items-start justify-between">
-                        <div className="flex-1">
-                          <div className="mb-2 flex items-center gap-2">
-                            <span className="rounded-full bg-primary px-3 py-1 text-sm font-bold text-primary-foreground">
-                              {index + 1}
-                            </span>
-                            {option.label && (
-                              <span className="text-sm text-muted-foreground">
-                                {option.label}
+                      {editingOptionId === option._id ? (
+                        // Edit Form
+                        <form
+                          onSubmit={handleUpdateOption}
+                          className="space-y-4"
+                        >
+                          <div className="space-y-2">
+                            <Label htmlFor="edit-label">標籤（選填）</Label>
+                            <Input
+                              id="edit-label"
+                              value={editOption.label}
+                              onChange={(e) =>
+                                setEditOption({
+                                  ...editOption,
+                                  label: e.target.value,
+                                })
+                              }
+                              placeholder="例：候選人組合、會長候選人"
+                            />
+                          </div>
+
+                          <div className="space-y-3">
+                            <h4 className="font-semibold">正選候選人</h4>
+                            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                              <Input
+                                placeholder="姓名 *"
+                                value={editOption.candidate_name}
+                                onChange={(e) =>
+                                  setEditOption({
+                                    ...editOption,
+                                    candidate_name: e.target.value,
+                                  })
+                                }
+                                required
+                              />
+                              <Input
+                                placeholder="系所（選填）"
+                                value={editOption.candidate_department}
+                                onChange={(e) =>
+                                  setEditOption({
+                                    ...editOption,
+                                    candidate_department: e.target.value,
+                                  })
+                                }
+                              />
+                              <Input
+                                placeholder="學院（選填）"
+                                value={editOption.candidate_college}
+                                onChange={(e) =>
+                                  setEditOption({
+                                    ...editOption,
+                                    candidate_college: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                            <Textarea
+                              placeholder="個人經歷（選填，一行一項）"
+                              value={editOption.candidate_experiences}
+                              onChange={(e) =>
+                                setEditOption({
+                                  ...editOption,
+                                  candidate_experiences: e.target.value,
+                                })
+                              }
+                              rows={3}
+                            />
+                            <Textarea
+                              placeholder="政見（選填，一行一項）"
+                              value={editOption.candidate_opinions}
+                              onChange={(e) =>
+                                setEditOption({
+                                  ...editOption,
+                                  candidate_opinions: e.target.value,
+                                })
+                              }
+                              rows={3}
+                            />
+                          </div>
+
+                          <div className="space-y-3">
+                            <h4 className="font-semibold">
+                              副選候選人 1（選填）
+                            </h4>
+                            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                              <Input
+                                placeholder="姓名"
+                                value={editOption.vice1_name}
+                                onChange={(e) =>
+                                  setEditOption({
+                                    ...editOption,
+                                    vice1_name: e.target.value,
+                                  })
+                                }
+                              />
+                              <Input
+                                placeholder="系所（選填）"
+                                value={editOption.vice1_department}
+                                onChange={(e) =>
+                                  setEditOption({
+                                    ...editOption,
+                                    vice1_department: e.target.value,
+                                  })
+                                }
+                              />
+                              <Input
+                                placeholder="學院（選填）"
+                                value={editOption.vice1_college}
+                                onChange={(e) =>
+                                  setEditOption({
+                                    ...editOption,
+                                    vice1_college: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                            <Textarea
+                              placeholder="個人經歷（選填，一行一項）"
+                              value={editOption.vice1_experiences}
+                              onChange={(e) =>
+                                setEditOption({
+                                  ...editOption,
+                                  vice1_experiences: e.target.value,
+                                })
+                              }
+                              rows={3}
+                            />
+                            <Textarea
+                              placeholder="政見（選填，一行一項）"
+                              value={editOption.vice1_opinions}
+                              onChange={(e) =>
+                                setEditOption({
+                                  ...editOption,
+                                  vice1_opinions: e.target.value,
+                                })
+                              }
+                              rows={3}
+                            />
+                          </div>
+
+                          <div className="space-y-3">
+                            <h4 className="font-semibold">
+                              副選候選人 2（選填）
+                            </h4>
+                            <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
+                              <Input
+                                placeholder="姓名"
+                                value={editOption.vice2_name}
+                                onChange={(e) =>
+                                  setEditOption({
+                                    ...editOption,
+                                    vice2_name: e.target.value,
+                                  })
+                                }
+                              />
+                              <Input
+                                placeholder="系所（選填）"
+                                value={editOption.vice2_department}
+                                onChange={(e) =>
+                                  setEditOption({
+                                    ...editOption,
+                                    vice2_department: e.target.value,
+                                  })
+                                }
+                              />
+                              <Input
+                                placeholder="學院（選填）"
+                                value={editOption.vice2_college}
+                                onChange={(e) =>
+                                  setEditOption({
+                                    ...editOption,
+                                    vice2_college: e.target.value,
+                                  })
+                                }
+                              />
+                            </div>
+                            <Textarea
+                              placeholder="個人經歷（選填，一行一項）"
+                              value={editOption.vice2_experiences}
+                              onChange={(e) =>
+                                setEditOption({
+                                  ...editOption,
+                                  vice2_experiences: e.target.value,
+                                })
+                              }
+                              rows={3}
+                            />
+                            <Textarea
+                              placeholder="政見（選填，一行一項）"
+                              value={editOption.vice2_opinions}
+                              onChange={(e) =>
+                                setEditOption({
+                                  ...editOption,
+                                  vice2_opinions: e.target.value,
+                                })
+                              }
+                              rows={3}
+                            />
+                          </div>
+
+                          <div className="flex gap-2">
+                            <Button type="submit" disabled={saving}>
+                              <Save className="mr-2 h-4 w-4" />
+                              儲存
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              onClick={() => setEditingOptionId(null)}
+                            >
+                              取消
+                            </Button>
+                          </div>
+                        </form>
+                      ) : (
+                        // Display View
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <div className="mb-2 flex items-center gap-2">
+                              <span className="rounded-full bg-primary px-3 py-1 text-sm font-bold text-primary-foreground">
+                                {index + 1}
                               </span>
+                              {option.label && (
+                                <span className="text-sm text-muted-foreground">
+                                  {option.label}
+                                </span>
+                              )}
+                            </div>
+
+                            {option.candidate && (
+                              <div className="mb-2">
+                                <p className="font-semibold">
+                                  {option.candidate.name}
+                                </p>
+                                {(option.candidate.department ||
+                                  option.candidate.college) && (
+                                  <p className="text-sm text-muted-foreground">
+                                    {[
+                                      option.candidate.department,
+                                      option.candidate.college,
+                                    ]
+                                      .filter(Boolean)
+                                      .join(" | ")}
+                                  </p>
+                                )}
+                              </div>
+                            )}
+
+                            {option.vice1 && (
+                              <div className="ml-4 mb-1 text-sm">
+                                <span className="text-muted-foreground">
+                                  副選 1:{" "}
+                                </span>
+                                <span>{option.vice1.name}</span>
+                                {option.vice1.department && (
+                                  <span className="text-muted-foreground">
+                                    {" "}
+                                    ({option.vice1.department})
+                                  </span>
+                                )}
+                              </div>
+                            )}
+
+                            {option.vice2 && (
+                              <div className="ml-4 text-sm">
+                                <span className="text-muted-foreground">
+                                  副選 2:{" "}
+                                </span>
+                                <span>{option.vice2.name}</span>
+                                {option.vice2.department && (
+                                  <span className="text-muted-foreground">
+                                    {" "}
+                                    ({option.vice2.department})
+                                  </span>
+                                )}
+                              </div>
                             )}
                           </div>
 
-                          {option.candidate && (
-                            <div className="mb-2">
-                              <p className="font-semibold">
-                                {option.candidate.name}
-                              </p>
-                              {(option.candidate.department ||
-                                option.candidate.college) && (
-                                <p className="text-sm text-muted-foreground">
-                                  {[
-                                    option.candidate.department,
-                                    option.candidate.college,
-                                  ]
-                                    .filter(Boolean)
-                                    .join(" | ")}
-                                </p>
-                              )}
-                            </div>
-                          )}
-
-                          {option.vice1 && (
-                            <div className="ml-4 mb-1 text-sm">
-                              <span className="text-muted-foreground">
-                                副選 1:{" "}
-                              </span>
-                              <span>{option.vice1.name}</span>
-                              {option.vice1.department && (
-                                <span className="text-muted-foreground">
-                                  {" "}
-                                  ({option.vice1.department})
-                                </span>
-                              )}
-                            </div>
-                          )}
-
-                          {option.vice2 && (
-                            <div className="ml-4 text-sm">
-                              <span className="text-muted-foreground">
-                                副選 2:{" "}
-                              </span>
-                              <span>{option.vice2.name}</span>
-                              {option.vice2.department && (
-                                <span className="text-muted-foreground">
-                                  {" "}
-                                  ({option.vice2.department})
-                                </span>
-                              )}
-                            </div>
-                          )}
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleStartEdit(option)}
+                              disabled={saving}
+                            >
+                              <Edit className="h-4 w-4" />
+                            </Button>
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => handleDeleteOption(option._id)}
+                              disabled={saving}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </div>
                         </div>
-
-                        <Button
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => handleDeleteOption(option._id)}
-                          disabled={saving}
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      )}
                     </CardContent>
                   </Card>
                 ))}
