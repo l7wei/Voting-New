@@ -25,10 +25,24 @@ export default function VotePage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [votedActivityIds, setVotedActivityIds] = useState<string[]>([]);
 
   useEffect(() => {
     fetchActivities();
+    loadVotingHistory();
   }, []);
+
+  const loadVotingHistory = () => {
+    try {
+      const history = localStorage.getItem('voting_history');
+      if (history) {
+        const parsed = JSON.parse(history);
+        setVotedActivityIds(parsed.votedActivityIds || []);
+      }
+    } catch (err) {
+      console.error('Error loading voting history:', err);
+    }
+  };
 
   const fetchActivities = async () => {
     try {
@@ -176,9 +190,21 @@ export default function VotePage() {
                   </div>
 
                   <div className="pt-4">
-                    <Button className="w-full" asChild>
-                      <Link href={`/vote/${activity._id}`}>開始投票</Link>
-                    </Button>
+                    {votedActivityIds.includes(activity._id) ? (
+                      <div className="space-y-2">
+                        <Badge variant="default" className="w-full py-2 bg-green-600">
+                          <CheckCircle className="mr-2 h-4 w-4" />
+                          已完成投票
+                        </Badge>
+                        <Button className="w-full" variant="outline" asChild>
+                          <Link href={`/vote/${activity._id}`}>查看詳情</Link>
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button className="w-full" asChild>
+                        <Link href={`/vote/${activity._id}`}>開始投票</Link>
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
