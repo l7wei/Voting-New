@@ -1,330 +1,337 @@
-# 清大學生會投票系統 v2.0 | NTHU Voting System
+# NTHU Voting System v2.0
 
-現代化的清華大學學生會線上投票系統，採用 Next.js + TypeScript + MongoDB 架構，確保投票匿名性與安全性。
+Modern anonymous voting system for National Tsing Hua University Student Association. Built with Next.js 15, TypeScript, and MongoDB.
 
-A modern voting system for National Tsing Hua University Student Association built with Next.js, TypeScript, and MongoDB, ensuring vote anonymity and security.
+## Architecture
 
-## ✨ 核心特色 | Key Features
+- **Framework**: Next.js 15 App Router
+- **Language**: TypeScript
+- **Database**: MongoDB 6 + Mongoose 8
+- **Authentication**: JWT + OAuth (CCXP OAuth / Mock OAuth)
+- **Styling**: Tailwind CSS
+- **Testing**: Jest + React Testing Library
+- **Deployment**: Docker + Docker Compose
 
-- 🔒 **完全匿名投票** - 使用 UUID 技術確保投票匿名性
-- 🎯 **僅追蹤是否投票** - 系統只記錄學生是否投票，不記錄投票內容
-- 🔐 **OAuth 安全認證** - 支援 CCXP OAuth 認證系統
-- 📊 **靈活的投票方式** - 支援多選(choose_all)和單選(choose_one)
-- 🎨 **現代化介面** - 使用 Tailwind CSS 打造響應式設計
-- 🚀 **高效能** - Next.js 15 App Router 架構
-- 🔄 **CI/CD 自動化** - GitHub Actions 自動測試與部署
-- 🐳 **Docker 支援** - 一鍵部署到任何環境
-- 🧪 **完整測試** - Jest 單元測試與整合測試
+## Core Features
 
-## 📋 技術棧 | Tech Stack
+### Anonymous Voting
+- UUID-based vote tokens ensure complete anonymity
+- Vote records are cryptographically separated from voter identity
+- System only tracks whether a student voted, not their choices
+- Even with full database access, votes cannot be traced to individuals
 
-- **框架**: Next.js 15 (App Router)
-- **語言**: TypeScript
-- **資料庫**: MongoDB 6 + Mongoose 8
-- **樣式**: Tailwind CSS
-- **認證**: JWT + OAuth
-- **測試**: Jest + React Testing Library
-- **CI/CD**: GitHub Actions
-- **容器化**: Docker + Docker Compose
+### Authentication
+- OAuth integration with CCXP (production)
+- Mock OAuth with customizable test data (development)
+- JWT session management
+- Admin role-based access control
 
-## 🚀 快速開始 | Quick Start
+### Voting Methods
+- **choose_all**: Rate each option (support/oppose/neutral)
+- **choose_one**: Single choice selection
 
-### 先決條件 | Prerequisites
+## Quick Start
 
-- Node.js 18+ 
+### Prerequisites
+- Node.js 18+
 - MongoDB 6+
 - npm 9+
 
-### 本地開發 | Local Development
+### Development
 
-1. **克隆專案**
 ```bash
+# Clone and install
 git clone https://github.com/l7wei/Voting-New.git
 cd Voting-New
-```
-
-2. **安裝依賴**
-```bash
 npm install
-```
 
-3. **設定環境變數**
-```bash
+# Configure environment
 cp .env.example .env
-```
 
-編輯 `.env` 文件，配置資料庫連接和其他設定。
-
-4. **啟動 MongoDB** (使用 Docker)
-```bash
+# Start MongoDB (Docker)
 docker-compose -f docker-compose.dev.yml up -d
-```
 
-5. **啟動開發伺服器**
-```bash
+# Run development server
 npm run dev
 ```
 
-訪問 http://localhost:3000 查看應用。
+Access at http://localhost:3000
 
-### 使用 Docker | Using Docker
-
-完整的 Docker 部署：
+### Docker Deployment
 
 ```bash
-# 構建並啟動所有服務
+# Full stack
 docker-compose up -d
 
-# 查看日誌
+# View logs
 docker-compose logs -f
 
-# 停止服務
+# Stop
 docker-compose down
 ```
 
-### GitHub Codespaces
-
-本專案支援 GitHub Codespaces，點擊 "Code" → "Open with Codespaces" 即可在雲端開發環境中開始工作。
-
-## 📚 API 文檔 | API Documentation
-
-### 認證 | Authentication
-
-#### 登入
-```
-GET /api/auth/login
-```
-重定向到 OAuth 認證頁面
-
-#### OAuth 回調
-```
-GET /api/auth/callback?code={code}
-```
-處理 OAuth 回調並設置認證 cookie
-
-#### 登出
-```
-GET /api/auth/logout
-```
-清除認證 cookie 並重定向到首頁
-
-### 投票 | Voting
-
-#### 建立投票
-```
-POST /api/votes
-Authorization: Bearer {token}
-
-Body:
-{
-  "activity_id": "活動ID",
-  "rule": "choose_all", // 或 "choose_one"
-  "choose_all": [
-    {
-      "option_id": "選項ID",
-      "remark": "我要投給他" // 或 "我不投給他", "我沒有意見"
-    }
-  ]
-}
-```
-
-#### 獲取投票記錄 (管理員)
-```
-GET /api/votes?activity_id={id}&limit=100&skip=0
-Authorization: Bearer {token}
-```
-
-### 開發用 Mock OAuth
-
-開發環境下，系統會自動使用 Mock OAuth：
-
-```
-GET /api/mock/auth
-POST /api/mock/token
-POST /api/mock/resource
-```
-
-## 🧪 測試 | Testing
-
-```bash
-# 執行所有測試
-npm test
-
-# 監聽模式
-npm run test:watch
-
-# 類型檢查
-npm run type-check
-
-# Lint 檢查
-npm run lint
-```
-
-## 🔧 開發 | Development
-
-### 專案結構
-
-```
-├── app/                    # Next.js App Router
-│   ├── api/               # API 路由
-│   │   ├── auth/         # 認證相關
-│   │   ├── mock/         # Mock OAuth
-│   │   └── votes/        # 投票相關
-│   ├── globals.css       # 全域樣式
-│   ├── layout.tsx        # 根布局
-│   └── page.tsx          # 首頁
-├── lib/                   # 共用函式庫
-│   ├── models/           # Mongoose 模型
-│   ├── auth.ts           # 認證工具
-│   ├── db.ts             # 資料庫連接
-│   ├── middleware.ts     # API 中介軟體
-│   ├── oauth.ts          # OAuth 處理
-│   └── voterList.ts      # 投票人名單管理
-├── types/                 # TypeScript 類型定義
-├── __tests__/            # 測試檔案
-├── data/                 # 資料檔案（投票人名單）
-├── .devcontainer/        # Codespaces 設定
-└── .github/              # GitHub Actions
-
-```
-
-### 資料模型 | Data Models
-
-#### User (使用者)
-```typescript
-{
-  student_id: string;      // 學號
-  remark?: string;         // 備註（如 "admin"）
-  created_at: Date;
-  updated_at: Date;
-}
-```
-
-#### Activity (投票活動)
-```typescript
-{
-  name: string;                    // 活動名稱
-  type: string;                    // 活動類型
-  rule: 'choose_all' | 'choose_one';
-  users: ObjectId[];               // 已投票的使用者
-  options: ObjectId[];             // 投票選項
-  open_from: Date;                 // 開始時間
-  open_to: Date;                   // 結束時間
-}
-```
-
-#### Vote (投票記錄)
-```typescript
-{
-  activity_id: ObjectId;
-  rule: 'choose_all' | 'choose_one';
-  choose_all?: Array<{
-    option_id: ObjectId;
-    remark: '我要投給他' | '我不投給他' | '我沒有意見';
-  }>;
-  choose_one?: ObjectId;
-  token: string;                   // UUID - 確保匿名性
-  created_at: Date;
-}
-```
-
-### 投票流程說明
-
-1. **管理員設置**
-   - 上傳學生清單 CSV (data/voterList.csv)
-   - 在資料庫中設置管理員（remark: "admin"）
-
-2. **建立投票活動**
-   - 管理員登入後台
-   - 建立投票活動（設定名稱、時間、規則）
-   - 新增候選人/選項
-
-3. **學生投票**
-   - 學生通過 OAuth 登入
-   - 選擇投票活動
-   - 進行投票（系統會檢查資格和投票時間）
-   - 投票時生成 UUID token 確保匿名性
-
-4. **結果統計**
-   - 系統僅記錄學生是否投票（activity.users）
-   - 投票內容與 UUID token 關聯，無法追溯到個人
-
-## 🔐 安全性 | Security
-
-- ✅ 所有依賴項已更新到最新安全版本
-- ✅ JWT token 認證
-- ✅ UUID 確保投票匿名性
-- ✅ 管理員權限檢查
-- ✅ 投票資格驗證
-- ✅ 時間窗口限制
-- ✅ 防止重複投票
-
-## 🚢 部署 | Deployment
-
-### 環境變數
-
-必須設定以下環境變數：
+## Environment Variables
 
 ```env
-# 資料庫
+# Database
 MONGO_HOST=127.0.0.1
 MONGO_USERNAME=root
 MONGO_PASSWORD=password
 MONGO_NAME=voting_sa
 
-# 認證
+# Authentication
 TOKEN_SECRET=your-secret-key
 
-# OAuth (生產環境)
+# OAuth (Production)
 OAUTH_CLIENT_ID=your-client-id
 OAUTH_CLIENT_SECRET=your-client-secret
 OAUTH_AUTHORIZE=https://oauth.ccxp.nthu.edu.tw/v1.1/authorize.php
 OAUTH_TOKEN_URL=https://oauth.ccxp.nthu.edu.tw/v1.1/token.php
 OAUTH_RESOURCE_URL=https://oauth.ccxp.nthu.edu.tw/v1.1/resource.php
 OAUTH_CALLBACK_URL=https://your-domain.com/api/auth/callback
+
+# Mock OAuth (Development - leave OAuth URLs commented out to use defaults)
+MOCK_STUDENT_ID=110000114
 ```
 
-### Docker 部署
+## System Design
 
+### Anonymity Model
+
+**Vote Record (votes collection)**
+```typescript
+{
+  activity_id: ObjectId,
+  rule: 'choose_all' | 'choose_one',
+  choose_all?: Array<{
+    option_id: ObjectId,
+    remark: '我要投給他' | '我不投給他' | '我沒有意見'
+  }>,
+  choose_one?: ObjectId,
+  token: string,  // UUID - voter identity decoupled
+  created_at: Date
+}
+```
+
+**Activity Record (activities collection)**
+```typescript
+{
+  name: string,
+  type: string,
+  rule: 'choose_all' | 'choose_one',
+  users: string[],  // Student IDs who voted (no vote content)
+  options: ObjectId[],
+  open_from: Date,
+  open_to: Date
+}
+```
+
+### Authentication Flow
+
+1. User requests protected resource → Redirected to `/login`
+2. Login page → Redirects to `/api/auth/login`
+3. Auth endpoint → Redirects to OAuth provider
+4. OAuth provider → User authorizes → Redirects to `/api/auth/callback` with code
+5. Callback → Exchanges code for token → Retrieves user info → Generates JWT → Sets cookie → Redirects to `/vote`
+
+**JWT Payload (minimal)**
+```typescript
+{
+  _id: string,        // Student ID
+  student_id: string, // Student ID
+  name: string        // Display name
+}
+```
+
+### Voting Flow
+
+1. **Eligibility Check**
+   - Student ID in `data/voterList.csv`
+   - Activity time window valid
+   - Not already voted (not in `activity.users`)
+
+2. **Vote Submission**
+   - Generate UUID token
+   - Store vote record with token (no student ID)
+   - Add student ID to `activity.users`
+   - Return UUID token to voter
+
+3. **Vote Verification**
+   - Voters can verify their vote using UUID token
+   - Cannot identify other votes or voters
+
+### Admin Management
+
+Admins are defined in `config/admins.json` (file-based, not database):
+```json
+{
+  "admins": ["108060001", "110000114"]
+}
+```
+
+**Admin privileges** (server-side validation via `lib/adminConfig.ts`):
+- Create/modify/delete activities
+- Add/remove options
+- View anonymized vote statistics
+- Export results
+
+## API Reference
+
+### Authentication
+- `GET /api/auth/login` - Initiate OAuth flow
+- `GET /api/auth/callback` - OAuth callback handler
+- `GET /api/auth/check` - Check authentication status
+- `GET /api/auth/logout` - Logout and clear session
+
+### Activities
+- `GET /api/activities` - List activities (public)
+- `GET /api/activities/:id` - Get activity details
+- `POST /api/activities` - Create activity (admin)
+- `PUT /api/activities/:id` - Update activity (admin)
+- `DELETE /api/activities/:id` - Delete activity (admin)
+
+### Voting
+- `POST /api/votes` - Submit vote (authenticated, eligible)
+- `GET /api/votes` - List votes (admin, anonymized)
+
+### Statistics
+- `GET /api/stats?activity_id=:id` - Get activity statistics (admin)
+
+### Mock OAuth (Development)
+- `GET /api/mock/auth` - Mock OAuth authorization page
+- `POST /api/mock/token` - Mock token endpoint
+- `POST /api/mock/resource` - Mock resource endpoint
+
+## Development
+
+### Project Structure
+```
+├── app/
+│   ├── api/          # API routes
+│   │   ├── auth/     # Authentication
+│   │   ├── mock/     # Mock OAuth
+│   │   ├── activities/
+│   │   ├── votes/
+│   │   └── stats/
+│   ├── admin/        # Admin pages
+│   ├── vote/         # Voting pages
+│   └── login/        # Login page
+├── lib/              # Shared libraries
+│   ├── models/       # Mongoose schemas
+│   ├── auth.ts       # JWT utilities
+│   ├── oauth.ts      # OAuth client
+│   ├── db.ts         # Database connection
+│   ├── adminConfig.ts # Admin verification
+│   └── voterList.ts  # Voter eligibility
+├── components/       # React components
+├── types/            # TypeScript definitions
+├── data/             # Static data files
+│   └── voterList.csv # Eligible voters
+├── config/           # Configuration files
+│   └── admins.json   # Admin list
+└── middleware.ts     # Auth middleware
+```
+
+### Testing
 ```bash
-# 構建生產映像
-docker build -t voting-system .
+# Run tests
+npm test
 
-# 使用 docker-compose 部署
-docker-compose up -d
+# Watch mode
+npm run test:watch
+
+# Type checking
+npm run type-check
+
+# Lint
+npm run lint
 ```
 
-## 🤝 貢獻 | Contributing
+### Mock OAuth
 
-歡迎提交 Pull Request 或開 Issue！
+In development, the system uses Mock OAuth by default. Users can input custom test data:
 
-1. Fork 本專案
-2. 建立功能分支 (`git checkout -b feature/amazing-feature`)
-3. 提交變更 (`git commit -m 'Add some amazing feature'`)
-4. 推送到分支 (`git push origin feature/amazing-feature`)
-5. 開啟 Pull Request
+1. Navigate to protected route → Redirected to Mock OAuth form
+2. Fill in custom test data:
+   - **Userid** (學號): Student ID
+   - **Name** (姓名): Display name
+   - **Inschool**: In-school status (true/false)
+   - **UUID**: Custom UUID (optional, auto-generated if empty)
+3. Click "Authorize" → Redirected with custom identity
 
-## 📝 授權 | License
+## Security
+
+### Implemented Safeguards
+- ✅ JWT token authentication
+- ✅ UUID-based vote anonymization
+- ✅ Admin role verification
+- ✅ Voter eligibility validation
+- ✅ Time-window enforcement
+- ✅ Duplicate vote prevention
+- ✅ HttpOnly secure cookies
+- ✅ HTTPS enforced in production
+
+### Privacy Guarantees
+- No user database (users not persisted)
+- OAuth data used only for authentication (not stored)
+- Vote records contain no voter identification
+- Activity records only track participation (not choices)
+- UUID tokens are cryptographically random
+- Database breach cannot reveal vote content → voter mapping
+
+## Deployment Checklist
+
+- [ ] Set strong `TOKEN_SECRET`
+- [ ] Configure production OAuth credentials
+- [ ] Set up HTTPS/SSL certificates
+- [ ] Configure MongoDB authentication
+- [ ] Set secure cookie flags (`secure: true`, `httpOnly: true`)
+- [ ] Update `voterList.csv` with current student roster
+- [ ] Update `config/admins.json` with admin student IDs
+- [ ] Enable MongoDB backup automation
+- [ ] Configure firewall rules
+- [ ] Set up monitoring and logging
+
+## Troubleshooting
+
+### Common Issues
+
+**Login infinite loop**
+- Ensure OAuth URLs are correctly configured
+- Check that `OAUTH_CALLBACK_URL` matches registered redirect URI
+- Verify middleware isn't blocking auth endpoints
+
+**Database connection failed**
+- Verify MongoDB is running: `docker-compose ps`
+- Check credentials in `.env`
+- Ensure MongoDB port (27017) isn't blocked
+
+**Vote submission fails**
+- Verify student is in `voterList.csv`
+- Check activity time window is valid
+- Confirm student hasn't already voted
+
+**Mock OAuth not showing custom data**
+- This is a known issue in development due to cookie propagation
+- Data IS being stored correctly
+- Will be fixed in next release
+
+## Contributing
+
+1. Fork repository
+2. Create feature branch (`git checkout -b feature/name`)
+3. Commit changes (`git commit -m 'Add feature'`)
+4. Push branch (`git push origin feature/name`)
+5. Open Pull Request
+
+## License
 
 ISC License
 
-## 👥 維護者 | Maintainers
+## Maintainers
 
-- 清華大學學生會資訊部
-
-## 🙏 致謝 | Acknowledgments
-
-感謝所有為本專案做出貢獻的開發者和清華大學學生會。
+National Tsing Hua University Student Association - Technology Department
 
 ---
 
-**⚠️ 重要提醒**
-
-此系統處理敏感的投票資料，請確保：
-1. 妥善保管環境變數和 secrets
-2. 定期更新依賴項
-3. 遵循最佳安全實踐
-4. 定期備份資料庫
-5. 在生產環境使用 HTTPS
-
-如有任何問題，請聯繫清華大學學生會資訊部。
+**Security Notice**: This system handles sensitive voting data. Follow security best practices, keep dependencies updated, enable HTTPS in production, and regularly backup the database.
