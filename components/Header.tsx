@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -63,8 +64,14 @@ export default function Header() {
     <header className="sticky top-0 z-50 w-full border-b bg-white/80 backdrop-blur-sm">
       <div className="container mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
         <Link href="/" className="flex items-center gap-2">
-          <Vote className="h-6 w-6 text-primary" />
-          <span className="text-xl font-bold">學生會投票系統</span>
+          <Image
+            src="/banner.png"
+            alt="banner"
+            width={150}
+            height={20}
+            className="h-8 w-auto object-contain"
+          />
+          <span className="text-xl font-bold">投票系統</span>
         </Link>
 
         <div className="flex items-center gap-4">
