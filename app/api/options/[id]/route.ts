@@ -1,13 +1,18 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, requireAdmin, createErrorResponse, createSuccessResponse } from '@/lib/middleware';
-import { Activity } from '@/lib/models/Activity';
-import { Option } from '@/lib/models/Option';
-import connectDB from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import {
+  requireAuth,
+  requireAdmin,
+  createErrorResponse,
+  createSuccessResponse,
+} from "@/lib/middleware";
+import { Activity } from "@/lib/models/Activity";
+import { Option } from "@/lib/models/Option";
+import connectDB from "@/lib/db";
 
 // GET /api/options/[id] - Get single option
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
@@ -16,13 +21,14 @@ export async function GET(
     const option = await Option.findById(id);
 
     if (!option) {
-      return createErrorResponse('Option not found', 404);
+      return createErrorResponse("Option not found", 404);
     }
 
     return createSuccessResponse(option);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to get option';
-    console.error('Get option error:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to get option";
+    console.error("Get option error:", error);
     return createErrorResponse(errorMessage, 500);
   }
 }
@@ -30,7 +36,7 @@ export async function GET(
 // PUT /api/options/[id] - Update option (Admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Authenticate user and require admin
@@ -59,20 +65,20 @@ export async function PUT(
     if (body.vice1 !== undefined) updateData.vice1 = body.vice1;
     if (body.vice2 !== undefined) updateData.vice2 = body.vice2;
 
-    const option = await Option.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    );
+    const option = await Option.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!option) {
-      return createErrorResponse('Option not found', 404);
+      return createErrorResponse("Option not found", 404);
     }
 
     return createSuccessResponse(option);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to update option';
-    console.error('Update option error:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to update option";
+    console.error("Update option error:", error);
     return createErrorResponse(errorMessage, 500);
   }
 }
@@ -80,7 +86,7 @@ export async function PUT(
 // DELETE /api/options/[id] - Delete option (Admin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Authenticate user and require admin
@@ -101,21 +107,22 @@ export async function DELETE(
     const option = await Option.findById(id);
 
     if (!option) {
-      return createErrorResponse('Option not found', 404);
+      return createErrorResponse("Option not found", 404);
     }
 
     // Remove option from activity's options array
     await Activity.updateOne(
       { _id: option.activity_id },
-      { $pull: { options: option._id } }
+      { $pull: { options: option._id } },
     );
 
     await Option.findByIdAndDelete(id);
 
-    return createSuccessResponse({ message: 'Option deleted successfully' });
+    return createSuccessResponse({ message: "Option deleted successfully" });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to delete option';
-    console.error('Delete option error:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to delete option";
+    console.error("Delete option error:", error);
     return createErrorResponse(errorMessage, 500);
   }
 }

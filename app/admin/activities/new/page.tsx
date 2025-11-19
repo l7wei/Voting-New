@@ -1,43 +1,43 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Header from '@/components/Header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Loading } from '@/components/ui/loader';
-import Link from 'next/link';
-import { ArrowLeft, Plus, AlertCircle } from 'lucide-react';
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import Header from "@/components/Header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Loading } from "@/components/ui/loader";
+import Link from "next/link";
+import { ArrowLeft, Plus, AlertCircle } from "lucide-react";
 
 function NewActivityPageContent() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [formData, setFormData] = useState({
-    name: '',
-    type: '',
-    subtitle: '',
-    description: '',
-    rule: 'choose_one' as 'choose_one' | 'choose_all',
-    open_from: '',
-    open_to: '',
+    name: "",
+    type: "",
+    subtitle: "",
+    description: "",
+    rule: "choose_one" as "choose_one" | "choose_all",
+    open_from: "",
+    open_to: "",
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    setError('');
+    setError("");
 
     try {
-      const response = await fetch('/api/activities', {
-        method: 'POST',
+      const response = await fetch("/api/activities", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify(formData),
       });
 
@@ -47,18 +47,20 @@ function NewActivityPageContent() {
         // Redirect to the new activity's management page
         router.push(`/admin/activities/${data.data._id}`);
       } else {
-        setError(data.error || '建立活動失敗');
+        setError(data.error || "建立活動失敗");
       }
     } catch (err) {
-      console.error('Error creating activity:', err);
-      setError('建立活動時發生錯誤');
+      console.error("Error creating activity:", err);
+      setError("建立活動時發生錯誤");
     } finally {
       setLoading(false);
     }
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >,
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -165,10 +167,13 @@ function NewActivityPageContent() {
                   disabled={loading}
                 >
                   <option value="choose_one">單選（選擇一個候選人）</option>
-                  <option value="choose_all">多選評分（對所有候選人表態）</option>
+                  <option value="choose_all">
+                    多選評分（對所有候選人表態）
+                  </option>
                 </select>
                 <p className="text-xs text-muted-foreground">
-                  單選：投票者只能選擇一個選項 | 多選評分：投票者需對每個選項表態（支持/反對/無意見）
+                  單選：投票者只能選擇一個選項 |
+                  多選評分：投票者需對每個選項表態（支持/反對/無意見）
                 </p>
               </div>
 
@@ -217,7 +222,7 @@ function NewActivityPageContent() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => router.push('/admin')}
+                  onClick={() => router.push("/admin")}
                   disabled={loading}
                 >
                   取消

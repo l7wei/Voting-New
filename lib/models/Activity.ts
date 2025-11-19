@@ -1,5 +1,5 @@
-import mongoose, { Schema, Model } from 'mongoose';
-import { IActivity } from '@/types';
+import mongoose, { Schema, Model } from "mongoose";
+import { IActivity } from "@/types";
 
 const ActivitySchema = new Schema<IActivity>({
   name: {
@@ -20,16 +20,20 @@ const ActivitySchema = new Schema<IActivity>({
   },
   rule: {
     type: String,
-    enum: ['choose_all', 'choose_one'],
+    enum: ["choose_all", "choose_one"],
     required: true,
   },
-  users: [{
-    type: String,
-  }],
-  options: [{
-    type: Schema.Types.ObjectId,
-    ref: 'Option',
-  }],
+  users: [
+    {
+      type: String,
+    },
+  ],
+  options: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "Option",
+    },
+  ],
   open_from: {
     type: Date,
     required: true,
@@ -50,4 +54,6 @@ const ActivitySchema = new Schema<IActivity>({
   },
 } as const);
 
-export const Activity: Model<IActivity> = mongoose.models.Activity || mongoose.model<IActivity>('Activity', ActivitySchema);
+export const Activity: Model<IActivity> =
+  mongoose.models.Activity ||
+  mongoose.model<IActivity>("Activity", ActivitySchema);

@@ -1,12 +1,17 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, requireAdmin, createErrorResponse, createSuccessResponse } from '@/lib/middleware';
-import { Vote } from '@/lib/models/Vote';
-import connectDB from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import {
+  requireAuth,
+  requireAdmin,
+  createErrorResponse,
+  createSuccessResponse,
+} from "@/lib/middleware";
+import { Vote } from "@/lib/models/Vote";
+import connectDB from "@/lib/db";
 
 // GET /api/activities/[id]/verification - Get voted UUIDs for verification (Admin only)
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Authenticate user and require admin
@@ -22,12 +27,12 @@ export async function GET(
     }
 
     await connectDB();
-    
+
     const { id } = await params;
 
     // Get all votes for this activity with only the token field
     const votes = await Vote.find({ activity_id: id })
-      .select('token created_at')
+      .select("token created_at")
       .sort({ created_at: -1 })
       .lean();
 
@@ -35,14 +40,17 @@ export async function GET(
     return createSuccessResponse({
       activity_id: id,
       total_votes: votes.length,
-      voted_tokens: votes.map(v => ({
+      voted_tokens: votes.map((v) => ({
         uuid: v.token,
         voted_at: v.created_at,
       })),
     });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to get verification data';
-    console.error('Get verification error:', error);
+    const errorMessage =
+      error instanceof Error
+        ? error.message
+        : "Failed to get verification data";
+    console.error("Get verification error:", error);
     return createErrorResponse(errorMessage, 500);
   }
 }

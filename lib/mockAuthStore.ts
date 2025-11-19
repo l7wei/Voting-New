@@ -16,9 +16,15 @@ class MockAuthStore {
   constructor() {
     // Use globalThis to survive hot reloads in development
     if (!(globalThis as Record<string, unknown>).__mockAuthStore) {
-      (globalThis as Record<string, unknown>).__mockAuthStore = new Map<string, MockAuthData>();
+      (globalThis as Record<string, unknown>).__mockAuthStore = new Map<
+        string,
+        MockAuthData
+      >();
     }
-    this.store = (globalThis as Record<string, unknown>).__mockAuthStore as Map<string, MockAuthData>;
+    this.store = (globalThis as Record<string, unknown>).__mockAuthStore as Map<
+      string,
+      MockAuthData
+    >;
   }
 
   set(key: string, data: MockAuthData) {

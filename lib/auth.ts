@@ -44,7 +44,7 @@ export async function hashPassword(password: string): Promise<string> {
 
 export async function comparePassword(
   password: string,
-  hash: string
+  hash: string,
 ): Promise<boolean> {
   const bcrypt = await import("bcryptjs");
   return bcrypt.compare(password, hash);

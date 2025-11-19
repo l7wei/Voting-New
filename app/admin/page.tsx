@@ -1,13 +1,13 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import Header from '@/components/Header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Loading } from '@/components/ui/loader';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import Header from "@/components/Header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Loading } from "@/components/ui/loader";
 import {
   Table,
   TableBody,
@@ -15,7 +15,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from '@/components/ui/table';
+} from "@/components/ui/table";
 import {
   Plus,
   RefreshCw,
@@ -26,13 +26,13 @@ import {
   BarChart3,
   ClipboardCheck,
   AlertCircle,
-} from 'lucide-react';
+} from "lucide-react";
 
 interface Activity {
   _id: string;
   name: string;
   type: string;
-  rule: 'choose_all' | 'choose_one';
+  rule: "choose_all" | "choose_one";
   open_from: string;
   open_to: string;
   users: string[];
@@ -42,7 +42,7 @@ interface Activity {
 function AdminDashboardContent() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     checkAdminAccess();
@@ -51,35 +51,35 @@ function AdminDashboardContent() {
 
   const checkAdminAccess = async () => {
     try {
-      const response = await fetch('/api/auth/check');
+      const response = await fetch("/api/auth/check");
       const data = await response.json();
-      
+
       if (!data.authenticated || !data.user?.isAdmin) {
         // Not authenticated or not an admin, redirect to home
-        window.location.href = '/?error=admin_required';
+        window.location.href = "/?error=admin_required";
         return;
       }
-      
+
       fetchActivities();
     } catch (err) {
-      console.error('Error checking admin access:', err);
-      window.location.href = '/?error=auth_failed';
+      console.error("Error checking admin access:", err);
+      window.location.href = "/?error=auth_failed";
     }
   };
 
   const fetchActivities = async () => {
     try {
-      const response = await fetch('/api/activities');
+      const response = await fetch("/api/activities");
       const data = await response.json();
 
       if (data.success) {
         setActivities(data.data);
       } else {
-        setError(data.error || '無法載入投票活動');
+        setError(data.error || "無法載入投票活動");
       }
     } catch (err) {
-      console.error('Error fetching activities:', err);
-      setError('載入投票活動時發生錯誤');
+      console.error("Error fetching activities:", err);
+      setError("載入投票活動時發生錯誤");
     } finally {
       setLoading(false);
     }
@@ -109,12 +109,14 @@ function AdminDashboardContent() {
     }
   };
 
-  const activeCount = activities.filter(a => {
+  const activeCount = activities.filter((a) => {
     const now = new Date();
     return now >= new Date(a.open_from) && now <= new Date(a.open_to);
   }).length;
 
-  const completedCount = activities.filter(a => new Date() > new Date(a.open_to)).length;
+  const completedCount = activities.filter(
+    (a) => new Date() > new Date(a.open_to),
+  ).length;
 
   if (loading) {
     return (
@@ -144,7 +146,9 @@ function AdminDashboardContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="mb-1 text-sm font-medium text-muted-foreground">總活動數</p>
+                  <p className="mb-1 text-sm font-medium text-muted-foreground">
+                    總活動數
+                  </p>
                   <p className="text-4xl font-bold">{activities.length}</p>
                 </div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
@@ -158,8 +162,12 @@ function AdminDashboardContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="mb-1 text-sm font-medium text-muted-foreground">進行中</p>
-                  <p className="text-4xl font-bold text-primary">{activeCount}</p>
+                  <p className="mb-1 text-sm font-medium text-muted-foreground">
+                    進行中
+                  </p>
+                  <p className="text-4xl font-bold text-primary">
+                    {activeCount}
+                  </p>
                 </div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                   <CheckCircle className="h-6 w-6 text-primary" />
@@ -172,8 +180,12 @@ function AdminDashboardContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="mb-1 text-sm font-medium text-muted-foreground">已結束</p>
-                  <p className="text-4xl font-bold text-muted-foreground">{completedCount}</p>
+                  <p className="mb-1 text-sm font-medium text-muted-foreground">
+                    已結束
+                  </p>
+                  <p className="text-4xl font-bold text-muted-foreground">
+                    {completedCount}
+                  </p>
                 </div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-muted">
                   <Clock className="h-6 w-6 text-muted-foreground" />
@@ -207,7 +219,11 @@ function AdminDashboardContent() {
                   新增投票活動
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" onClick={() => window.location.reload()}>
+              <Button
+                size="lg"
+                variant="outline"
+                onClick={() => window.location.reload()}
+              >
                 <RefreshCw className="mr-2 h-4 w-4" />
                 重新整理
               </Button>
@@ -227,7 +243,9 @@ function AdminDashboardContent() {
                 <div className="mx-auto mb-4 inline-flex h-20 w-20 items-center justify-center rounded-full bg-muted">
                   <ClipboardList className="h-10 w-10 text-muted-foreground" />
                 </div>
-                <p className="mb-6 text-lg text-muted-foreground">目前沒有任何投票活動</p>
+                <p className="mb-6 text-lg text-muted-foreground">
+                  目前沒有任何投票活動
+                </p>
                 <Button asChild>
                   <Link href="/admin/activities/new">
                     <Plus className="mr-2 h-4 w-4" />
@@ -253,12 +271,14 @@ function AdminDashboardContent() {
                       <TableCell>
                         <div>
                           <div className="font-semibold">{activity.name}</div>
-                          <div className="text-xs text-muted-foreground">{activity.type}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {activity.type}
+                          </div>
                         </div>
                       </TableCell>
                       <TableCell>{getStatusBadge(activity)}</TableCell>
                       <TableCell className="text-sm">
-                        {activity.rule === 'choose_all' ? '多選評分' : '單選'}
+                        {activity.rule === "choose_all" ? "多選評分" : "單選"}
                       </TableCell>
                       <TableCell>{activity.options?.length || 0}</TableCell>
                       <TableCell>{activity.users?.length || 0}</TableCell>
@@ -271,13 +291,17 @@ function AdminDashboardContent() {
                             </Link>
                           </Button>
                           <Button size="sm" variant="outline" asChild>
-                            <Link href={`/admin/activities/${activity._id}/results`}>
+                            <Link
+                              href={`/admin/activities/${activity._id}/results`}
+                            >
                               <BarChart3 className="mr-1 h-3 w-3" />
                               統計
                             </Link>
                           </Button>
                           <Button size="sm" variant="outline" asChild>
-                            <Link href={`/admin/activities/${activity._id}/verification`}>
+                            <Link
+                              href={`/admin/activities/${activity._id}/verification`}
+                            >
                               <ClipboardCheck className="mr-1 h-3 w-3" />
                               驗票
                             </Link>

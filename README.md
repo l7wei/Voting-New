@@ -15,24 +15,28 @@ Modern anonymous voting system for National Tsing Hua University Student Associa
 ## Core Features
 
 ### Anonymous Voting
+
 - UUID-based vote tokens ensure complete anonymity
 - Vote records are cryptographically separated from voter identity
 - System only tracks whether a student voted, not their choices
 - Even with full database access, votes cannot be traced to individuals
 
 ### Authentication
+
 - OAuth integration with CCXP (production)
 - Mock OAuth with customizable test data (development)
 - JWT session management
 - Admin role-based access control
 
 ### Voting Methods
+
 - **choose_all**: Rate each option (support/oppose/neutral)
 - **choose_one**: Single choice selection
 
 ## Quick Start
 
 ### Prerequisites
+
 - Node.js 18+
 - MongoDB 6+
 - npm 9+
@@ -96,6 +100,7 @@ OAUTH_CALLBACK_URL=https://your-domain.com/api/auth/callback
 ### Anonymity Model
 
 **Vote Record (votes collection)**
+
 ```typescript
 {
   activity_id: ObjectId,
@@ -111,6 +116,7 @@ OAUTH_CALLBACK_URL=https://your-domain.com/api/auth/callback
 ```
 
 **Activity Record (activities collection)**
+
 ```typescript
 {
   name: string,
@@ -132,6 +138,7 @@ OAUTH_CALLBACK_URL=https://your-domain.com/api/auth/callback
 5. Callback → Exchanges code for token → Retrieves user info → Generates JWT → Sets cookie → Redirects to `/vote`
 
 **JWT Payload (minimal)**
+
 ```typescript
 {
   _id: string,        // Student ID
@@ -160,6 +167,7 @@ OAUTH_CALLBACK_URL=https://your-domain.com/api/auth/callback
 ### Admin Management
 
 Admins are defined in `config/admins.json` (file-based, not database):
+
 ```json
 {
   "admins": ["108060001", "110000114"]
@@ -167,6 +175,7 @@ Admins are defined in `config/admins.json` (file-based, not database):
 ```
 
 **Admin privileges** (server-side validation via `lib/adminConfig.ts`):
+
 - Create/modify/delete activities
 - Add/remove options
 - View anonymized vote statistics
@@ -175,12 +184,14 @@ Admins are defined in `config/admins.json` (file-based, not database):
 ## API Reference
 
 ### Authentication
+
 - `GET /api/auth/login` - Initiate OAuth flow
 - `GET /api/auth/callback` - OAuth callback handler
 - `GET /api/auth/check` - Check authentication status
 - `GET /api/auth/logout` - Logout and clear session
 
 ### Activities
+
 - `GET /api/activities` - List activities (public)
 - `GET /api/activities/:id` - Get activity details
 - `POST /api/activities` - Create activity (admin)
@@ -188,13 +199,16 @@ Admins are defined in `config/admins.json` (file-based, not database):
 - `DELETE /api/activities/:id` - Delete activity (admin)
 
 ### Voting
+
 - `POST /api/votes` - Submit vote (authenticated, eligible)
 - `GET /api/votes` - List votes (admin, anonymized)
 
 ### Statistics
+
 - `GET /api/stats?activity_id=:id` - Get activity statistics (admin)
 
 ### Mock OAuth (Development)
+
 - `GET /api/mock/auth` - Mock OAuth authorization page
 - `POST /api/mock/token` - Mock token endpoint
 - `POST /api/mock/resource` - Mock resource endpoint
@@ -202,6 +216,7 @@ Admins are defined in `config/admins.json` (file-based, not database):
 ## Development
 
 ### Project Structure
+
 ```
 ├── app/
 │   ├── api/          # API routes
@@ -230,6 +245,7 @@ Admins are defined in `config/admins.json` (file-based, not database):
 ```
 
 ### Testing
+
 ```bash
 # Run tests
 npm test
@@ -259,6 +275,7 @@ In development, the system uses Mock OAuth by default. Users can input custom te
 ## Security
 
 ### Implemented Safeguards
+
 - ✅ JWT token authentication
 - ✅ UUID-based vote anonymization
 - ✅ Admin role verification
@@ -269,6 +286,7 @@ In development, the system uses Mock OAuth by default. Users can input custom te
 - ✅ HTTPS enforced in production
 
 ### Privacy Guarantees
+
 - No user database (users not persisted)
 - OAuth data used only for authentication (not stored)
 - Vote records contain no voter identification
@@ -294,21 +312,25 @@ In development, the system uses Mock OAuth by default. Users can input custom te
 ### Common Issues
 
 **Login infinite loop**
+
 - Ensure OAuth URLs are correctly configured
 - Check that `OAUTH_CALLBACK_URL` matches registered redirect URI
 - Verify middleware isn't blocking auth endpoints
 
 **Database connection failed**
+
 - Verify MongoDB is running: `docker-compose ps`
 - Check credentials in `.env`
 - Ensure MongoDB port (27017) isn't blocked
 
 **Vote submission fails**
+
 - Verify student is in `voterList.csv`
 - Check activity time window is valid
 - Confirm student hasn't already voted
 
 **Mock OAuth not showing custom data**
+
 - This is a known issue in development due to cookie propagation
 - Data IS being stored correctly
 - Will be fixed in next release

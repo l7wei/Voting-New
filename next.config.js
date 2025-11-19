@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  output: 'standalone',
+  output: "standalone",
   env: {
     MONGO_HOST: process.env.MONGO_HOST,
     MONGO_USERNAME: process.env.MONGO_USERNAME,
@@ -14,4 +14,3 @@ const nextConfig = {
 };
 
 module.exports = nextConfig;
-

@@ -17,7 +17,7 @@ export async function POST(request: NextRequest) {
           "[Mock Token] Found custom mock data for code:",
           code,
           "data:",
-          mockData
+          mockData,
         );
         // Delete the code after use (one-time use)
         mockAuthStore.delete(code);
@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
         console.log(
           "[Mock Token] No data found for code:",
           code,
-          "using fallback"
+          "using fallback",
         );
       }
     }

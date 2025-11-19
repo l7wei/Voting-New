@@ -1,37 +1,43 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, requireAdmin, createErrorResponse, createSuccessResponse } from '@/lib/middleware';
-import { Activity } from '@/lib/models/Activity';
-import { Option } from '@/lib/models/Option';
-import connectDB from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import {
+  requireAuth,
+  requireAdmin,
+  createErrorResponse,
+  createSuccessResponse,
+} from "@/lib/middleware";
+import { Activity } from "@/lib/models/Activity";
+import { Option } from "@/lib/models/Option";
+import connectDB from "@/lib/db";
 
 // GET /api/activities/[id] - Get single activity
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     await connectDB();
 
     const { id } = await params;
     const searchParams = request.nextUrl.searchParams;
-    const includeOptions = searchParams.get('include_options') === 'true';
+    const includeOptions = searchParams.get("include_options") === "true";
 
     let query = Activity.findById(id);
-    
+
     if (includeOptions) {
-      query = query.populate('options');
+      query = query.populate("options");
     }
 
     const activity = await query.exec();
 
     if (!activity) {
-      return createErrorResponse('Activity not found', 404);
+      return createErrorResponse("Activity not found", 404);
     }
 
     return createSuccessResponse(activity);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to get activity';
-    console.error('Get activity error:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to get activity";
+    console.error("Get activity error:", error);
     return createErrorResponse(errorMessage, 500);
   }
 }
@@ -39,7 +45,7 @@ export async function GET(
 // PUT /api/activities/[id] - Update activity (Admin only)
 export async function PUT(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Authenticate user and require admin
@@ -58,10 +64,11 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { name, type, subtitle, description, rule, open_from, open_to } = body;
+    const { name, type, subtitle, description, rule, open_from, open_to } =
+      body;
 
     // Validate rule if provided
-    if (rule && !['choose_all', 'choose_one'].includes(rule)) {
+    if (rule && !["choose_all", "choose_one"].includes(rule)) {
       return createErrorResponse(`Invalid rule: ${rule}`);
     }
 
@@ -71,11 +78,11 @@ export async function PUT(
       const openTo = new Date(open_to);
 
       if (isNaN(openFrom.getTime()) || isNaN(openTo.getTime())) {
-        return createErrorResponse('Invalid date format');
+        return createErrorResponse("Invalid date format");
       }
 
       if (openFrom >= openTo) {
-        return createErrorResponse('open_from must be before open_to');
+        return createErrorResponse("open_from must be before open_to");
       }
     }
 
@@ -91,20 +98,20 @@ export async function PUT(
     if (open_from) updateData.open_from = new Date(open_from);
     if (open_to) updateData.open_to = new Date(open_to);
 
-    const activity = await Activity.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    );
+    const activity = await Activity.findByIdAndUpdate(id, updateData, {
+      new: true,
+      runValidators: true,
+    });
 
     if (!activity) {
-      return createErrorResponse('Activity not found', 404);
+      return createErrorResponse("Activity not found", 404);
     }
 
     return createSuccessResponse(activity);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to update activity';
-    console.error('Update activity error:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to update activity";
+    console.error("Update activity error:", error);
     return createErrorResponse(errorMessage, 500);
   }
 }
@@ -112,7 +119,7 @@ export async function PUT(
 // DELETE /api/activities/[id] - Delete activity (Admin only)
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ id: string }> },
 ) {
   try {
     // Authenticate user and require admin
@@ -137,13 +144,14 @@ export async function DELETE(
     const activity = await Activity.findByIdAndDelete(id);
 
     if (!activity) {
-      return createErrorResponse('Activity not found', 404);
+      return createErrorResponse("Activity not found", 404);
     }
 
-    return createSuccessResponse({ message: 'Activity deleted successfully' });
+    return createSuccessResponse({ message: "Activity deleted successfully" });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to delete activity';
-    console.error('Delete activity error:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to delete activity";
+    console.error("Delete activity error:", error);
     return createErrorResponse(errorMessage, 500);
   }
 }

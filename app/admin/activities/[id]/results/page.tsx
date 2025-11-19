@@ -1,14 +1,14 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import Header from '@/components/Header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Loading } from '@/components/ui/loader';
-import { Separator } from '@/components/ui/separator';
-import Link from 'next/link';
-import { ArrowLeft, TrendingUp, Users, Award, AlertCircle } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Header from "@/components/Header";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Loading } from "@/components/ui/loader";
+import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import { ArrowLeft, TrendingUp, Users, Award, AlertCircle } from "lucide-react";
 
 interface ActivityStats {
   activity: {
@@ -37,10 +37,10 @@ interface ActivityStats {
 function ResultsPageContent() {
   const params = useParams();
   const activityId = params.id as string;
-  
+
   const [stats, setStats] = useState<ActivityStats | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchStats();
@@ -49,18 +49,18 @@ function ResultsPageContent() {
   const fetchStats = async () => {
     try {
       const response = await fetch(`/api/stats?activity_id=${activityId}`, {
-        credentials: 'include',
+        credentials: "include",
       });
       const data = await response.json();
 
       if (data.success) {
         setStats(data.data);
       } else {
-        setError(data.error || '無法載入統計資料');
+        setError(data.error || "無法載入統計資料");
       }
     } catch (err) {
-      console.error('Error fetching stats:', err);
-      setError('載入統計資料時發生錯誤');
+      console.error("Error fetching stats:", err);
+      setError("載入統計資料時發生錯誤");
     } finally {
       setLoading(false);
     }
@@ -85,7 +85,7 @@ function ResultsPageContent() {
           <Card className="border-destructive bg-destructive/10">
             <CardContent className="flex items-center gap-2 py-8">
               <AlertCircle className="h-5 w-5 text-destructive" />
-              <p className="text-destructive">{error || '無法載入統計資料'}</p>
+              <p className="text-destructive">{error || "無法載入統計資料"}</p>
             </CardContent>
           </Card>
         </main>
@@ -94,14 +94,17 @@ function ResultsPageContent() {
   }
 
   // Calculate winner for choose_one
-  const winner = stats.activity.rule === 'choose_one' 
-    ? stats.statistics.optionStats.reduce((prev, current) => 
-        (current.support > prev.support) ? current : prev
-      )
-    : null;
+  const winner =
+    stats.activity.rule === "choose_one"
+      ? stats.statistics.optionStats.reduce((prev, current) =>
+          current.support > prev.support ? current : prev,
+        )
+      : null;
 
   // Sort options by support votes
-  const sortedOptions = [...stats.statistics.optionStats].sort((a, b) => b.support - a.support);
+  const sortedOptions = [...stats.statistics.optionStats].sort(
+    (a, b) => b.support - a.support,
+  );
 
   return (
     <div className="min-h-screen bg-background">
@@ -120,7 +123,9 @@ function ResultsPageContent() {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>{stats.activity.name}</CardTitle>
-            <p className="text-sm text-muted-foreground">{stats.activity.type}</p>
+            <p className="text-sm text-muted-foreground">
+              {stats.activity.type}
+            </p>
           </CardHeader>
           <Separator />
           <CardContent className="pt-6">
@@ -128,14 +133,14 @@ function ResultsPageContent() {
               <div>
                 <span className="text-muted-foreground">投票方式：</span>
                 <span className="font-semibold">
-                  {stats.activity.rule === 'choose_one' ? '單選' : '多選評分'}
+                  {stats.activity.rule === "choose_one" ? "單選" : "多選評分"}
                 </span>
               </div>
               <div>
                 <span className="text-muted-foreground">活動期間：</span>
                 <span className="font-semibold">
-                  {new Date(stats.activity.open_from).toLocaleString('zh-TW')} 至{' '}
-                  {new Date(stats.activity.open_to).toLocaleString('zh-TW')}
+                  {new Date(stats.activity.open_from).toLocaleString("zh-TW")}{" "}
+                  至 {new Date(stats.activity.open_to).toLocaleString("zh-TW")}
                 </span>
               </div>
             </div>
@@ -148,8 +153,12 @@ function ResultsPageContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="mb-1 text-sm font-medium text-muted-foreground">總投票數</p>
-                  <p className="text-4xl font-bold">{stats.statistics.totalVotes}</p>
+                  <p className="mb-1 text-sm font-medium text-muted-foreground">
+                    總投票數
+                  </p>
+                  <p className="text-4xl font-bold">
+                    {stats.statistics.totalVotes}
+                  </p>
                 </div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10">
                   <TrendingUp className="h-6 w-6 text-primary" />
@@ -162,8 +171,12 @@ function ResultsPageContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="mb-1 text-sm font-medium text-muted-foreground">合格選民數</p>
-                  <p className="text-4xl font-bold">{stats.statistics.totalEligibleVoters}</p>
+                  <p className="mb-1 text-sm font-medium text-muted-foreground">
+                    合格選民數
+                  </p>
+                  <p className="text-4xl font-bold">
+                    {stats.statistics.totalEligibleVoters}
+                  </p>
                 </div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-blue-100">
                   <Users className="h-6 w-6 text-blue-600" />
@@ -176,8 +189,12 @@ function ResultsPageContent() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="mb-1 text-sm font-medium text-muted-foreground">投票率</p>
-                  <p className="text-4xl font-bold text-green-600">{stats.statistics.turnoutRate}%</p>
+                  <p className="mb-1 text-sm font-medium text-muted-foreground">
+                    投票率
+                  </p>
+                  <p className="text-4xl font-bold text-green-600">
+                    {stats.statistics.turnoutRate}%
+                  </p>
                 </div>
                 <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-green-100">
                   <Award className="h-6 w-6 text-green-600" />
@@ -188,7 +205,7 @@ function ResultsPageContent() {
         </div>
 
         {/* Winner Announcement (for choose_one) */}
-        {stats.activity.rule === 'choose_one' && winner && (
+        {stats.activity.rule === "choose_one" && winner && (
           <Card className="mb-8 border-primary bg-primary/5">
             <CardHeader>
               <div className="flex items-center gap-2">
@@ -200,11 +217,17 @@ function ResultsPageContent() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-2xl font-bold">{winner.name}</p>
-                  <p className="text-muted-foreground">獲得 {winner.support} 票</p>
+                  <p className="text-muted-foreground">
+                    獲得 {winner.support} 票
+                  </p>
                 </div>
                 <div className="text-right">
                   <p className="text-3xl font-bold text-primary">
-                    {((winner.support / stats.statistics.totalVotes) * 100).toFixed(1)}%
+                    {(
+                      (winner.support / stats.statistics.totalVotes) *
+                      100
+                    ).toFixed(1)}
+                    %
                   </p>
                   <p className="text-sm text-muted-foreground">得票率</p>
                 </div>
@@ -236,7 +259,7 @@ function ResultsPageContent() {
                         </span>
                         <div>
                           <p className="font-semibold">{option.name}</p>
-                          {stats.activity.rule === 'choose_all' && (
+                          {stats.activity.rule === "choose_all" && (
                             <p className="text-sm text-muted-foreground">
                               總表態數: {option.total}
                             </p>
@@ -244,17 +267,21 @@ function ResultsPageContent() {
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl font-bold text-green-600">{option.support}</p>
+                        <p className="text-2xl font-bold text-green-600">
+                          {option.support}
+                        </p>
                         <p className="text-xs text-muted-foreground">支持票</p>
                       </div>
                     </div>
 
                     {/* Progress bars */}
-                    {stats.activity.rule === 'choose_one' ? (
+                    {stats.activity.rule === "choose_one" ? (
                       <div className="space-y-1">
                         <div className="flex items-center justify-between text-sm">
                           <span>支持</span>
-                          <span className="font-semibold">{supportPercent.toFixed(1)}%</span>
+                          <span className="font-semibold">
+                            {supportPercent.toFixed(1)}%
+                          </span>
                         </div>
                         <div className="h-3 w-full overflow-hidden rounded-full bg-muted">
                           <div
@@ -268,7 +295,9 @@ function ResultsPageContent() {
                         <div>
                           <div className="mb-1 flex items-center justify-between text-sm">
                             <span className="text-green-600">支持</span>
-                            <span className="font-semibold">{option.support} ({supportPercent.toFixed(1)}%)</span>
+                            <span className="font-semibold">
+                              {option.support} ({supportPercent.toFixed(1)}%)
+                            </span>
                           </div>
                           <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                             <div
@@ -281,7 +310,9 @@ function ResultsPageContent() {
                         <div>
                           <div className="mb-1 flex items-center justify-between text-sm">
                             <span className="text-red-600">反對</span>
-                            <span className="font-semibold">{option.oppose} ({opposePercent.toFixed(1)}%)</span>
+                            <span className="font-semibold">
+                              {option.oppose} ({opposePercent.toFixed(1)}%)
+                            </span>
                           </div>
                           <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                             <div
@@ -294,7 +325,9 @@ function ResultsPageContent() {
                         <div>
                           <div className="mb-1 flex items-center justify-between text-sm">
                             <span className="text-gray-600">無意見</span>
-                            <span className="font-semibold">{option.neutral} ({neutralPercent.toFixed(1)}%)</span>
+                            <span className="font-semibold">
+                              {option.neutral} ({neutralPercent.toFixed(1)}%)
+                            </span>
                           </div>
                           <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
                             <div
@@ -306,7 +339,9 @@ function ResultsPageContent() {
                       </div>
                     )}
 
-                    {index < sortedOptions.length - 1 && <Separator className="mt-4" />}
+                    {index < sortedOptions.length - 1 && (
+                      <Separator className="mt-4" />
+                    )}
                   </div>
                 );
               })}

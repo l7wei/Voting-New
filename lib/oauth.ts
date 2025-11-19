@@ -10,7 +10,7 @@ if (
   !process.env.OAUTH_SCOPE
 ) {
   throw new Error(
-    "One or more OAuth environment variables are required but not set"
+    "One or more OAuth environment variables are required but not set",
   );
 }
 
@@ -55,7 +55,7 @@ export function getAuthorizationURL(redirect?: string): string {
 }
 
 export async function exchangeCodeForToken(
-  code: string
+  code: string,
 ): Promise<OAuthTokenResponse> {
   try {
     const response = await axios.post(OAUTH_TOKEN_URL, {
@@ -84,7 +84,7 @@ export async function getUserInfo(accessToken: string): Promise<OAuthUserInfo> {
       {},
       {
         headers: { Authorization: `Bearer ${accessToken}` },
-      }
+      },
     );
 
     return response.data;

@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
-import './globals.css';
+import type { Metadata } from "next";
+import "./globals.css";
 
 export const metadata: Metadata = {
-  title: '清大投票系統',
-  description: 'National Tsing Hua University Voting System',
+  title: "清大投票系統",
+  description: "National Tsing Hua University Voting System",
 };
 
 export default function RootLayout({
@@ -13,9 +13,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="zh-TW">
-      <body>
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

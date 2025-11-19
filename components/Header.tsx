@@ -1,9 +1,9 @@
-'use client';
+"use client";
 
-import Link from 'next/link';
-import { useEffect, useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -11,8 +11,8 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { User, Shield, LogOut, Vote, ClipboardCheck } from 'lucide-react';
+} from "@/components/ui/dropdown-menu";
+import { User, Shield, LogOut, Vote, ClipboardCheck } from "lucide-react";
 
 interface UserData {
   student_id: string;
@@ -30,10 +30,10 @@ export default function Header() {
 
   const fetchUserData = async () => {
     try {
-      const response = await fetch('/api/auth/check', {
-        credentials: 'include',
+      const response = await fetch("/api/auth/check", {
+        credentials: "include",
       });
-      
+
       if (response.ok) {
         const data = await response.json();
         if (data.authenticated && data.user) {
@@ -41,7 +41,7 @@ export default function Header() {
         }
       }
     } catch (error) {
-      console.error('Failed to fetch user data:', error);
+      console.error("Failed to fetch user data:", error);
     } finally {
       setLoading(false);
     }
@@ -49,13 +49,13 @@ export default function Header() {
 
   const handleLogout = async () => {
     try {
-      await fetch('/api/auth/logout', {
-        method: 'GET',
-        credentials: 'include',
+      await fetch("/api/auth/logout", {
+        method: "GET",
+        credentials: "include",
       });
-      window.location.href = '/';
+      window.location.href = "/";
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error("Logout error:", error);
     }
   };
 
@@ -84,7 +84,13 @@ export default function Header() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="gap-2">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback className={user.isAdmin ? "bg-primary text-primary-foreground" : "bg-muted"}>
+                      <AvatarFallback
+                        className={
+                          user.isAdmin
+                            ? "bg-primary text-primary-foreground"
+                            : "bg-muted"
+                        }
+                      >
                         <User className="h-4 w-4" />
                       </AvatarFallback>
                     </Avatar>
@@ -94,7 +100,9 @@ export default function Header() {
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
-                      <p className="text-sm font-medium leading-none">{user.name}</p>
+                      <p className="text-sm font-medium leading-none">
+                        {user.name}
+                      </p>
                       <p className="text-xs leading-none text-muted-foreground">
                         {user.student_id}
                       </p>
@@ -125,7 +133,10 @@ export default function Header() {
                     </>
                   )}
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
+                  <DropdownMenuItem
+                    onClick={handleLogout}
+                    className="text-destructive focus:text-destructive"
+                  >
                     <LogOut className="mr-2 h-4 w-4" />
                     登出
                   </DropdownMenuItem>

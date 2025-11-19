@@ -1,8 +1,13 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, requireAdmin, createErrorResponse, createSuccessResponse } from '@/lib/middleware';
-import { Activity } from '@/lib/models/Activity';
-import { Option } from '@/lib/models/Option';
-import connectDB from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import {
+  requireAuth,
+  requireAdmin,
+  createErrorResponse,
+  createSuccessResponse,
+} from "@/lib/middleware";
+import { Activity } from "@/lib/models/Activity";
+import { Option } from "@/lib/models/Option";
+import connectDB from "@/lib/db";
 
 // GET /api/options - List options for an activity
 export async function GET(request: NextRequest) {
@@ -10,18 +15,19 @@ export async function GET(request: NextRequest) {
     await connectDB();
 
     const searchParams = request.nextUrl.searchParams;
-    const activity_id = searchParams.get('activity_id');
+    const activity_id = searchParams.get("activity_id");
 
     if (!activity_id) {
-      return createErrorResponse('activity_id is required');
+      return createErrorResponse("activity_id is required");
     }
 
     const options = await Option.find({ activity_id }).sort({ created_at: 1 });
 
     return createSuccessResponse(options);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to get options';
-    console.error('Get options error:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to get options";
+    console.error("Get options error:", error);
     return createErrorResponse(errorMessage, 500);
   }
 }
@@ -48,13 +54,13 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!activity_id || !type) {
-      return createErrorResponse('Missing required fields');
+      return createErrorResponse("Missing required fields");
     }
 
     // Check if activity exists
     const activity = await Activity.findById(activity_id);
     if (!activity) {
-      return createErrorResponse('Activity not found', 404);
+      return createErrorResponse("Activity not found", 404);
     }
 
     const option = await Option.create({
@@ -70,13 +76,14 @@ export async function POST(request: NextRequest) {
     // Add option to activity's options array
     await Activity.updateOne(
       { _id: activity_id },
-      { $addToSet: { options: option._id } }
+      { $addToSet: { options: option._id } },
     );
 
     return createSuccessResponse(option, 201);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create option';
-    console.error('Create option error:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to create option";
+    console.error("Create option error:", error);
     return createErrorResponse(errorMessage, 500);
   }
 }

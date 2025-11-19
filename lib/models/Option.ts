@@ -1,36 +1,43 @@
-import mongoose, { Schema, Model } from 'mongoose';
-import { IOption, ICandidate } from '@/types';
+import mongoose, { Schema, Model } from "mongoose";
+import { IOption, ICandidate } from "@/types";
 
-const CandidateSchema = new Schema<ICandidate>({
-  name: {
-    type: String,
-    required: true,
+const CandidateSchema = new Schema<ICandidate>(
+  {
+    name: {
+      type: String,
+      required: true,
+    },
+    department: {
+      type: String,
+      required: true,
+    },
+    college: {
+      type: String,
+      required: true,
+    },
+    avatar_url: {
+      type: String,
+      required: false,
+    },
+    personal_experiences: [
+      {
+        type: String,
+      },
+    ],
+    political_opinions: [
+      {
+        type: String,
+      },
+    ],
   },
-  department: {
-    type: String,
-    required: true,
-  },
-  college: {
-    type: String,
-    required: true,
-  },
-  avatar_url: {
-    type: String,
-    required: false,
-  },
-  personal_experiences: [{
-    type: String,
-  }],
-  political_opinions: [{
-    type: String,
-  }],
-}, { _id: false });
+  { _id: false },
+);
 
 const OptionSchema = new Schema<IOption>({
   activity_id: {
     type: Schema.Types.ObjectId,
     required: true,
-    ref: 'Activity',
+    ref: "Activity",
   },
   type: {
     type: String,
@@ -60,4 +67,5 @@ const OptionSchema = new Schema<IOption>({
   },
 } as const);
 
-export const Option: Model<IOption> = mongoose.models.Option || mongoose.model<IOption>('Option', OptionSchema);
+export const Option: Model<IOption> =
+  mongoose.models.Option || mongoose.model<IOption>("Option", OptionSchema);

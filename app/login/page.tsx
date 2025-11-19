@@ -1,17 +1,19 @@
-'use client';
+"use client";
 
-import { Suspense, useEffect } from 'react';
-import { useSearchParams } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loading } from '@/components/ui/loader';
+import { Suspense, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Loading } from "@/components/ui/loader";
 
 function LoginContent() {
   const searchParams = useSearchParams();
-  const redirect = searchParams.get('redirect');
+  const redirect = searchParams.get("redirect");
 
   useEffect(() => {
     // Auto-redirect to OAuth login
-    window.location.href = '/api/auth/login' + (redirect ? `?redirect=${encodeURIComponent(redirect)}` : '');
+    window.location.href =
+      "/api/auth/login" +
+      (redirect ? `?redirect=${encodeURIComponent(redirect)}` : "");
   }, [redirect]);
 
   return (

@@ -1,19 +1,26 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import Link from 'next/link';
-import Header from '@/components/Header';
-import Footer from '@/components/Footer';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Lock, UserCheck, Zap, ArrowRight, CheckCircle2, Vote } from 'lucide-react';
+import { useEffect, useState } from "react";
+import Link from "next/link";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import {
+  Lock,
+  UserCheck,
+  Zap,
+  ArrowRight,
+  CheckCircle2,
+  Vote,
+} from "lucide-react";
 
 interface Activity {
   _id: string;
   name: string;
   type: string;
-  rule: 'choose_all' | 'choose_one';
+  rule: "choose_all" | "choose_one";
   open_from: string;
   open_to: string;
   users: string[];
@@ -29,7 +36,7 @@ export default function HomePage() {
 
   const fetchActivities = async () => {
     try {
-      const response = await fetch('/api/activities');
+      const response = await fetch("/api/activities");
       const data = await response.json();
 
       if (data.success) {
@@ -42,7 +49,7 @@ export default function HomePage() {
         setActivities(activeActivities);
       }
     } catch (err) {
-      console.error('Error fetching activities:', err);
+      console.error("Error fetching activities:", err);
     } finally {
       setLoading(false);
     }
@@ -51,7 +58,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="container mx-auto max-w-7xl px-6 py-12">
         {/* Hero Section */}
         <div className="mb-16 space-y-6 text-center">
@@ -66,7 +73,7 @@ export default function HomePage() {
           <p className="mx-auto max-w-2xl text-xl text-muted-foreground">
             National Tsing Hua University Voting System
           </p>
-          
+
           <div className="flex flex-col items-center justify-center gap-4 pt-4 sm:flex-row">
             <Button size="lg" asChild>
               <Link href="/vote">
@@ -75,7 +82,10 @@ export default function HomePage() {
               </Link>
             </Button>
             {!loading && activities.length > 0 && (
-              <Badge variant="success" className="flex items-center gap-2 px-4 py-2 text-sm">
+              <Badge
+                variant="success"
+                className="flex items-center gap-2 px-4 py-2 text-sm"
+              >
                 <CheckCircle2 className="h-4 w-4" />
                 {activities.length} 個投票活動進行中
               </Badge>
@@ -142,10 +152,10 @@ export default function HomePage() {
           <CardContent className="pb-8">
             <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
               {[
-                { num: '1', title: '登入系統', desc: '使用學號登入' },
-                { num: '2', title: '選擇活動', desc: '選擇投票活動' },
-                { num: '3', title: '進行投票', desc: '投下您的一票' },
-                { num: '4', title: '完成投票', desc: '取得投票憑證' },
+                { num: "1", title: "登入系統", desc: "使用學號登入" },
+                { num: "2", title: "選擇活動", desc: "選擇投票活動" },
+                { num: "3", title: "進行投票", desc: "投下您的一票" },
+                { num: "4", title: "完成投票", desc: "取得投票憑證" },
               ].map((step) => (
                 <div key={step.num} className="text-center">
                   <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary text-2xl font-bold text-primary-foreground shadow-sm">

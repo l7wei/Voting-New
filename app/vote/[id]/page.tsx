@@ -1,14 +1,21 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Loading } from '@/components/ui/loader';
-import { CheckCircle2, Tag, Briefcase, FileText, ArrowLeft, AlertCircle } from 'lucide-react';
-import { cn } from '@/lib/utils';
+import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Loading } from "@/components/ui/loader";
+import {
+  CheckCircle2,
+  Tag,
+  Briefcase,
+  FileText,
+  ArrowLeft,
+  AlertCircle,
+} from "lucide-react";
+import { cn } from "@/lib/utils";
 
 interface Candidate {
   name: string;
@@ -33,7 +40,7 @@ interface Activity {
   type: string;
   subtitle?: string;
   description?: string;
-  rule: 'choose_all' | 'choose_one';
+  rule: "choose_all" | "choose_one";
   open_from: string;
   open_to: string;
   options: Option[];
@@ -46,16 +53,18 @@ export default function VotingPage() {
 
   const [activity, setActivity] = useState<Activity | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [voteToken, setVoteToken] = useState<string>('');
+  const [voteToken, setVoteToken] = useState<string>("");
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [allActivities, setAllActivities] = useState<Activity[]>([]);
   const [votedActivityIds, setVotedActivityIds] = useState<string[]>([]);
 
   // Vote state
-  const [chooseAllVotes, setChooseAllVotes] = useState<Record<string, string>>({});
-  const [chooseOneVote, setChooseOneVote] = useState<string>('');
+  const [chooseAllVotes, setChooseAllVotes] = useState<Record<string, string>>(
+    {},
+  );
+  const [chooseOneVote, setChooseOneVote] = useState<string>("");
 
   useEffect(() => {
     fetchActivity();
@@ -65,26 +74,32 @@ export default function VotingPage() {
 
   const loadVotingHistory = () => {
     try {
-      const history = localStorage.getItem('voting_history');
+      const history = localStorage.getItem("voting_history");
       if (history) {
         const parsed = JSON.parse(history);
         setVotedActivityIds(parsed.votedActivityIds || []);
       }
     } catch (err) {
-      console.error('Error loading voting history:', err);
+      console.error("Error loading voting history:", err);
     }
   };
 
-  const saveVotingRecord = (activityId: string, token: string, activityName: string) => {
+  const saveVotingRecord = (
+    activityId: string,
+    token: string,
+    activityName: string,
+  ) => {
     try {
-      const history = localStorage.getItem('voting_history');
-      const parsed = history ? JSON.parse(history) : { votedActivityIds: [], votes: [] };
-      
+      const history = localStorage.getItem("voting_history");
+      const parsed = history
+        ? JSON.parse(history)
+        : { votedActivityIds: [], votes: [] };
+
       // Add activity ID if not already present
       if (!parsed.votedActivityIds.includes(activityId)) {
         parsed.votedActivityIds.push(activityId);
       }
-      
+
       // Add vote record
       parsed.votes.push({
         activityId,
@@ -92,17 +107,17 @@ export default function VotingPage() {
         token,
         timestamp: new Date().toISOString(),
       });
-      
-      localStorage.setItem('voting_history', JSON.stringify(parsed));
+
+      localStorage.setItem("voting_history", JSON.stringify(parsed));
       setVotedActivityIds(parsed.votedActivityIds);
     } catch (err) {
-      console.error('Error saving voting record:', err);
+      console.error("Error saving voting record:", err);
     }
   };
 
   const fetchAllActivities = async () => {
     try {
-      const response = await fetch('/api/activities');
+      const response = await fetch("/api/activities");
       const data = await response.json();
 
       if (data.success) {
@@ -116,39 +131,41 @@ export default function VotingPage() {
         setAllActivities(activeActivities);
       }
     } catch (err) {
-      console.error('Error fetching activities:', err);
+      console.error("Error fetching activities:", err);
     }
   };
 
   const fetchActivity = async () => {
     try {
-      const response = await fetch(`/api/activities/${activityId}?include_options=true`);
+      const response = await fetch(
+        `/api/activities/${activityId}?include_options=true`,
+      );
       const data = await response.json();
 
       if (data.success) {
         setActivity(data.data);
-        
+
         // Initialize vote state for choose_all
-        if (data.data.rule === 'choose_all') {
+        if (data.data.rule === "choose_all") {
           const initialVotes: Record<string, string> = {};
           data.data.options.forEach((option: Option) => {
-            initialVotes[option._id] = '我沒有意見';
+            initialVotes[option._id] = "我沒有意見";
           });
           setChooseAllVotes(initialVotes);
         }
       } else {
-        setError(data.error || '無法載入投票活動');
+        setError(data.error || "無法載入投票活動");
       }
     } catch (err) {
-      console.error('Error fetching activity:', err);
-      setError('載入投票活動時發生錯誤');
+      console.error("Error fetching activity:", err);
+      setError("載入投票活動時發生錯誤");
     } finally {
       setLoading(false);
     }
   };
 
   const handleChooseAllChange = (optionId: string, remark: string) => {
-    setChooseAllVotes(prev => ({
+    setChooseAllVotes((prev) => ({
       ...prev,
       [optionId]: remark,
     }));
@@ -158,34 +175,38 @@ export default function VotingPage() {
     if (!activity) return;
 
     // Validate vote
-    if (activity.rule === 'choose_one' && !chooseOneVote) {
-      setError('請選擇一個選項');
+    if (activity.rule === "choose_one" && !chooseOneVote) {
+      setError("請選擇一個選項");
       return;
     }
 
     setSubmitting(true);
-    setError('');
+    setError("");
 
     try {
       const voteData = {
         activity_id: activityId,
         rule: activity.rule,
-        ...(activity.rule === 'choose_all' ? {
-          choose_all: Object.entries(chooseAllVotes).map(([option_id, remark]) => ({
-            option_id,
-            remark,
-          })),
-        } : {
-          choose_one: chooseOneVote,
-        }),
+        ...(activity.rule === "choose_all"
+          ? {
+              choose_all: Object.entries(chooseAllVotes).map(
+                ([option_id, remark]) => ({
+                  option_id,
+                  remark,
+                }),
+              ),
+            }
+          : {
+              choose_one: chooseOneVote,
+            }),
       };
 
-      const response = await fetch('/api/votes', {
-        method: 'POST',
+      const response = await fetch("/api/votes", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        credentials: 'include',
+        credentials: "include",
         body: JSON.stringify(voteData),
       });
 
@@ -197,11 +218,11 @@ export default function VotingPage() {
         await fetchAllActivities();
         setShowConfirmation(true);
       } else {
-        setError(data.error || '投票失敗');
+        setError(data.error || "投票失敗");
       }
     } catch (err) {
-      console.error('Error submitting vote:', err);
-      setError('投票時發生錯誤');
+      console.error("Error submitting vote:", err);
+      setError("投票時發生錯誤");
     } finally {
       setSubmitting(false);
     }
@@ -221,46 +242,54 @@ export default function VotingPage() {
               />
             )}
             <div className="flex-1">
-              <Badge variant="default" className="mb-2">{role}</Badge>
+              <Badge variant="default" className="mb-2">
+                {role}
+              </Badge>
               <h4 className="mb-1 text-xl font-bold">{candidate.name}</h4>
-              <p className="text-sm font-medium text-primary">{candidate.department}</p>
-              <p className="text-sm text-muted-foreground">{candidate.college}</p>
+              <p className="text-sm font-medium text-primary">
+                {candidate.department}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                {candidate.college}
+              </p>
             </div>
           </div>
-          
-          {candidate.personal_experiences && candidate.personal_experiences.length > 0 && (
-            <div className="mb-3 rounded-lg bg-white/80 p-3">
-              <div className="mb-2 flex items-center gap-2">
-                <Briefcase className="h-4 w-4 text-primary" />
-                <p className="text-sm font-bold">經歷</p>
+
+          {candidate.personal_experiences &&
+            candidate.personal_experiences.length > 0 && (
+              <div className="mb-3 rounded-lg bg-white/80 p-3">
+                <div className="mb-2 flex items-center gap-2">
+                  <Briefcase className="h-4 w-4 text-primary" />
+                  <p className="text-sm font-bold">經歷</p>
+                </div>
+                <ul className="space-y-1">
+                  {candidate.personal_experiences.map((exp, idx) => (
+                    <li key={idx} className="flex items-start text-sm">
+                      <span className="mr-2 text-primary">•</span>
+                      <span>{exp}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-1">
-                {candidate.personal_experiences.map((exp, idx) => (
-                  <li key={idx} className="flex items-start text-sm">
-                    <span className="mr-2 text-primary">•</span>
-                    <span>{exp}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-          
-          {candidate.political_opinions && candidate.political_opinions.length > 0 && (
-            <div className="rounded-lg bg-white/80 p-3">
-              <div className="mb-2 flex items-center gap-2">
-                <FileText className="h-4 w-4 text-primary" />
-                <p className="text-sm font-bold">政見</p>
+            )}
+
+          {candidate.political_opinions &&
+            candidate.political_opinions.length > 0 && (
+              <div className="rounded-lg bg-white/80 p-3">
+                <div className="mb-2 flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-primary" />
+                  <p className="text-sm font-bold">政見</p>
+                </div>
+                <ul className="space-y-1">
+                  {candidate.political_opinions.map((opinion, idx) => (
+                    <li key={idx} className="flex items-start text-sm">
+                      <span className="mr-2 text-primary">•</span>
+                      <span>{opinion}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
-              <ul className="space-y-1">
-                {candidate.political_opinions.map((opinion, idx) => (
-                  <li key={idx} className="flex items-start text-sm">
-                    <span className="mr-2 text-primary">•</span>
-                    <span>{opinion}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
+            )}
         </CardContent>
       </Card>
     );
@@ -280,9 +309,7 @@ export default function VotingPage() {
         <Card className="w-full max-w-md">
           <CardContent className="py-12 text-center">
             <h2 className="mb-4 text-2xl font-bold">找不到投票活動</h2>
-            <Button onClick={() => router.push('/vote')}>
-              返回投票列表
-            </Button>
+            <Button onClick={() => router.push("/vote")}>返回投票列表</Button>
           </CardContent>
         </Card>
       </div>
@@ -291,11 +318,12 @@ export default function VotingPage() {
 
   if (showConfirmation) {
     // Find next unvoted activity
-    const nextActivity = allActivities.find(act => 
-      act._id !== activityId && !votedActivityIds.includes(act._id)
+    const nextActivity = allActivities.find(
+      (act) => act._id !== activityId && !votedActivityIds.includes(act._id),
     );
-    const allVoted = allActivities.length > 0 && 
-      allActivities.every(act => votedActivityIds.includes(act._id));
+    const allVoted =
+      allActivities.length > 0 &&
+      allActivities.every((act) => votedActivityIds.includes(act._id));
 
     return (
       <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -311,12 +339,15 @@ export default function VotingPage() {
 
             <Card className="mb-8 border-primary bg-primary/5">
               <CardContent className="p-6">
-                <h3 className="mb-2 text-lg font-semibold text-primary">投票證明 UUID</h3>
+                <h3 className="mb-2 text-lg font-semibold text-primary">
+                  投票證明 UUID
+                </h3>
                 <div className="break-all rounded-lg border border-primary/20 bg-white p-4 font-mono text-sm text-primary">
                   {voteToken}
                 </div>
                 <p className="mt-4 text-sm text-muted-foreground">
-                  請妥善保存此 UUID，這是您投票的唯一證明。系統採用匿名投票機制，無法追溯您的投票內容。
+                  請妥善保存此
+                  UUID，這是您投票的唯一證明。系統採用匿名投票機制，無法追溯您的投票內容。
                 </p>
               </CardContent>
             </Card>
@@ -335,10 +366,19 @@ export default function VotingPage() {
                   </CardContent>
                 </Card>
                 <div className="flex gap-3">
-                  <Button size="lg" variant="outline" className="flex-1" onClick={() => router.push('/vote')}>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => router.push("/vote")}
+                  >
                     返回投票列表
                   </Button>
-                  <Button size="lg" className="flex-1" onClick={() => router.push('/vote/completion')}>
+                  <Button
+                    size="lg"
+                    className="flex-1"
+                    onClick={() => router.push("/vote/completion")}
+                  >
                     查看投票證明
                   </Button>
                 </div>
@@ -354,21 +394,32 @@ export default function VotingPage() {
                       {nextActivity.name}
                     </p>
                     {nextActivity.subtitle && (
-                      <p className="text-xs text-blue-600">{nextActivity.subtitle}</p>
+                      <p className="text-xs text-blue-600">
+                        {nextActivity.subtitle}
+                      </p>
                     )}
                   </CardContent>
                 </Card>
                 <div className="flex gap-3">
-                  <Button size="lg" variant="outline" className="flex-1" onClick={() => router.push('/vote')}>
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="flex-1"
+                    onClick={() => router.push("/vote")}
+                  >
                     返回投票列表
                   </Button>
-                  <Button size="lg" className="flex-1" onClick={() => router.push(`/vote/${nextActivity._id}`)}>
+                  <Button
+                    size="lg"
+                    className="flex-1"
+                    onClick={() => router.push(`/vote/${nextActivity._id}`)}
+                  >
                     繼續投票
                   </Button>
                 </div>
               </div>
             ) : (
-              <Button size="lg" onClick={() => router.push('/vote')}>
+              <Button size="lg" onClick={() => router.push("/vote")}>
                 返回投票列表
               </Button>
             )}
@@ -387,7 +438,9 @@ export default function VotingPage() {
             <div className="flex flex-col gap-2">
               <CardTitle className="text-3xl">{activity.name}</CardTitle>
               {activity.subtitle && (
-                <p className="text-lg text-muted-foreground">{activity.subtitle}</p>
+                <p className="text-lg text-muted-foreground">
+                  {activity.subtitle}
+                </p>
               )}
               {activity.description && (
                 <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
@@ -401,16 +454,22 @@ export default function VotingPage() {
                 </div>
                 <div className="flex items-center">
                   <CheckCircle2 className="mr-2 h-4 w-4 text-primary" />
-                  <span>投票方式：{activity.rule === 'choose_all' ? '多選評分' : '單選'}</span>
+                  <span>
+                    投票方式：
+                    {activity.rule === "choose_all" ? "多選評分" : "單選"}
+                  </span>
                 </div>
               </div>
             </div>
           </CardHeader>
-          {activity.rule === 'choose_all' && (
+          {activity.rule === "choose_all" && (
             <>
               <Separator />
               <CardContent className="pt-4">
-                <Badge variant="outline" className="w-full justify-start text-sm">
+                <Badge
+                  variant="outline"
+                  className="w-full justify-start text-sm"
+                >
                   <strong className="mr-2">投票說明：</strong>
                   請對每位候選人表達您的意見（支持、反對或無意見）
                 </Badge>
@@ -434,44 +493,62 @@ export default function VotingPage() {
           {activity.options.map((option, index) => (
             <Card key={option._id}>
               <CardHeader>
-                <CardTitle className="text-xl">
-                  候選人 {index + 1}
-                </CardTitle>
+                <CardTitle className="text-xl">候選人 {index + 1}</CardTitle>
               </CardHeader>
               <Separator />
               <CardContent className="pt-6">
-                {option.candidate && renderCandidate(option.candidate, '會長')}
-                {option.vice1 && renderCandidate(option.vice1, '副會長一')}
-                {option.vice2 && renderCandidate(option.vice2, '副會長二')}
+                {option.candidate && renderCandidate(option.candidate, "會長")}
+                {option.vice1 && renderCandidate(option.vice1, "副會長一")}
+                {option.vice2 && renderCandidate(option.vice2, "副會長二")}
 
                 {/* Vote Selection */}
                 <div className="mt-6 border-t pt-6">
                   <p className="mb-3 text-sm font-semibold">您的選擇：</p>
-                  {activity.rule === 'choose_all' ? (
+                  {activity.rule === "choose_all" ? (
                     <div className="grid grid-cols-3 gap-2">
                       <Button
-                        onClick={() => handleChooseAllChange(option._id, '我要投給他')}
-                        variant={chooseAllVotes[option._id] === '我要投給他' ? 'default' : 'outline'}
+                        onClick={() =>
+                          handleChooseAllChange(option._id, "我要投給他")
+                        }
+                        variant={
+                          chooseAllVotes[option._id] === "我要投給他"
+                            ? "default"
+                            : "outline"
+                        }
                         className={cn(
                           "flex-1",
-                          chooseAllVotes[option._id] === '我要投給他' && "bg-green-600 hover:bg-green-700 text-white border-green-600"
+                          chooseAllVotes[option._id] === "我要投給他" &&
+                            "bg-green-600 hover:bg-green-700 text-white border-green-600",
                         )}
                       >
                         我要投給他
                       </Button>
                       <Button
-                        onClick={() => handleChooseAllChange(option._id, '我不投給他')}
-                        variant={chooseAllVotes[option._id] === '我不投給他' ? 'destructive' : 'outline'}
+                        onClick={() =>
+                          handleChooseAllChange(option._id, "我不投給他")
+                        }
+                        variant={
+                          chooseAllVotes[option._id] === "我不投給他"
+                            ? "destructive"
+                            : "outline"
+                        }
                         className="flex-1"
                       >
                         我不投給他
                       </Button>
                       <Button
-                        onClick={() => handleChooseAllChange(option._id, '我沒有意見')}
-                        variant={chooseAllVotes[option._id] === '我沒有意見' ? 'default' : 'outline'}
+                        onClick={() =>
+                          handleChooseAllChange(option._id, "我沒有意見")
+                        }
+                        variant={
+                          chooseAllVotes[option._id] === "我沒有意見"
+                            ? "default"
+                            : "outline"
+                        }
                         className={cn(
                           "flex-1",
-                          chooseAllVotes[option._id] === '我沒有意見' && "bg-gray-500 hover:bg-gray-600 text-white"
+                          chooseAllVotes[option._id] === "我沒有意見" &&
+                            "bg-gray-500 hover:bg-gray-600 text-white",
                         )}
                       >
                         我沒有意見
@@ -480,11 +557,15 @@ export default function VotingPage() {
                   ) : (
                     <Button
                       onClick={() => setChooseOneVote(option._id)}
-                      variant={chooseOneVote === option._id ? 'default' : 'outline'}
+                      variant={
+                        chooseOneVote === option._id ? "default" : "outline"
+                      }
                       className="w-full"
                       size="lg"
                     >
-                      {chooseOneVote === option._id ? '✓ 已選擇' : '選擇此候選人'}
+                      {chooseOneVote === option._id
+                        ? "✓ 已選擇"
+                        : "選擇此候選人"}
                     </Button>
                   )}
                 </div>
@@ -496,7 +577,7 @@ export default function VotingPage() {
         {/* Submit Button */}
         <div className="flex gap-4">
           <Button
-            onClick={() => router.push('/vote')}
+            onClick={() => router.push("/vote")}
             variant="outline"
             size="lg"
             className="flex-1"
@@ -510,7 +591,7 @@ export default function VotingPage() {
             disabled={submitting}
             className="flex-1"
           >
-            {submitting ? '提交中...' : '確認投票'}
+            {submitting ? "提交中..." : "確認投票"}
           </Button>
         </div>
       </div>

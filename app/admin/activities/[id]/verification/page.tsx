@@ -1,15 +1,28 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
-import Header from '@/components/Header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Loading } from '@/components/ui/loader';
-import { Separator } from '@/components/ui/separator';
-import Link from 'next/link';
-import { ArrowLeft, Search, CheckCircle2, XCircle, AlertCircle, Download } from 'lucide-react';
+import { useEffect, useState } from "react";
+import { useParams } from "next/navigation";
+import Header from "@/components/Header";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  CardDescription,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Loading } from "@/components/ui/loader";
+import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import {
+  ArrowLeft,
+  Search,
+  CheckCircle2,
+  XCircle,
+  AlertCircle,
+  Download,
+} from "lucide-react";
 
 interface VerificationData {
   activity_id: string;
@@ -23,12 +36,14 @@ interface VerificationData {
 function VerificationPageContent() {
   const params = useParams();
   const activityId = params.id as string;
-  
+
   const [data, setData] = useState<VerificationData | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [searchToken, setSearchToken] = useState('');
-  const [searchResult, setSearchResult] = useState<'found' | 'not-found' | null>(null);
+  const [error, setError] = useState("");
+  const [searchToken, setSearchToken] = useState("");
+  const [searchResult, setSearchResult] = useState<
+    "found" | "not-found" | null
+  >(null);
 
   useEffect(() => {
     fetchVerificationData();
@@ -36,19 +51,22 @@ function VerificationPageContent() {
 
   const fetchVerificationData = async () => {
     try {
-      const response = await fetch(`/api/activities/${activityId}/verification`, {
-        credentials: 'include',
-      });
+      const response = await fetch(
+        `/api/activities/${activityId}/verification`,
+        {
+          credentials: "include",
+        },
+      );
       const result = await response.json();
 
       if (result.success) {
         setData(result.data);
       } else {
-        setError(result.error || '無法載入驗證資料');
+        setError(result.error || "無法載入驗證資料");
       }
     } catch (err) {
-      console.error('Error fetching verification data:', err);
-      setError('載入驗證資料時發生錯誤');
+      console.error("Error fetching verification data:", err);
+      setError("載入驗證資料時發生錯誤");
     } finally {
       setLoading(false);
     }
@@ -61,31 +79,36 @@ function VerificationPageContent() {
       return;
     }
 
-    const found = data.voted_tokens.some((token) => 
-      token.uuid.toLowerCase() === searchToken.trim().toLowerCase()
+    const found = data.voted_tokens.some(
+      (token) => token.uuid.toLowerCase() === searchToken.trim().toLowerCase(),
     );
-    setSearchResult(found ? 'found' : 'not-found');
+    setSearchResult(found ? "found" : "not-found");
   };
 
   const handleDownloadCSV = () => {
     if (!data) return;
 
     const csvContent = [
-      ['投票憑證 UUID', '投票時間'],
+      ["投票憑證 UUID", "投票時間"],
       ...data.voted_tokens.map((token) => [
         token.uuid,
-        new Date(token.voted_at).toLocaleString('zh-TW'),
+        new Date(token.voted_at).toLocaleString("zh-TW"),
       ]),
     ]
-      .map((row) => row.join(','))
-      .join('\n');
+      .map((row) => row.join(","))
+      .join("\n");
 
-    const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
+    const blob = new Blob(["\uFEFF" + csvContent], {
+      type: "text/csv;charset=utf-8;",
+    });
+    const link = document.createElement("a");
     const url = URL.createObjectURL(blob);
-    link.setAttribute('href', url);
-    link.setAttribute('download', `voting_verification_${activityId}_${Date.now()}.csv`);
-    link.style.visibility = 'hidden';
+    link.setAttribute("href", url);
+    link.setAttribute(
+      "download",
+      `voting_verification_${activityId}_${Date.now()}.csv`,
+    );
+    link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -110,7 +133,7 @@ function VerificationPageContent() {
           <Card className="border-destructive bg-destructive/10">
             <CardContent className="flex items-center gap-2 py-8">
               <AlertCircle className="h-5 w-5 text-destructive" />
-              <p className="text-destructive">{error || '無法載入驗證資料'}</p>
+              <p className="text-destructive">{error || "無法載入驗證資料"}</p>
             </CardContent>
           </Card>
         </main>
@@ -135,9 +158,7 @@ function VerificationPageContent() {
         <Card className="mb-8">
           <CardHeader>
             <CardTitle>投票驗證</CardTitle>
-            <CardDescription>
-              驗證投票憑證 UUID 是否已投票
-            </CardDescription>
+            <CardDescription>驗證投票憑證 UUID 是否已投票</CardDescription>
           </CardHeader>
           <Separator />
           <CardContent className="pt-6">
@@ -173,12 +194,14 @@ function VerificationPageContent() {
 
               {/* Search Result */}
               {searchResult && (
-                <div className={`flex items-center gap-2 rounded-md border p-4 ${
-                  searchResult === 'found'
-                    ? 'border-green-500 bg-green-50 text-green-700'
-                    : 'border-red-500 bg-red-50 text-red-700'
-                }`}>
-                  {searchResult === 'found' ? (
+                <div
+                  className={`flex items-center gap-2 rounded-md border p-4 ${
+                    searchResult === "found"
+                      ? "border-green-500 bg-green-50 text-green-700"
+                      : "border-red-500 bg-red-50 text-red-700"
+                  }`}
+                >
+                  {searchResult === "found" ? (
                     <>
                       <CheckCircle2 className="h-5 w-5" />
                       <p className="font-semibold">
@@ -225,7 +248,7 @@ function VerificationPageContent() {
                       </code>
                     </div>
                     <span className="text-muted-foreground">
-                      {new Date(token.voted_at).toLocaleString('zh-TW')}
+                      {new Date(token.voted_at).toLocaleString("zh-TW")}
                     </span>
                   </div>
                 ))}

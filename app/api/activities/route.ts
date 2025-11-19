@@ -1,7 +1,12 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, requireAdmin, createErrorResponse, createSuccessResponse } from '@/lib/middleware';
-import { Activity } from '@/lib/models/Activity';
-import connectDB from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import {
+  requireAuth,
+  requireAdmin,
+  createErrorResponse,
+  createSuccessResponse,
+} from "@/lib/middleware";
+import { Activity } from "@/lib/models/Activity";
+import connectDB from "@/lib/db";
 
 // GET /api/activities - List all activities
 export async function GET(request: NextRequest) {
@@ -9,20 +14,21 @@ export async function GET(request: NextRequest) {
     await connectDB();
 
     const searchParams = request.nextUrl.searchParams;
-    const includeOptions = searchParams.get('include_options') === 'true';
+    const includeOptions = searchParams.get("include_options") === "true";
 
     let query = Activity.find().sort({ created_at: -1 });
-    
+
     if (includeOptions) {
-      query = query.populate('options');
+      query = query.populate("options");
     }
 
     const activities = await query.exec();
 
     return createSuccessResponse(activities);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to get activities';
-    console.error('Get activities error:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to get activities";
+    console.error("Get activities error:", error);
     return createErrorResponse(errorMessage, 500);
   }
 }
@@ -45,15 +51,16 @@ export async function POST(request: NextRequest) {
     await connectDB();
 
     const body = await request.json();
-    const { name, type, subtitle, description, rule, open_from, open_to } = body;
+    const { name, type, subtitle, description, rule, open_from, open_to } =
+      body;
 
     // Validate required fields
     if (!name || !type || !rule || !open_from || !open_to) {
-      return createErrorResponse('Missing required fields');
+      return createErrorResponse("Missing required fields");
     }
 
     // Validate rule
-    const allowRules = ['choose_all', 'choose_one'];
+    const allowRules = ["choose_all", "choose_one"];
     if (!allowRules.includes(rule)) {
       return createErrorResponse(`Invalid rule: ${rule}`);
     }
@@ -63,11 +70,11 @@ export async function POST(request: NextRequest) {
     const openTo = new Date(open_to);
 
     if (isNaN(openFrom.getTime()) || isNaN(openTo.getTime())) {
-      return createErrorResponse('Invalid date format');
+      return createErrorResponse("Invalid date format");
     }
 
     if (openFrom >= openTo) {
-      return createErrorResponse('open_from must be before open_to');
+      return createErrorResponse("open_from must be before open_to");
     }
 
     const activity = await Activity.create({
@@ -86,8 +93,9 @@ export async function POST(request: NextRequest) {
 
     return createSuccessResponse(activity, 201);
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to create activity';
-    console.error('Create activity error:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to create activity";
+    console.error("Create activity error:", error);
     return createErrorResponse(errorMessage, 500);
   }
 }

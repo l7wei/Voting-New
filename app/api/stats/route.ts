@@ -1,9 +1,14 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { requireAuth, requireAdmin, createErrorResponse, createSuccessResponse } from '@/lib/middleware';
-import { Activity } from '@/lib/models/Activity';
-import { Option } from '@/lib/models/Option';
-import { Vote } from '@/lib/models/Vote';
-import connectDB from '@/lib/db';
+import { NextRequest, NextResponse } from "next/server";
+import {
+  requireAuth,
+  requireAdmin,
+  createErrorResponse,
+  createSuccessResponse,
+} from "@/lib/middleware";
+import { Activity } from "@/lib/models/Activity";
+import { Option } from "@/lib/models/Option";
+import { Vote } from "@/lib/models/Vote";
+import connectDB from "@/lib/db";
 
 // GET /api/stats?activity_id=xxx - Get statistics for an activity (Admin only)
 export async function GET(request: NextRequest) {
@@ -23,16 +28,16 @@ export async function GET(request: NextRequest) {
     await connectDB();
 
     const searchParams = request.nextUrl.searchParams;
-    const activity_id = searchParams.get('activity_id');
+    const activity_id = searchParams.get("activity_id");
 
     if (!activity_id) {
-      return createErrorResponse('activity_id is required');
+      return createErrorResponse("activity_id is required");
     }
 
     // Get activity
-    const activity = await Activity.findById(activity_id).populate('options');
+    const activity = await Activity.findById(activity_id).populate("options");
     if (!activity) {
-      return createErrorResponse('Activity not found', 404);
+      return createErrorResponse("Activity not found", 404);
     }
 
     // Get all votes for this activity
@@ -41,26 +46,30 @@ export async function GET(request: NextRequest) {
     // Calculate statistics
     const totalVotes = votes.length;
     const totalEligibleVoters = activity.users.length;
-    const turnoutRate = totalEligibleVoters > 0 
-      ? ((totalVotes / totalEligibleVoters) * 100).toFixed(2) 
-      : '0';
+    const turnoutRate =
+      totalEligibleVoters > 0
+        ? ((totalVotes / totalEligibleVoters) * 100).toFixed(2)
+        : "0";
 
     // Calculate vote distribution by option
-    const optionStats: Record<string, {
-      option_id: string;
-      name: string;
-      support: number;
-      oppose: number;
-      neutral: number;
-      total: number;
-    }> = {};
+    const optionStats: Record<
+      string,
+      {
+        option_id: string;
+        name: string;
+        support: number;
+        oppose: number;
+        neutral: number;
+        total: number;
+      }
+    > = {};
 
     // Initialize stats for all options
     const options = await Option.find({ activity_id });
-    options.forEach(option => {
+    options.forEach((option) => {
       const optionId = option._id.toString();
-      const candidateName = option.candidate?.name || 'Unknown';
-      
+      const candidateName = option.candidate?.name || "Unknown";
+
       optionStats[optionId] = {
         option_id: optionId,
         name: candidateName,
@@ -72,25 +81,25 @@ export async function GET(request: NextRequest) {
     });
 
     // Count votes
-    if (activity.rule === 'choose_all') {
-      votes.forEach(vote => {
-        vote.choose_all?.forEach(choice => {
+    if (activity.rule === "choose_all") {
+      votes.forEach((vote) => {
+        vote.choose_all?.forEach((choice) => {
           const optionId = choice.option_id.toString();
           if (optionStats[optionId]) {
             optionStats[optionId].total++;
-            
-            if (choice.remark === '我要投給他') {
+
+            if (choice.remark === "我要投給他") {
               optionStats[optionId].support++;
-            } else if (choice.remark === '我不投給他') {
+            } else if (choice.remark === "我不投給他") {
               optionStats[optionId].oppose++;
-            } else if (choice.remark === '我沒有意見') {
+            } else if (choice.remark === "我沒有意見") {
               optionStats[optionId].neutral++;
             }
           }
         });
       });
-    } else if (activity.rule === 'choose_one') {
-      votes.forEach(vote => {
+    } else if (activity.rule === "choose_one") {
+      votes.forEach((vote) => {
         if (vote.choose_one) {
           const optionId = vote.choose_one.toString();
           if (optionStats[optionId]) {
@@ -118,8 +127,9 @@ export async function GET(request: NextRequest) {
       },
     });
   } catch (error: unknown) {
-    const errorMessage = error instanceof Error ? error.message : 'Failed to get statistics';
-    console.error('Get statistics error:', error);
+    const errorMessage =
+      error instanceof Error ? error.message : "Failed to get statistics";
+    console.error("Get statistics error:", error);
     return createErrorResponse(errorMessage, 500);
   }
 }
