@@ -1,14 +1,17 @@
 import { SignJWT, jwtVerify } from "jose";
 import { JWTPayload, AuthUser } from "@/types";
 
-if (!process.env.TOKEN_SECRET) {
-  throw new Error("TOKEN_SECRET environment variable is required but not set");
+function getTokenSecret(): string {
+  if (!process.env.TOKEN_SECRET) {
+    throw new Error("TOKEN_SECRET environment variable is required but not set");
+  }
+  return process.env.TOKEN_SECRET;
 }
 
-const TOKEN_SECRET = process.env.TOKEN_SECRET;
-const secret = new TextEncoder().encode(TOKEN_SECRET);
-
 export async function generateToken(user: AuthUser): Promise<string> {
+  const TOKEN_SECRET = getTokenSecret();
+  const secret = new TextEncoder().encode(TOKEN_SECRET);
+
   // _id is set to student_id since we don't use MongoDB User collection
   const payload = {
     account: user.student_id,
@@ -25,6 +28,9 @@ export async function generateToken(user: AuthUser): Promise<string> {
 
 export async function verifyToken(token: string): Promise<JWTPayload | null> {
   try {
+    const TOKEN_SECRET = getTokenSecret();
+    const secret = new TextEncoder().encode(TOKEN_SECRET);
+
     const { payload } = await jwtVerify(token, secret);
     // Validate the payload has required fields
     if (

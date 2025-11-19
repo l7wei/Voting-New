@@ -21,26 +21,18 @@ export async function GET(request: NextRequest) {
         if (stateData.redirect) {
           redirectPath = stateData.redirect;
         }
-      } catch (e) {
-        console.error("Failed to parse state:", e);
+      } catch {
+        // Invalid state, use default redirect
       }
     }
 
-    console.log("Callback: Exchanging code for token...");
     // Exchange code for access token
     const tokenInfo = await exchangeCodeForToken(code);
-    console.log("Callback: Got token info");
 
     // Get user info from OAuth (Userid field maps to student_id)
     const userInfo = await getUserInfo(tokenInfo.access_token);
     const studentId = userInfo.Userid; // OAuth returns "Userid", we map it to student_id
     const userName = userInfo.name || studentId;
-    console.log(
-      "Callback: Got user info for student ID:",
-      studentId,
-      "name:",
-      userName,
-    );
 
     // Generate service token with name included (no database lookup needed)
     const serviceToken = await generateToken({
@@ -49,10 +41,6 @@ export async function GET(request: NextRequest) {
       name: userName,
     });
 
-    console.log(
-      "Callback: Generated service token, redirecting to",
-      redirectPath,
-    );
     // Create response with redirect to the original destination
     const response = NextResponse.redirect(new URL(redirectPath, request.url));
 
@@ -70,9 +58,6 @@ export async function GET(request: NextRequest) {
     const errorMessage =
       error instanceof Error ? error.message : "Authentication failed";
     console.error("OAuth callback error:", errorMessage);
-    if (error instanceof Error && error.stack) {
-      console.error("Stack trace:", error.stack);
-    }
     return NextResponse.redirect(new URL("/?error=auth_failed", request.url));
   }
 }

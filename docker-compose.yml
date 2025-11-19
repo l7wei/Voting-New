@@ -1,21 +1,6 @@
 version: "3.8"
 
 services:
-  mongodb:
-    image: mongo:6
-    container_name: voting-mongodb
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGO_USERNAME:-root}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGO_PASSWORD:-password}
-      MONGO_INITDB_DATABASE: ${MONGO_NAME:-voting_sa}
-    ports:
-      - "27017:27017"
-    volumes:
-      - mongodb_data:/data/db
-    networks:
-      - voting-network
-    restart: unless-stopped
-
   app:
     build:
       context: .
@@ -24,24 +9,28 @@ services:
     ports:
       - "${PORT:-3000}:3000"
     environment:
+      # MongoDB Connection (required)
+      - MONGODB_URI=${MONGODB_URI}
+      # Or use individual parameters
+      - MONGO_HOST=${MONGO_HOST}
+      - MONGO_PORT=${MONGO_PORT:-27017}
+      - MONGO_USERNAME=${MONGO_USERNAME}
+      - MONGO_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_NAME=${MONGO_NAME}
+      
+      # Application
       - NODE_ENV=production
-      - TOKEN_SECRET=${TOKEN_SECRET:-mysecret}
+      - TOKEN_SECRET=${TOKEN_SECRET}
+      
+      # OAuth Configuration (required)
       - OAUTH_CLIENT_ID=${OAUTH_CLIENT_ID}
       - OAUTH_CLIENT_SECRET=${OAUTH_CLIENT_SECRET}
       - OAUTH_AUTHORIZE=${OAUTH_AUTHORIZE}
       - OAUTH_TOKEN_URL=${OAUTH_TOKEN_URL}
       - OAUTH_RESOURCE_URL=${OAUTH_RESOURCE_URL}
       - OAUTH_CALLBACK_URL=${OAUTH_CALLBACK_URL}
-      - OAUTH_SCOPE=${OAUTH_SCOPE}
-    depends_on:
-      - mongodb
-    networks:
-      - voting-network
+      - OAUTH_SCOPE=${OAUTH_SCOPE:-userid name inschool uuid}
     restart: unless-stopped
-
-networks:
-  voting-network:
-    driver: bridge
-
-volumes:
-  mongodb_data:
+    volumes:
+      # Mount data files that may be updated
+      - ./data:/app/data:ro
