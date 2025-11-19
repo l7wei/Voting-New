@@ -1,8 +1,12 @@
-import jwt from 'jsonwebtoken';
-import { JWTPayload, AuthUser } from '@/types';
-import { isAdmin as checkIsAdmin } from '@/lib/adminConfig';
+import jwt from "jsonwebtoken";
+import { JWTPayload, AuthUser } from "@/types";
+import { isAdmin as checkIsAdmin } from "@/lib/adminConfig";
 
-const TOKEN_SECRET = process.env.TOKEN_SECRET || 'mysecret';
+if (!process.env.TOKEN_SECRET) {
+  throw new Error("TOKEN_SECRET environment variable is required but not set");
+}
+
+const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 export function generateToken(user: AuthUser): string {
   // _id is set to student_id since we don't use MongoDB User collection
@@ -14,8 +18,8 @@ export function generateToken(user: AuthUser): string {
   };
 
   const options: jwt.SignOptions = {
-    algorithm: 'HS256',
-    expiresIn: '1d',
+    algorithm: "HS256",
+    expiresIn: "1d",
   };
 
   return jwt.sign(payload, TOKEN_SECRET, options);
@@ -34,11 +38,14 @@ export async function isAdmin(studentId: string): Promise<boolean> {
 }
 
 export async function hashPassword(password: string): Promise<string> {
-  const bcrypt = await import('bcryptjs');
+  const bcrypt = await import("bcryptjs");
   return bcrypt.hash(password, 10);
 }
 
-export async function comparePassword(password: string, hash: string): Promise<boolean> {
-  const bcrypt = await import('bcryptjs');
+export async function comparePassword(
+  password: string,
+  hash: string
+): Promise<boolean> {
+  const bcrypt = await import("bcryptjs");
   return bcrypt.compare(password, hash);
 }
