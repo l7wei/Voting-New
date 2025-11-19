@@ -8,18 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle2, Download, Home, Copy, Check } from "lucide-react";
-
-interface VoteRecord {
-  activityId: string;
-  activityName: string;
-  token: string;
-  timestamp: string;
-}
-
-interface VotingHistory {
-  votedActivityIds: string[];
-  votes: VoteRecord[];
-}
+import { loadVotingHistory, VotingHistory } from "@/lib/votingHistory";
 
 export default function CompletionPage() {
   const router = useRouter();
@@ -29,19 +18,8 @@ export default function CompletionPage() {
   const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
 
   useEffect(() => {
-    loadVotingHistory();
+    setVotingHistory(loadVotingHistory());
   }, []);
-
-  const loadVotingHistory = () => {
-    try {
-      const history = localStorage.getItem("voting_history");
-      if (history) {
-        setVotingHistory(JSON.parse(history));
-      }
-    } catch (err) {
-      console.error("Error loading voting history:", err);
-    }
-  };
 
   const handleCopyToken = (token: string, index: number) => {
     navigator.clipboard.writeText(token);

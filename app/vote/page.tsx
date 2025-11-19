@@ -14,6 +14,7 @@ import {
   ArrowLeft,
   AlertCircle,
 } from "lucide-react";
+import { getVotedActivityIds } from "@/lib/votingHistory";
 
 interface Activity {
   _id: string;
@@ -35,20 +36,8 @@ export default function VotePage() {
 
   useEffect(() => {
     fetchActivities();
-    loadVotingHistory();
+    setVotedActivityIds(getVotedActivityIds());
   }, []);
-
-  const loadVotingHistory = () => {
-    try {
-      const history = localStorage.getItem("voting_history");
-      if (history) {
-        const parsed = JSON.parse(history);
-        setVotedActivityIds(parsed.votedActivityIds || []);
-      }
-    } catch (err) {
-      console.error("Error loading voting history:", err);
-    }
-  };
 
   const fetchActivities = async () => {
     try {

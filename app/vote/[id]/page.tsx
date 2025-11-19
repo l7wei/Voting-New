@@ -16,6 +16,10 @@ import {
   AlertCircle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import {
+  getVotedActivityIds,
+  saveVotingRecord,
+} from "@/lib/votingHistory";
 
 interface Candidate {
   name: string;
@@ -73,22 +77,10 @@ export default function VotingPage() {
 
   useEffect(() => {
     fetchActivity();
-    loadVotingHistory();
+    setVotedActivityIds(getVotedActivityIds());
     fetchUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activityId]);
-
-  const loadVotingHistory = () => {
-    try {
-      const history = localStorage.getItem("voting_history");
-      if (history) {
-        const parsed = JSON.parse(history);
-        setVotedActivityIds(parsed.votedActivityIds || []);
-      }
-    } catch (err) {
-      console.error("Error loading voting history:", err);
-    }
-  };
 
   const fetchUserData = async () => {
     try {
@@ -106,37 +98,6 @@ export default function VotingPage() {
       }
     } catch (err) {
       console.error("Error fetching user data:", err);
-    }
-  };
-
-  const saveVotingRecord = (
-    activityId: string,
-    token: string,
-    activityName: string,
-  ) => {
-    try {
-      const history = localStorage.getItem("voting_history");
-      const parsed = history
-        ? JSON.parse(history)
-        : { votedActivityIds: [], votes: [] };
-
-      // Add activity ID if not already present
-      if (!parsed.votedActivityIds.includes(activityId)) {
-        parsed.votedActivityIds.push(activityId);
-      }
-
-      // Add vote record
-      parsed.votes.push({
-        activityId,
-        activityName,
-        token,
-        timestamp: new Date().toISOString(),
-      });
-
-      localStorage.setItem("voting_history", JSON.stringify(parsed));
-      setVotedActivityIds(parsed.votedActivityIds);
-    } catch (err) {
-      console.error("Error saving voting record:", err);
     }
   };
 
@@ -239,7 +200,12 @@ export default function VotingPage() {
 
       if (data.success) {
         setVoteToken(data.data.token);
-        saveVotingRecord(activityId, data.data.token, activity.name);
+        const updatedHistory = saveVotingRecord(
+          activityId,
+          data.data.token,
+          activity.name,
+        );
+        setVotedActivityIds(updatedHistory.votedActivityIds);
         await fetchAllActivities();
         setShowConfirmation(true);
       } else {
