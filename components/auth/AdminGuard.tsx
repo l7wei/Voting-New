@@ -1,73 +1,43 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect } from 'react';
 import { Loading } from '@/components/ui/loader';
-
-interface User {
-  student_id: string;
-  name: string;
-  isAdmin: boolean;
-}
 
 interface AdminGuardProps {
   children: React.ReactNode;
   loadingComponent?: React.ReactNode;
 }
 
+/**
+ * AdminGuard component - Simplified version
+ * 
+ * Note: Authentication and authorization are now handled by middleware.
+ * This component only provides a brief loading state while the page initializes.
+ * The middleware ensures only authenticated admins can access admin routes.
+ */
 export default function AdminGuard({ children, loadingComponent }: AdminGuardProps) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const router = useRouter();
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    async function checkAuth() {
-      try {
-        const response = await fetch('/api/auth/check', {
-          credentials: 'include',
-        });
-        
-        if (response.ok) {
-          const data = await response.json();
-          if (data.authenticated && data.user) {
-            if (!data.user.isAdmin) {
-              // Not an admin, redirect to home
-              router.push('/');
-              return;
-            }
-            setUser(data.user);
-            setLoading(false);
-          } else {
-            // Not authenticated, redirect to login
-            router.push('/login?redirect=' + encodeURIComponent(window.location.pathname));
-          }
-        } else {
-          // Auth check failed, redirect to login
-          router.push('/login?redirect=' + encodeURIComponent(window.location.pathname));
-        }
-      } catch (err) {
-        console.error('Auth check error:', err);
-        router.push('/login?redirect=' + encodeURIComponent(window.location.pathname));
-      }
-    }
+    // Brief delay to allow middleware to complete its checks
+    // This prevents flash of content if user needs to be redirected
+    const timer = setTimeout(() => {
+      setIsReady(true);
+    }, 100);
 
-    checkAuth();
-  }, [router]);
+    return () => clearTimeout(timer);
+  }, []);
 
-  if (loading) {
+  if (!isReady) {
     if (loadingComponent) {
       return <>{loadingComponent}</>;
     }
     
     return (
       <div className="flex min-h-screen items-center justify-center bg-background">
-        <Loading text="驗證中..." />
+        <Loading text="載入中..." />
       </div>
     );
-  }
-
-  if (!user) {
-    return null;
   }
 
   return <>{children}</>;

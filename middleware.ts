@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { verifyToken } from '@/lib/auth';
+import { isAdmin } from '@/lib/auth';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -15,12 +17,12 @@ export function middleware(request: NextRequest) {
     return pathname.startsWith(path);
   });
   
-  // API routes and public paths are allowed
+  // Allow public paths and Next.js internals
   if (isPublicPath || pathname.startsWith('/_next') || pathname.startsWith('/static')) {
     return NextResponse.next();
   }
   
-  // Check for authentication token
+  // Get token from cookie
   const token = request.cookies.get('service_token')?.value;
   
   // If no token and trying to access protected route, redirect to login
@@ -28,6 +30,33 @@ export function middleware(request: NextRequest) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
+  }
+  
+  // Admin routes require additional permission check
+  if (pathname.startsWith('/admin')) {
+    if (!token) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+    
+    // Verify token and check admin permission
+    const decoded = verifyToken(token);
+    if (!decoded) {
+      // Invalid token, redirect to login
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      loginUrl.searchParams.set('error', 'invalid_token');
+      return NextResponse.redirect(loginUrl);
+    }
+    
+    // Check if user is admin
+    if (!isAdmin(decoded.student_id)) {
+      // Not an admin, redirect to home with error
+      const homeUrl = new URL('/', request.url);
+      homeUrl.searchParams.set('error', 'admin_required');
+      return NextResponse.redirect(homeUrl);
+    }
   }
   
   return NextResponse.next();
