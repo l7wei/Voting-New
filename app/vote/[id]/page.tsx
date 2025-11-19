@@ -330,14 +330,14 @@ export default function VotingPage() {
                           chooseAllVotes[option._id] === '我要投給他' && "bg-green-600 hover:bg-green-700 text-white border-green-600"
                         )}
                       >
-                        支持
+                        我要投給他
                       </Button>
                       <Button
                         onClick={() => handleChooseAllChange(option._id, '我不投給他')}
                         variant={chooseAllVotes[option._id] === '我不投給他' ? 'destructive' : 'outline'}
                         className="flex-1"
                       >
-                        反對
+                        我不投給他
                       </Button>
                       <Button
                         onClick={() => handleChooseAllChange(option._id, '我沒有意見')}
@@ -347,7 +347,7 @@ export default function VotingPage() {
                           chooseAllVotes[option._id] === '我沒有意見' && "bg-gray-500 hover:bg-gray-600 text-white"
                         )}
                       >
-                        無意見
+                        我沒有意見
                       </Button>
                     </div>
                   ) : (
