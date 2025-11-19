@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { verifyToken, isAdmin } from '@/lib/auth';
+import { verifyToken } from '@/lib/auth';
+import { isAdmin } from '@/lib/adminConfig';
 
 export async function GET(request: NextRequest) {
   try {
@@ -15,7 +16,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ authenticated: false }, { status: 200 });
     }
 
-    const isUserAdmin = isAdmin(payload.student_id);
+    const isUserAdmin = await isAdmin(payload.student_id);
 
     return NextResponse.json({ 
       authenticated: true,

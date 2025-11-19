@@ -1,230 +1,330 @@
-# Voting-DSA
+# 清大學生會投票系統 v2.0 | NTHU Voting System
 
-清大學生會首個線上投票系統上線啦～
+現代化的清華大學學生會線上投票系統，採用 Next.js + TypeScript + MongoDB 架構，確保投票匿名性與安全性。
 
-2020 年新型冠狀病毒全球大流行，為了減少人與人之間的接觸、保持社交距離，選委會決定將過往實體投票的選舉改為線上選舉，因此委託學生會資訊部開發，並且順利完成第 29 屆學生會正副會長、學生議會學生議員之選舉。
+A modern voting system for National Tsing Hua University Student Association built with Next.js, TypeScript, and MongoDB, ensuring vote anonymity and security.
 
-此專案歡迎各界高手幫忙開發貢獻，也歡迎其他學生自治組織使用這套投票系統，如果有好點子、改善建議也都相當歡迎提出 issue。
+## ✨ 核心特色 | Key Features
 
-## 操作畫面
+- 🔒 **完全匿名投票** - 使用 UUID 技術確保投票匿名性
+- 🎯 **僅追蹤是否投票** - 系統只記錄學生是否投票，不記錄投票內容
+- 🔐 **OAuth 安全認證** - 支援 CCXP OAuth 認證系統
+- 📊 **靈活的投票方式** - 支援多選(choose_all)和單選(choose_one)
+- 🎨 **現代化介面** - 使用 Tailwind CSS 打造響應式設計
+- 🚀 **高效能** - Next.js 15 App Router 架構
+- 🔄 **CI/CD 自動化** - GitHub Actions 自動測試與部署
+- 🐳 **Docker 支援** - 一鍵部署到任何環境
+- 🧪 **完整測試** - Jest 單元測試與整合測試
 
-- [投票教學影片](https://www.youtube.com/watch?v=SN2JP758dFA&feature=youtu.be)
+## 📋 技術棧 | Tech Stack
 
-![](README/img/voting.jpg)
+- **框架**: Next.js 15 (App Router)
+- **語言**: TypeScript
+- **資料庫**: MongoDB 6 + Mongoose 8
+- **樣式**: Tailwind CSS
+- **認證**: JWT + OAuth
+- **測試**: Jest + React Testing Library
+- **CI/CD**: GitHub Actions
+- **容器化**: Docker + Docker Compose
 
-![](README/img/activity.png)
+## 🚀 快速開始 | Quick Start
 
-![](README/img/verification.jpg)
+### 先決條件 | Prerequisites
 
-## 安裝、執行
+- Node.js 18+ 
+- MongoDB 6+
+- npm 9+
 
-1. `npm install`
-1. `cp .env.dev .env`
-1. `npm run dev`
+### 本地開發 | Local Development
 
-## 開發
-
-- 在 [README/postman](README/postman) 中有 API 測試範本
-  - 記得改 `service_token`，產生方式如下
-- 如何關閉 OAuth，啟用學號模擬？
-  - `cp .env.dev`
-  - 將 **For development** 中的註解拿掉
-  - 在網頁中登入後，開啟瀏覽器命令列輸入 `jwtToken` 即可獲得
-- 如何從本機產生登入 JWT Token?
-  - 先透過 `addUser` API 建立使用者，並取得 `_id` 與 `student_id`
-  - 打開 Node.js CLI 輸入以下程式碼產生 Token
-  - 將 Token 直接貼到瀏覽器 cookie 中 `service_token` 欄位
-
-```javascript
-auth = require('./libs/ccxpAuth.js');
-user = {"_id": "5ed699efdc02ue515d79627b","student_id": "108060001"}
-auth.obtainServiceToken('108060001', user);
+1. **克隆專案**
+```bash
+git clone https://github.com/l7wei/Voting-New.git
+cd Voting-New
 ```
 
-## 匯入測試檔案
+2. **安裝依賴**
+```bash
+npm install
+```
 
-- `mongorestore --drop --host localhost --port 27017 -uroot -ppassword --db voting_sa README/dump`
+3. **設定環境變數**
+```bash
+cp .env.example .env
+```
 
-## 指派使用者為管理員
-  ```bash
-    mongo
+編輯 `.env` 文件，配置資料庫連接和其他設定。
 
-    use DATABASE_NAME
-    
-    db.TABLE_NAME.update({student_id:'{YOUR_STUDENTID}'}, {$set: {"remark":"admin"}})
+4. **啟動 MongoDB** (使用 Docker)
+```bash
+docker-compose -f docker-compose.dev.yml up -d
+```
 
-  ```
+5. **啟動開發伺服器**
+```bash
+npm run dev
+```
 
-## 新增投票活動步驟
+訪問 http://localhost:3000 查看應用。
 
-1. 透過 Postman 新增管理員（addUser）
+### 使用 Docker | Using Docker
 
-   ```json
-   {
-     "student_id": "108062001",
-   }
-   ```
+完整的 Docker 部署：
 
-   加上 admin 權限
+```bash
+# 構建並啟動所有服務
+docker-compose up -d
 
-   ```json
-   {
-     "student_id": "108062001",
-     "remark": "admin"
-   }
-   ```
+# 查看日誌
+docker-compose logs -f
 
-   
+# 停止服務
+docker-compose down
+```
 
-1. 透過 Postman 新增活動（addActivity）
+### GitHub Codespaces
 
-    ```json
+本專案支援 GitHub Codespaces，點擊 "Code" → "Open with Codespaces" 即可在雲端開發環境中開始工作。
+
+## 📚 API 文檔 | API Documentation
+
+### 認證 | Authentication
+
+#### 登入
+```
+GET /api/auth/login
+```
+重定向到 OAuth 認證頁面
+
+#### OAuth 回調
+```
+GET /api/auth/callback?code={code}
+```
+處理 OAuth 回調並設置認證 cookie
+
+#### 登出
+```
+GET /api/auth/logout
+```
+清除認證 cookie 並重定向到首頁
+
+### 投票 | Voting
+
+#### 建立投票
+```
+POST /api/votes
+Authorization: Bearer {token}
+
+Body:
+{
+  "activity_id": "活動ID",
+  "rule": "choose_all", // 或 "choose_one"
+  "choose_all": [
     {
-        "name": "第 30 屆學生會正副會長",
-        "type": "candidate",
-        "rule": "choose_all",
-        "open_from": "2020/06/28 12:00:00",
-        "open_to": "2020/06/30 12:00:00"
+      "option_id": "選項ID",
+      "remark": "我要投給他" // 或 "我不投給他", "我沒有意見"
     }
-    ```
+  ]
+}
+```
 
-    ```json
-    {
-        "name": "第 30 屆學生議員",
-        "type": "candidate",
-        "rule": "choose_all",
-        "open_from": "2020/06/28 12:00:00",
-        "open_to": "2020/06/30 12:00:00"
-    }
-    ```
+#### 獲取投票記錄 (管理員)
+```
+GET /api/votes?activity_id={id}&limit=100&skip=0
+Authorization: Bearer {token}
+```
 
-    會返回類似於下面的資訊，請把 `_id` 記下來。
+### 開發用 Mock OAuth
 
-    ```json
-    {
-        "users": [],
-        "options": [],
-        "_id": "60dea866076f71776b9da13b",
-        "name": "第 30 屆學生會正副會長",
-        "type": "candidate",
-        "rule": "choose_all",
-        "created_at": "2021-07-02T05:47:18.861Z",
-        "updated_at": "2021-07-02T05:47:18.861Z",
-        "open_from": "2020-06-28T04:00:00.000Z",
-        "open_to": "2020-06-30T04:00:00.000Z",
-        "__v": 0
-    }
-    ```
+開發環境下，系統會自動使用 Mock OAuth：
 
-    ```json
-    {
-        "users": [],
-        "options": [],
-        "_id": "60dea866076f71776b9da13c",
-        "name": "第 30 屆學生議員",
-        "type": "candidate",
-        "rule": "choose_all",
-        "created_at": "2021-07-02T05:47:18.861Z",
-        "updated_at": "2021-07-02T05:47:18.861Z",
-        "open_from": "2020-06-28T04:00:00.000Z",
-        "open_to": "2020-06-30T04:00:00.000Z",
-        "__v": 0
-    }
-    ```
+```
+GET /api/mock/auth
+POST /api/mock/token
+POST /api/mock/resource
+```
 
-1. 新增選舉人（addOption）
+## 🧪 測試 | Testing
 
-   記得把 `activity_id`、`avatar_url` 換掉
+```bash
+# 執行所有測試
+npm test
 
-    - 會長參選人
-    ```json
-    {
-      "activity_id": "60dea866076f71776b9da13b",
-      "type": "candidate",
-      "candidate": {
-        "name": "王小明",
-        "department": "人文社會學院學士班 20 級",
-        "college": "人文社會學院",
-        "avatar_url": "https://imgur.com/xxxxx.jpg",
-        "personal_experiences": [
-          "國立清華大學105學年度下學期-書卷獎"
-        ],
-        "political_opinions": [
-          "1. 履行會長之職責。",
-          "2. 持續關注學生感興趣的校內議題。"
-        ]
-      },
-      "vice1": {
-        "personal_experiences": [
-          "國立清華大學轉學生聯誼會-活動"
-        ],
-        "name": "陳小明",
-        "department": "科技管理學院學士班 22 級",
-        "college": "科技管理學院",
-        "avatar_url": "https://imgur.com/xxxxx.jpg"
-      },
-      "vice2": {
-        "personal_experiences": [
-          "國立清華大學學生會第29屆秘書部-部員"
-        ],
-        "name": "劉曉明",
-        "department": "教育與學習科技學系 24 級",
-        "college": "教育學院",
-        "avatar_url": "https://imgur.com/xxxxx.jpg"
-      }
-    }
-    ```
-    - 議員參選人
-    ```json
-    {
-      "activity_id": "60dea866076f71776b9da13c",
-      "type": "candidate",
-      "candidate": {
-        "name": "陳小明",
-        "department": "科技管理學院學士班 23 級",
-        "college": "科技管理學院",
-        "avatar_url": "https://imgur.com/xxxxxx.jpg",
-        "personal_experiences": [
-          "國立清華大學第 28 屆學生會秘書部部員",
-          "國立清華大學第 29 屆學生議會秘書長"
-        ],
-        "political_opinions": [
-          "1. 履行議員之職責。",
-          "2. 持續關注學生感興趣的校內議題。"
-        ]
-      }
-    }
-    ```
+# 監聽模式
+npm run test:watch
 
-1. 到後台檢查名稱、日期（UTC+0）是否正確
-   - http://127.0.0.1:3000/activity.html
+# 類型檢查
+npm run type-check
 
-1. 修改 `libs/全校在學學生資料.csv`，這是可以投票的學生名單
+# Lint 檢查
+npm run lint
+```
 
+## 🔧 開發 | Development
 
-# Development
+### 專案結構
 
-## Backup
-`mongodump -h 127.0.0.1 -d DB_NAME -o ./mongo-backup`
+```
+├── app/                    # Next.js App Router
+│   ├── api/               # API 路由
+│   │   ├── auth/         # 認證相關
+│   │   ├── mock/         # Mock OAuth
+│   │   └── votes/        # 投票相關
+│   ├── globals.css       # 全域樣式
+│   ├── layout.tsx        # 根布局
+│   └── page.tsx          # 首頁
+├── lib/                   # 共用函式庫
+│   ├── models/           # Mongoose 模型
+│   ├── auth.ts           # 認證工具
+│   ├── db.ts             # 資料庫連接
+│   ├── middleware.ts     # API 中介軟體
+│   ├── oauth.ts          # OAuth 處理
+│   └── voterList.ts      # 投票人名單管理
+├── types/                 # TypeScript 類型定義
+├── __tests__/            # 測試檔案
+├── data/                 # 資料檔案（投票人名單）
+├── .devcontainer/        # Codespaces 設定
+└── .github/              # GitHub Actions
 
-## Restore
-`mongorestore -h 127.0.0.1 -d DB_NAME --directoryperdb DB_FILE`
+```
 
-     
-# TODO 111-2
+### 資料模型 | Data Models
 
-- [ ] 新增編輯投票人名單 UI
-- [ ] 新增選舉活動、候選人增修查改 UI
-- [ ] 將介面「我不投給他」改成「反對」
-- [ ] 介面增加**一人多票**的說明
-- [ ] 候選人增加一欄「參選執行長意願」
-- [ ] 完善 README.md
+#### User (使用者)
+```typescript
+{
+  student_id: string;      // 學號
+  remark?: string;         // 備註（如 "admin"）
+  created_at: Date;
+  updated_at: Date;
+}
+```
+
+#### Activity (投票活動)
+```typescript
+{
+  name: string;                    // 活動名稱
+  type: string;                    // 活動類型
+  rule: 'choose_all' | 'choose_one';
+  users: ObjectId[];               // 已投票的使用者
+  options: ObjectId[];             // 投票選項
+  open_from: Date;                 // 開始時間
+  open_to: Date;                   // 結束時間
+}
+```
+
+#### Vote (投票記錄)
+```typescript
+{
+  activity_id: ObjectId;
+  rule: 'choose_all' | 'choose_one';
+  choose_all?: Array<{
+    option_id: ObjectId;
+    remark: '我要投給他' | '我不投給他' | '我沒有意見';
+  }>;
+  choose_one?: ObjectId;
+  token: string;                   // UUID - 確保匿名性
+  created_at: Date;
+}
+```
+
+### 投票流程說明
+
+1. **管理員設置**
+   - 上傳學生清單 CSV (data/voterList.csv)
+   - 在資料庫中設置管理員（remark: "admin"）
+
+2. **建立投票活動**
+   - 管理員登入後台
+   - 建立投票活動（設定名稱、時間、規則）
+   - 新增候選人/選項
+
+3. **學生投票**
+   - 學生通過 OAuth 登入
+   - 選擇投票活動
+   - 進行投票（系統會檢查資格和投票時間）
+   - 投票時生成 UUID token 確保匿名性
+
+4. **結果統計**
+   - 系統僅記錄學生是否投票（activity.users）
+   - 投票內容與 UUID token 關聯，無法追溯到個人
+
+## 🔐 安全性 | Security
+
+- ✅ 所有依賴項已更新到最新安全版本
+- ✅ JWT token 認證
+- ✅ UUID 確保投票匿名性
+- ✅ 管理員權限檢查
+- ✅ 投票資格驗證
+- ✅ 時間窗口限制
+- ✅ 防止重複投票
+
+## 🚢 部署 | Deployment
+
+### 環境變數
+
+必須設定以下環境變數：
+
+```env
+# 資料庫
+MONGO_HOST=127.0.0.1
+MONGO_USERNAME=root
+MONGO_PASSWORD=password
+MONGO_NAME=voting_sa
+
+# 認證
+TOKEN_SECRET=your-secret-key
+
+# OAuth (生產環境)
+OAUTH_CLIENT_ID=your-client-id
+OAUTH_CLIENT_SECRET=your-client-secret
+OAUTH_AUTHORIZE=https://oauth.ccxp.nthu.edu.tw/v1.1/authorize.php
+OAUTH_TOKEN_URL=https://oauth.ccxp.nthu.edu.tw/v1.1/token.php
+OAUTH_RESOURCE_URL=https://oauth.ccxp.nthu.edu.tw/v1.1/resource.php
+OAUTH_CALLBACK_URL=https://your-domain.com/api/auth/callback
+```
+
+### Docker 部署
+
+```bash
+# 構建生產映像
+docker build -t voting-system .
+
+# 使用 docker-compose 部署
+docker-compose up -d
+```
+
+## 🤝 貢獻 | Contributing
+
+歡迎提交 Pull Request 或開 Issue！
+
+1. Fork 本專案
+2. 建立功能分支 (`git checkout -b feature/amazing-feature`)
+3. 提交變更 (`git commit -m 'Add some amazing feature'`)
+4. 推送到分支 (`git push origin feature/amazing-feature`)
+5. 開啟 Pull Request
+
+## 📝 授權 | License
+
+ISC License
+
+## 👥 維護者 | Maintainers
+
+- 清華大學學生會資訊部
+
+## 🙏 致謝 | Acknowledgments
+
+感謝所有為本專案做出貢獻的開發者和清華大學學生會。
 
 ---
 
-- [ ] 加入登入跳轉到原先頁面
-- [ ] 加入 debug、log
-- [ ] 加入後台投票統計圓餅圖
-- [ ] 加入自動化測試
-- [ ] 修正投票按鈕點選範圍
-- [ ] 重構前端程式碼
+**⚠️ 重要提醒**
+
+此系統處理敏感的投票資料，請確保：
+1. 妥善保管環境變數和 secrets
+2. 定期更新依賴項
+3. 遵循最佳安全實踐
+4. 定期備份資料庫
+5. 在生產環境使用 HTTPS
+
+如有任何問題，請聯繫清華大學學生會資訊部。
