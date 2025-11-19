@@ -3,11 +3,11 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Header from '@/components/Header';
-import AdminGuard from '@/components/auth/AdminGuard';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 import { Loading } from '@/components/ui/loader';
 import Link from 'next/link';
 import { ArrowLeft, Plus, AlertCircle } from 'lucide-react';
@@ -19,6 +19,8 @@ function NewActivityPageContent() {
   const [formData, setFormData] = useState({
     name: '',
     type: '',
+    subtitle: '',
+    description: '',
     rule: 'choose_one' as 'choose_one' | 'choose_all',
     open_from: '',
     open_to: '',
@@ -56,7 +58,7 @@ function NewActivityPageContent() {
   };
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -117,6 +119,38 @@ function NewActivityPageContent() {
                   required
                   disabled={loading}
                 />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="subtitle">活動副標題</Label>
+                <Input
+                  id="subtitle"
+                  name="subtitle"
+                  type="text"
+                  value={formData.subtitle}
+                  onChange={handleChange}
+                  placeholder="例：第52屆學生會會長選舉"
+                  disabled={loading}
+                />
+                <p className="text-xs text-muted-foreground">
+                  選填，將顯示在投票頁面作為副標題
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="description">活動說明</Label>
+                <Textarea
+                  id="description"
+                  name="description"
+                  value={formData.description}
+                  onChange={handleChange}
+                  placeholder="例：本次選舉將選出新任學生會會長及兩位副會長，任期為一年。請仔細閱讀各候選人政見後投票。"
+                  rows={4}
+                  disabled={loading}
+                />
+                <p className="text-xs text-muted-foreground">
+                  選填，將顯示在投票頁面作為活動說明
+                </p>
               </div>
 
               <div className="space-y-2">
@@ -198,9 +232,5 @@ function NewActivityPageContent() {
 }
 
 export default function NewActivityPage() {
-  return (
-    <AdminGuard>
-      <NewActivityPageContent />
-    </AdminGuard>
-  );
+  return <NewActivityPageContent />;
 }

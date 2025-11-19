@@ -13,6 +13,8 @@ interface Activity {
   _id: string;
   name: string;
   type: string;
+  subtitle?: string;
+  description?: string;
   rule: 'choose_all' | 'choose_one';
   open_from: string;
   open_to: string;
@@ -23,10 +25,24 @@ export default function VotePage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [votedActivityIds, setVotedActivityIds] = useState<string[]>([]);
 
   useEffect(() => {
     fetchActivities();
+    loadVotingHistory();
   }, []);
+
+  const loadVotingHistory = () => {
+    try {
+      const history = localStorage.getItem('voting_history');
+      if (history) {
+        const parsed = JSON.parse(history);
+        setVotedActivityIds(parsed.votedActivityIds || []);
+      }
+    } catch (err) {
+      console.error('Error loading voting history:', err);
+    }
+  };
 
   const fetchActivities = async () => {
     try {
@@ -125,13 +141,24 @@ export default function VotePage() {
               <Card key={activity._id} className="transition-shadow hover:shadow-lg">
                 <CardHeader>
                   <div className="flex items-start justify-between gap-2">
-                    <CardTitle className="flex-1 text-xl">
-                      {activity.name}
-                    </CardTitle>
+                    <div className="flex-1">
+                      <CardTitle className="text-xl">
+                        {activity.name}
+                      </CardTitle>
+                      {activity.subtitle && (
+                        <p className="mt-1 text-sm text-muted-foreground">{activity.subtitle}</p>
+                      )}
+                    </div>
                     {getStatusBadge(activity)}
                   </div>
                 </CardHeader>
                 <CardContent className="space-y-3">
+                  {activity.description && (
+                    <p className="text-sm text-muted-foreground line-clamp-2">
+                      {activity.description}
+                    </p>
+                  )}
+                  
                   <div className="flex items-center text-sm">
                     <Tag className="mr-2 h-4 w-4 flex-shrink-0 text-primary" />
                     <span className="font-medium">類型：</span>
@@ -163,9 +190,21 @@ export default function VotePage() {
                   </div>
 
                   <div className="pt-4">
-                    <Button className="w-full" asChild>
-                      <Link href={`/vote/${activity._id}`}>開始投票</Link>
-                    </Button>
+                    {votedActivityIds.includes(activity._id) ? (
+                      <div className="space-y-2">
+                        <Badge variant="default" className="w-full py-2 bg-green-600">
+                          <CheckCircle className="mr-2 h-4 w-4" />
+                          已完成投票
+                        </Badge>
+                        <Button className="w-full" variant="outline" asChild>
+                          <Link href={`/vote/${activity._id}`}>查看詳情</Link>
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button className="w-full" asChild>
+                        <Link href={`/vote/${activity._id}`}>開始投票</Link>
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>

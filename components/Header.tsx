@@ -12,7 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { User, Shield, LogOut, Vote } from 'lucide-react';
+import { User, Shield, LogOut, Vote, ClipboardCheck } from 'lucide-react';
 
 interface UserData {
   student_id: string;
@@ -101,17 +101,30 @@ export default function Header() {
                     </div>
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
+                  <DropdownMenuItem asChild>
+                    <Link href="/vote">
+                      <Vote className="mr-2 h-4 w-4" />
+                      投票活動
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link href="/vote/completion">
+                      <ClipboardCheck className="mr-2 h-4 w-4" />
+                      投票證明
+                    </Link>
+                  </DropdownMenuItem>
                   {user.isAdmin && (
                     <>
+                      <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
                         <Link href="/admin">
                           <Shield className="mr-2 h-4 w-4" />
                           管理後台
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator />
                     </>
                   )}
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleLogout} className="text-destructive focus:text-destructive">
                     <LogOut className="mr-2 h-4 w-4" />
                     登出

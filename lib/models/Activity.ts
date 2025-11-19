@@ -10,6 +10,14 @@ const ActivitySchema = new Schema<IActivity>({
     type: String,
     required: true,
   },
+  subtitle: {
+    type: String,
+    required: false,
+  },
+  description: {
+    type: String,
+    required: false,
+  },
   rule: {
     type: String,
     enum: ['choose_all', 'choose_one'],
