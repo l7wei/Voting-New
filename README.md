@@ -13,11 +13,13 @@ Anonymous voting system for National Tsing Hua University Student Association.
 ## Core Features
 
 ### Anonymous Voting
+
 - UUID-based tokens ensure complete anonymity
 - Votes cannot be traced to individuals even with database access
 - System tracks participation only, not vote content
 
 ### Voting Methods
+
 - **choose_all**: Rate each option (support/oppose/neutral)
 - **choose_one**: Single choice selection
 
@@ -54,6 +56,7 @@ Access at http://localhost:3000
 ### Production Deployment
 
 #### Prerequisites
+
 - MongoDB instance (external, not managed by this application)
 - OAuth credentials from CCXP
 - SSL certificates for HTTPS
@@ -105,6 +108,7 @@ OAUTH_SCOPE=userid name inschool uuid
 ```
 
 **Generate strong TOKEN_SECRET:**
+
 ```bash
 openssl rand -base64 32
 ```
@@ -114,6 +118,7 @@ openssl rand -base64 32
 ### Eligible Voters
 
 Edit `data/voterList.csv`:
+
 ```csv
 student_id
 110000001
@@ -123,6 +128,7 @@ student_id
 ### Administrators
 
 Edit `data/adminList.csv`:
+
 ```csv
 student_id
 108060001
@@ -134,6 +140,7 @@ student_id
 ### Anonymity Model
 
 **Vote Record (votes collection)** - No voter identification:
+
 ```typescript
 {
   activity_id: ObjectId,
@@ -146,6 +153,7 @@ student_id
 ```
 
 **Activity Record (activities collection)** - Tracks participation only:
+
 ```typescript
 {
   name: string,
@@ -167,12 +175,14 @@ student_id
 ## API Endpoints
 
 ### Authentication
+
 - `GET /api/auth/login` - Start OAuth flow
 - `GET /api/auth/callback` - OAuth callback
 - `GET /api/auth/check` - Check auth status
 - `GET /api/auth/logout` - Logout
 
 ### Activities
+
 - `GET /api/activities` - List activities (public)
 - `GET /api/activities/:id` - Get activity details (public)
 - `POST /api/activities` - Create activity (admin)
@@ -180,10 +190,12 @@ student_id
 - `DELETE /api/activities/:id` - Delete activity (admin)
 
 ### Voting
+
 - `POST /api/votes` - Submit vote (authenticated, eligible)
 - `GET /api/votes` - List votes (admin, anonymized)
 
 ### Statistics
+
 - `GET /api/stats?activity_id=:id` - Get statistics (admin)
 
 ## Development
@@ -246,6 +258,7 @@ For local development, the system uses Mock OAuth:
 ## Security
 
 ### Implemented Measures
+
 - ✅ JWT authentication with HttpOnly cookies
 - ✅ UUID-based vote anonymization
 - ✅ Admin role verification via CSV
@@ -256,6 +269,7 @@ For local development, the system uses Mock OAuth:
 - ✅ MongoDB authentication
 
 ### Privacy Guarantees
+
 - No user database - OAuth data not persisted
 - Vote records contain no voter identification
 - Activity records track participation only
@@ -281,18 +295,21 @@ Before deploying to production:
 ## Troubleshooting
 
 **MongoDB connection failed**
+
 - Verify MongoDB is running and accessible
 - Check connection credentials in `.env`
 - Ensure MongoDB allows connections from app server
 - Check firewall rules
 
 **OAuth login fails**
+
 - Verify OAuth credentials are correct
 - Ensure `OAUTH_CALLBACK_URL` matches registered redirect URI
 - Check OAuth provider is accessible
 - Review error logs: `docker-compose logs -f app`
 
 **Vote submission fails**
+
 - Verify student is in `data/voterList.csv`
 - Check activity time window is valid
 - Confirm student hasn't already voted

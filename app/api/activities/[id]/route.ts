@@ -64,8 +64,7 @@ export async function PUT(
 
     const { id } = await params;
     const body = await request.json();
-    const { name, type, description, rule, open_from, open_to } =
-      body;
+    const { name, type, description, rule, open_from, open_to } = body;
 
     // Validate rule if provided
     if (rule && !["choose_all", "choose_one"].includes(rule)) {

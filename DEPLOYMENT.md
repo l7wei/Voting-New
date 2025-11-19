@@ -409,6 +409,7 @@ sudo docker stats
 ## Support
 
 For issues or questions:
+
 - Check logs: `sudo docker-compose logs -f app`
 - Review documentation: README.md
 - Contact: NTHU Student Association Technology Department

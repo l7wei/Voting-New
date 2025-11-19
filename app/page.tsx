@@ -14,7 +14,7 @@ import {
   ArrowRight,
   CheckCircle2,
   Vote,
-  TrendingUp
+  TrendingUp,
 } from "lucide-react";
 
 interface Activity {
@@ -83,11 +83,14 @@ export default function HomePage() {
               </Link>
             </Button>
             {!loading && activities.length > 0 && (
-<Button variant="secondary" size="lg" className="flex items-center gap-2">
-  <CheckCircle2 className="h-4 w-4" />
-  {activities.length} 個投票活動進行中
-</Button>
-
+              <Button
+                variant="secondary"
+                size="lg"
+                className="flex items-center gap-2"
+              >
+                <CheckCircle2 className="h-4 w-4" />
+                {activities.length} 個投票活動進行中
+              </Button>
             )}
           </div>
         </div>
@@ -96,9 +99,7 @@ export default function HomePage() {
         <div className="mb-16">
           <div className="mb-8 text-center">
             <h2 className="mb-2 text-3xl font-bold">為什麼選擇我們</h2>
-            <p className="text-muted-foreground">
-              專為學生會設計的投票系統
-            </p>
+            <p className="text-muted-foreground">專為學生會設計的投票系統</p>
           </div>
           <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
             <Card className="group transition-all hover:shadow-lg">

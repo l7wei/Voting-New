@@ -55,9 +55,27 @@ function NewActivityWizard() {
   const [options, setOptions] = useState<OptionForm[]>([]);
   const [currentOption, setCurrentOption] = useState<OptionForm>({
     label: "",
-    candidate: { name: "", department: "", college: "", experiences: "", opinions: "" },
-    vice1: { name: "", department: "", college: "", experiences: "", opinions: "" },
-    vice2: { name: "", department: "", college: "", experiences: "", opinions: "" },
+    candidate: {
+      name: "",
+      department: "",
+      college: "",
+      experiences: "",
+      opinions: "",
+    },
+    vice1: {
+      name: "",
+      department: "",
+      college: "",
+      experiences: "",
+      opinions: "",
+    },
+    vice2: {
+      name: "",
+      department: "",
+      college: "",
+      experiences: "",
+      opinions: "",
+    },
   });
 
   // Check admin access on mount
@@ -90,18 +108,23 @@ function NewActivityWizard() {
   };
 
   const validateStep1 = () => {
-    if (!activityData.name || !activityData.type || !activityData.open_from || !activityData.open_to) {
+    if (
+      !activityData.name ||
+      !activityData.type ||
+      !activityData.open_from ||
+      !activityData.open_to
+    ) {
       setError("請填寫所有必填欄位");
       return false;
     }
-    
+
     const openFrom = new Date(activityData.open_from);
     const openTo = new Date(activityData.open_to);
     if (openFrom >= openTo) {
       setError("結束時間必須晚於開始時間");
       return false;
     }
-    
+
     return true;
   };
 
@@ -119,13 +142,31 @@ function NewActivityWizard() {
       setError("請至少填寫正選候選人姓名");
       return;
     }
-    
+
     setOptions([...options, currentOption]);
     setCurrentOption({
       label: "",
-      candidate: { name: "", department: "", college: "", experiences: "", opinions: "" },
-      vice1: { name: "", department: "", college: "", experiences: "", opinions: "" },
-      vice2: { name: "", department: "", college: "", experiences: "", opinions: "" },
+      candidate: {
+        name: "",
+        department: "",
+        college: "",
+        experiences: "",
+        opinions: "",
+      },
+      vice1: {
+        name: "",
+        department: "",
+        college: "",
+        experiences: "",
+        opinions: "",
+      },
+      vice2: {
+        name: "",
+        department: "",
+        college: "",
+        experiences: "",
+        opinions: "",
+      },
     });
     setError("");
   };
@@ -175,8 +216,10 @@ function NewActivityWizard() {
           const candidate: Record<string, unknown> = {
             name: option.candidate.name,
           };
-          if (option.candidate.department) candidate.department = option.candidate.department;
-          if (option.candidate.college) candidate.college = option.candidate.college;
+          if (option.candidate.department)
+            candidate.department = option.candidate.department;
+          if (option.candidate.college)
+            candidate.college = option.candidate.college;
           if (option.candidate.experiences) {
             candidate.personal_experiences = option.candidate.experiences
               .split("\n")
@@ -194,7 +237,8 @@ function NewActivityWizard() {
           const vice1: Record<string, unknown> = {
             name: option.vice1.name,
           };
-          if (option.vice1.department) vice1.department = option.vice1.department;
+          if (option.vice1.department)
+            vice1.department = option.vice1.department;
           if (option.vice1.college) vice1.college = option.vice1.college;
           if (option.vice1.experiences) {
             vice1.personal_experiences = option.vice1.experiences
@@ -213,7 +257,8 @@ function NewActivityWizard() {
           const vice2: Record<string, unknown> = {
             name: option.vice2.name,
           };
-          if (option.vice2.department) vice2.department = option.vice2.department;
+          if (option.vice2.department)
+            vice2.department = option.vice2.department;
           if (option.vice2.college) vice2.college = option.vice2.college;
           if (option.vice2.experiences) {
             vice2.personal_experiences = option.vice2.experiences
@@ -250,7 +295,7 @@ function NewActivityWizard() {
     candidate: CandidateForm,
     onChange: (field: keyof CandidateForm, value: string) => void,
     label: string,
-    required: boolean = false
+    required: boolean = false,
   ) => (
     <div className="space-y-3">
       <h4 className="font-semibold">{label}</h4>
@@ -490,10 +535,13 @@ function NewActivityWizard() {
                       (field, value) =>
                         setCurrentOption({
                           ...currentOption,
-                          candidate: { ...currentOption.candidate, [field]: value },
+                          candidate: {
+                            ...currentOption.candidate,
+                            [field]: value,
+                          },
                         }),
                       "正選候選人",
-                      true
+                      true,
                     )}
 
                     {renderCandidateForm(
@@ -503,7 +551,7 @@ function NewActivityWizard() {
                           ...currentOption,
                           vice1: { ...currentOption.vice1, [field]: value },
                         }),
-                      "副選候選人 1（選填）"
+                      "副選候選人 1（選填）",
                     )}
 
                     {renderCandidateForm(
@@ -513,7 +561,7 @@ function NewActivityWizard() {
                           ...currentOption,
                           vice2: { ...currentOption.vice2, [field]: value },
                         }),
-                      "副選候選人 2（選填）"
+                      "副選候選人 2（選填）",
                     )}
 
                     <Button

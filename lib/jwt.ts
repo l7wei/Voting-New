@@ -3,7 +3,9 @@ import { JWTPayload, AuthUser } from "@/types";
 
 function getTokenSecret(): string {
   if (!process.env.TOKEN_SECRET) {
-    throw new Error("TOKEN_SECRET environment variable is required but not set");
+    throw new Error(
+      "TOKEN_SECRET environment variable is required but not set",
+    );
   }
   return process.env.TOKEN_SECRET;
 }

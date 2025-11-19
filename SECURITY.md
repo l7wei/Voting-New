@@ -76,20 +76,22 @@ The NTHU Voting System has undergone a comprehensive security audit. The codebas
 1. **Rate Limiting**
    - **Risk**: Brute force attacks on login
    - **Recommendation**: Implement rate limiting middleware
+
    ```typescript
    // Example using express-rate-limit
-   import rateLimit from 'express-rate-limit';
-   
+   import rateLimit from "express-rate-limit";
+
    const authLimiter = rateLimit({
      windowMs: 15 * 60 * 1000, // 15 minutes
      max: 5, // 5 requests per window
-     message: 'Too many login attempts, please try again later'
+     message: "Too many login attempts, please try again later",
    });
    ```
 
 2. **Content Security Policy (CSP)**
    - **Risk**: XSS attacks via inline scripts
    - **Recommendation**: Add CSP headers
+
    ```typescript
    // In next.config.js
    async headers() {
@@ -114,7 +116,7 @@ The NTHU Voting System has undergone a comprehensive security audit. The codebas
    export const config = {
      api: {
        bodyParser: {
-         sizeLimit: '1mb',
+         sizeLimit: "1mb",
        },
      },
    };
@@ -125,16 +127,27 @@ The NTHU Voting System has undergone a comprehensive security audit. The codebas
 4. **CORS Configuration**
    - **Current**: Default Next.js CORS
    - **Recommendation**: Explicit CORS configuration for production
+
    ```typescript
    // In middleware or API routes
-   response.headers.set('Access-Control-Allow-Origin', 'https://voting.nthusa.tw');
-   response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
-   response.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+   response.headers.set(
+     "Access-Control-Allow-Origin",
+     "https://voting.nthusa.tw",
+   );
+   response.headers.set(
+     "Access-Control-Allow-Methods",
+     "GET, POST, PUT, DELETE",
+   );
+   response.headers.set(
+     "Access-Control-Allow-Headers",
+     "Content-Type, Authorization",
+   );
    ```
 
 5. **Database Connection Pooling**
    - **Current**: Basic Mongoose connection
    - **Recommendation**: Configure connection pool limits
+
    ```typescript
    mongoose.connect(MONGODB_URI, {
      maxPoolSize: 10,
@@ -162,6 +175,7 @@ The NTHU Voting System has undergone a comprehensive security audit. The codebas
 
 7. **Helmet.js for Additional Headers**
    - **Recommendation**: Add security headers via Helmet
+
    ```typescript
    // Security headers to add:
    // - X-Content-Type-Options: nosniff
@@ -177,10 +191,11 @@ The NTHU Voting System has undergone a comprehensive security audit. The codebas
 
 9. **Dependency Scanning**
    - **Recommendation**: Set up automated dependency scanning
+
    ```bash
    npm audit
    npm audit fix
-   
+
    # Or use Snyk/Dependabot
    ```
 
@@ -196,11 +211,12 @@ The NTHU Voting System has undergone a comprehensive security audit. The codebas
 ### Recommendations for Production MongoDB
 
 1. **Network Security**
+
    ```bash
    # Bind only to specific IP
    net:
      bindIp: 127.0.0.1,APP_SERVER_IP
-   
+
    # Enable TLS/SSL
    net:
      tls:
@@ -209,6 +225,7 @@ The NTHU Voting System has undergone a comprehensive security audit. The codebas
    ```
 
 2. **Authentication**
+
    ```bash
    # Use strong passwords (20+ characters)
    # Rotate credentials regularly
@@ -216,6 +233,7 @@ The NTHU Voting System has undergone a comprehensive security audit. The codebas
    ```
 
 3. **Backup & Recovery**
+
    ```bash
    # Automated daily backups
    # Test restore procedures
@@ -279,6 +297,7 @@ The NTHU Voting System has undergone a comprehensive security audit. The codebas
    - Test rate limiting and DoS resilience
 
 2. **Automated Security Scanning**
+
    ```bash
    # Run OWASP ZAP or similar
    # Schedule regular scans
@@ -344,12 +363,14 @@ The NTHU Voting System demonstrates a strong security posture with proper implem
 **Overall Security Rating: 8.5/10**
 
 ### Strengths
+
 - Robust anonymization mechanism
 - Proper authentication and authorization
 - Clean code with good practices
 - No critical vulnerabilities found
 
 ### Areas for Improvement
+
 - Add rate limiting
 - Implement CSP headers
 - Add audit logging for admin actions
