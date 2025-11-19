@@ -1,23 +1,31 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { mockAuthStore } from '@/lib/mockAuthStore';
 
 export async function POST(request: NextRequest) {
-  // Try to get mock data from cookie
-  const mockDataCookie = request.cookies.get('mock_oauth_data');
+  // Get access token from Authorization header
+  const authHeader = request.headers.get('Authorization');
   
-  let mockData = {
+  let mockData = null;
+  
+  if (authHeader && authHeader.startsWith('Bearer ')) {
+    const accessToken = authHeader.substring(7);
+    // Retrieve mock data from store using access token
+    mockData = mockAuthStore.get(accessToken);
+    
+    if (mockData) {
+      console.log('[Mock Resource] Found data for access token');
+      return NextResponse.json(mockData);
+    }
+  }
+  
+  // Fallback to default data
+  mockData = {
     Userid: process.env.MOCK_STUDENT_ID || '110000114',
     name: '測試學生',
     inschool: 'true',
     uuid: 'mock-uuid-' + Date.now(),
   };
   
-  if (mockDataCookie) {
-    try {
-      mockData = JSON.parse(mockDataCookie.value);
-    } catch {
-      // Use default if parsing fails
-    }
-  }
-
+  console.log('[Mock Resource] Using fallback data');
   return NextResponse.json(mockData);
 }

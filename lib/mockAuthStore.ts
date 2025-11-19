@@ -15,24 +15,24 @@ class MockAuthStore {
 
   constructor() {
     // Use globalThis to survive hot reloads in development
-    if (!(globalThis as any).__mockAuthStore) {
-      (globalThis as any).__mockAuthStore = new Map<string, MockAuthData>();
+    if (!(globalThis as Record<string, unknown>).__mockAuthStore) {
+      (globalThis as Record<string, unknown>).__mockAuthStore = new Map<string, MockAuthData>();
     }
-    this.store = (globalThis as any).__mockAuthStore;
+    this.store = (globalThis as Record<string, unknown>).__mockAuthStore as Map<string, MockAuthData>;
   }
 
-  set(code: string, data: MockAuthData) {
-    this.store.set(code, { ...data, timestamp: Date.now() });
+  set(key: string, data: MockAuthData) {
+    this.store.set(key, { ...data, timestamp: Date.now() });
     this.cleanup();
   }
 
-  get(code: string): MockAuthData | null {
-    const data = this.store.get(code);
-    if (data) {
-      this.store.delete(code); // One-time use
-      return data;
-    }
-    return null;
+  get(key: string): MockAuthData | null {
+    const data = this.store.get(key);
+    return data || null;
+  }
+
+  delete(key: string): void {
+    this.store.delete(key);
   }
 
   private cleanup() {
