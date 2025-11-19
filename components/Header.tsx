@@ -79,35 +79,25 @@ export default function Header() {
             <div className="h-10 w-24 animate-pulse rounded-xl bg-muted" />
           ) : user ? (
             <>
-              {user.isAdmin && (
-                <Button variant="outline" asChild>
-                  <Link href="/admin">
-                    <Shield className="mr-2 h-4 w-4" />
-                    管理後台
-                  </Link>
-                </Button>
-              )}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="gap-2">
                     <Avatar className="h-8 w-8">
-                      <AvatarFallback
-                        className={
-                          user.isAdmin
-                            ? "bg-primary text-primary-foreground"
-                            : "bg-muted"
-                        }
-                      >
+                      <AvatarFallback className="bg-primary text-primary-foreground">
                         <User className="h-4 w-4" />
                       </AvatarFallback>
                     </Avatar>
-                    <span className="hidden sm:inline">{user.name}</span>
+                    <span className="hidden sm:inline">
+                      {user.isAdmin && "[管理員] "}
+                      {user.name}
+                    </span>
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <DropdownMenuLabel>
                     <div className="flex flex-col space-y-1">
                       <p className="text-sm font-medium leading-none">
+                        {user.isAdmin && "[管理員] "}
                         {user.name}
                       </p>
                       <p className="text-xs leading-none text-muted-foreground">
