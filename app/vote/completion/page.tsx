@@ -77,8 +77,8 @@ export default function CompletionPage() {
       <main className="container mx-auto max-w-4xl px-6 py-8 sm:py-12">
         {/* Header */}
         <div className="mb-8 text-center">
-          <div className="mx-auto mb-4 inline-flex h-20 w-20 items-center justify-center rounded-full bg-green-100">
-            <CheckCircle2 className="h-12 w-12 text-green-600" />
+          <div className="mx-auto mb-4 inline-flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
+            <CheckCircle2 className="h-12 w-12 text-primary" />
           </div>
           <h1 className="mb-3 text-3xl font-bold sm:text-4xl">
             投票完成證明
@@ -89,7 +89,7 @@ export default function CompletionPage() {
         </div>
 
         {/* Completion Certificate Card */}
-        <Card className="mb-8 border-2 border-primary bg-gradient-to-br from-primary/5 to-purple-50">
+        <Card className="mb-8 border-2 border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle className="text-2xl">投票證明總覽</CardTitle>
@@ -107,7 +107,7 @@ export default function CompletionPage() {
                     <div className="mb-4 flex items-start justify-between">
                       <div className="flex-1">
                         <div className="mb-2 flex items-center gap-2">
-                          <CheckCircle2 className="h-5 w-5 text-green-600" />
+                          <CheckCircle2 className="h-5 w-5 text-primary" />
                           <h3 className="text-lg font-bold">{vote.activityName}</h3>
                         </div>
                         <p className="text-sm text-muted-foreground">
@@ -160,10 +160,10 @@ export default function CompletionPage() {
         </Card>
 
         {/* Important Notice */}
-        <Card className="mb-8 border-amber-500 bg-amber-50">
+        <Card className="mb-8 border-primary/30 bg-primary/5">
           <CardContent className="p-6">
-            <h3 className="mb-3 font-bold text-amber-900">📌 重要提醒</h3>
-            <ul className="space-y-2 text-sm text-amber-800">
+            <h3 className="mb-3 font-bold">📌 重要提醒</h3>
+            <ul className="space-y-2 text-sm text-muted-foreground">
               <li className="flex items-start">
                 <span className="mr-2">•</span>
                 <span>請截圖保存此頁面作為投票完成證明（可用於期末慰問會等活動）</span>

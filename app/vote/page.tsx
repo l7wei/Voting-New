@@ -192,7 +192,7 @@ export default function VotePage() {
                   <div className="pt-4">
                     {votedActivityIds.includes(activity._id) ? (
                       <div className="space-y-2">
-                        <Badge variant="default" className="w-full py-2 bg-green-600">
+                        <Badge variant="default" className="w-full py-2">
                           <CheckCircle className="mr-2 h-4 w-4" />
                           已完成投票
                         </Badge>
