@@ -2,7 +2,10 @@ import jwt from 'jsonwebtoken';
 import { JWTPayload, AuthUser } from '@/types';
 import { isAdmin as checkIsAdmin } from '@/lib/adminConfig';
 
-const TOKEN_SECRET = process.env.TOKEN_SECRET || 'mysecret';
+if (!process.env.TOKEN_SECRET) {
+  throw new Error('TOKEN_SECRET is required but not set');
+}
+const TOKEN_SECRET = process.env.TOKEN_SECRET;
 
 export function generateToken(user: AuthUser): string {
   // _id is set to student_id since we don't use MongoDB User collection
