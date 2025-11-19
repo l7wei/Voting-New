@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
       return NextResponse.json({ authenticated: false }, { status: 200 });
     }
 
-    const payload = verifyToken(token);
+    const payload = await verifyToken(token);
 
     if (!payload) {
       return NextResponse.json({ authenticated: false }, { status: 200 });

@@ -1,37 +1,5 @@
-import jwt from "jsonwebtoken";
-import { JWTPayload, AuthUser } from "@/types";
+export { generateToken, verifyToken } from "@/lib/jwt";
 import { isAdmin as checkIsAdmin } from "@/lib/adminConfig";
-
-if (!process.env.TOKEN_SECRET) {
-  throw new Error("TOKEN_SECRET environment variable is required but not set");
-}
-
-const TOKEN_SECRET = process.env.TOKEN_SECRET;
-
-export function generateToken(user: AuthUser): string {
-  // _id is set to student_id since we don't use MongoDB User collection
-  const payload: JWTPayload = {
-    account: user.student_id,
-    _id: user.student_id, // Use student_id as _id (no User collection)
-    student_id: user.student_id,
-    name: user.name,
-  };
-
-  const options: jwt.SignOptions = {
-    algorithm: "HS256",
-    expiresIn: "1d",
-  };
-
-  return jwt.sign(payload, TOKEN_SECRET, options);
-}
-
-export function verifyToken(token: string): JWTPayload | null {
-  try {
-    return jwt.verify(token, TOKEN_SECRET) as JWTPayload;
-  } catch {
-    return null;
-  }
-}
 
 export async function isAdmin(studentId: string): Promise<boolean> {
   return checkIsAdmin(studentId);

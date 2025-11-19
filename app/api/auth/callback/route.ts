@@ -43,7 +43,7 @@ export async function GET(request: NextRequest) {
     );
 
     // Generate service token with name included (no database lookup needed)
-    const serviceToken = generateToken({
+    const serviceToken = await generateToken({
       _id: studentId, // Use student_id as _id
       student_id: studentId,
       name: userName,

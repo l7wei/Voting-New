@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { verifyTokenEdge } from "@/lib/authEdge";
+import { verifyToken } from "@/lib/jwt";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -50,8 +50,8 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    // Verify token using Edge-compatible function
-    const decoded = await verifyTokenEdge(token);
+    // Verify token using auth function
+    const decoded = await verifyToken(token);
     if (!decoded) {
       // Invalid token, redirect to login
       const loginUrl = new URL("/login", request.url);
