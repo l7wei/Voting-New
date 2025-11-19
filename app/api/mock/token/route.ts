@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
 import { mockAuthStore } from "@/lib/mockAuthStore";
-import { error } from "console";
 
 export async function POST(request: NextRequest) {
   try {
