@@ -13,6 +13,7 @@ function MockAuthContent() {
   const redirectUri = searchParams.get('redirect_uri');
   const clientId = searchParams.get('client_id');
   const scope = searchParams.get('scope') || 'userid name inschool uuid';
+  const state = searchParams.get('state');
   
   const [formData, setFormData] = useState({
     userid: '110000114',
@@ -69,9 +70,12 @@ function MockAuthContent() {
         throw new Error('Failed to store authorization data');
       }
       
-      // Redirect to callback with code
+      // Redirect to callback with code and state
       const callbackUrl = new URL(redirectUri);
       callbackUrl.searchParams.set('code', code);
+      if (state) {
+        callbackUrl.searchParams.set('state', state);
+      }
       window.location.href = callbackUrl.toString();
     } catch (error) {
       console.error('Error during mock OAuth:', error);

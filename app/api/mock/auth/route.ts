@@ -5,6 +5,7 @@ export async function GET(request: NextRequest) {
   const redirectUri = searchParams.get('redirect_uri');
   const clientId = searchParams.get('client_id');
   const scope = searchParams.get('scope');
+  const state = searchParams.get('state');
   
   if (!redirectUri) {
     return NextResponse.json({ error: 'Missing redirect_uri' }, { status: 400 });
@@ -18,6 +19,9 @@ export async function GET(request: NextRequest) {
   }
   if (scope) {
     authPageUrl.searchParams.set('scope', scope);
+  }
+  if (state) {
+    authPageUrl.searchParams.set('state', state);
   }
   
   return NextResponse.redirect(authPageUrl);

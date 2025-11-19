@@ -7,9 +7,23 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams;
     const code = searchParams.get('code');
     const error = searchParams.get('error');
+    const state = searchParams.get('state');
 
     if (error === 'access_denied' || !code) {
       return NextResponse.redirect(new URL('/?error=auth_failed', request.url));
+    }
+
+    // Parse state to get redirect URL
+    let redirectPath = '/vote'; // Default redirect
+    if (state) {
+      try {
+        const stateData = JSON.parse(Buffer.from(state, 'base64').toString());
+        if (stateData.redirect) {
+          redirectPath = stateData.redirect;
+        }
+      } catch (e) {
+        console.error('Failed to parse state:', e);
+      }
     }
 
     console.log('Callback: Exchanging code for token...');
@@ -30,9 +44,9 @@ export async function GET(request: NextRequest) {
       name: userName,
     });
 
-    console.log('Callback: Generated service token, redirecting to /vote');
-    // Create response with redirect
-    const response = NextResponse.redirect(new URL('/vote', request.url));
+    console.log('Callback: Generated service token, redirecting to', redirectPath);
+    // Create response with redirect to the original destination
+    const response = NextResponse.redirect(new URL(redirectPath, request.url));
     
     // Set token in cookie
     response.cookies.set('service_token', serviceToken, {
