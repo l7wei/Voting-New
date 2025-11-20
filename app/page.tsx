@@ -6,7 +6,6 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   Lock,
   UserCheck,
@@ -16,39 +15,21 @@ import {
   Vote,
   TrendingUp,
 } from "lucide-react";
-
-interface Activity {
-  _id: string;
-  name: string;
-  type: string;
-  rule: "choose_all" | "choose_one";
-  open_from: string;
-  open_to: string;
-  users: string[];
-}
+import { fetchActiveActivities, Activity } from "@/lib/activities";
 
 export default function HomePage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchActivities();
+    fetchActivitiesData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const fetchActivities = async () => {
+  const fetchActivitiesData = async () => {
     try {
-      const response = await fetch("/api/activities");
-      const data = await response.json();
-
-      if (data.success) {
-        const now = new Date();
-        const activeActivities = data.data.filter((activity: Activity) => {
-          const openFrom = new Date(activity.open_from);
-          const openTo = new Date(activity.open_to);
-          return now >= openFrom && now <= openTo;
-        });
-        setActivities(activeActivities);
-      }
+      const activeActivities = await fetchActiveActivities();
+      setActivities(activeActivities);
     } catch (err) {
       console.error("Error fetching activities:", err);
     } finally {
