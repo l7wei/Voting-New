@@ -10,6 +10,15 @@ import connectDB from "@/lib/db";
 import { validateDateRange, isValidRule } from "@/lib/validation";
 import { API_CONSTANTS } from "@/lib/constants";
 
+// Configure API route
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "1mb",
+    },
+  },
+};
+
 // GET /api/activities - List all activities
 export async function GET(request: NextRequest) {
   try {

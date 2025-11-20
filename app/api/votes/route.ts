@@ -13,6 +13,15 @@ import { isValidRule } from "@/lib/validation";
 import { validatePagination } from "@/lib/validation";
 import { API_CONSTANTS } from "@/lib/constants";
 
+// Configure API route
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "1mb",
+    },
+  },
+};
+
 export async function POST(request: NextRequest) {
   try {
     // Authenticate user
