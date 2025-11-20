@@ -7,7 +7,7 @@ import {
 } from "@/lib/middleware";
 import { Activity } from "@/lib/models/Activity";
 import connectDB from "@/lib/db";
-import { validateDateRange, isValidRule } from "@/lib/validation";
+import { validateDateRange, isValidRule, validateRequiredFields } from "@/lib/validation";
 import { API_CONSTANTS } from "@/lib/constants";
 
 // Configure API route
@@ -65,9 +65,18 @@ export async function POST(request: NextRequest) {
     const { name, type, subtitle, description, rule, open_from, open_to } =
       body;
 
-    // Validate required fields
-    if (!name || !type || !rule || !open_from || !open_to) {
-      return createErrorResponse(API_CONSTANTS.ERRORS.MISSING_FIELD);
+    // Validate required fields using helper
+    const validation = validateRequiredFields(body, [
+      "name",
+      "type",
+      "rule",
+      "open_from",
+      "open_to",
+    ]);
+    if (!validation.valid) {
+      return createErrorResponse(
+        `${API_CONSTANTS.ERRORS.MISSING_FIELD}: ${validation.missingFields?.join(", ")}`
+      );
     }
 
     // Validate rule

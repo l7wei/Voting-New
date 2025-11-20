@@ -14,7 +14,7 @@ import {
   ArrowLeft,
   AlertCircle,
 } from "lucide-react";
-import { getVotedActivityIds } from "@/lib/votingHistory";
+import { hasVoted } from "@/lib/votingHistory";
 import {
   fetchActiveActivities,
   Activity,
@@ -25,13 +25,29 @@ export default function VotePage() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [votedActivityIds, setVotedActivityIds] = useState<string[]>([]);
+  const [currentStudentId, setCurrentStudentId] = useState<string>("");
 
   useEffect(() => {
     fetchActivitiesData();
-    setVotedActivityIds(getVotedActivityIds());
+    fetchUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch("/api/auth/check", {
+        credentials: "include",
+      });
+      if (response.ok) {
+        const data = await response.json();
+        if (data.authenticated && data.user) {
+          setCurrentStudentId(data.user.student_id);
+        }
+      }
+    } catch (err) {
+      console.error("Error fetching user data:", err);
+    }
+  };
 
   const fetchActivitiesData = async () => {
     try {
@@ -168,7 +184,7 @@ export default function VotePage() {
                   </div>
 
                   <div className="pt-4">
-                    {votedActivityIds.includes(activity._id) ? (
+                    {hasVoted(activity._id, currentStudentId) ? (
                       <div className="space-y-2">
                         <Badge variant="default" className="w-full py-2">
                           <CheckCircle className="mr-2 h-4 w-4" />

@@ -6,7 +6,6 @@ import Header from "@/components/Header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { CheckCircle2, Download, Home, Copy, Check, User } from "lucide-react";
 import { loadVotingHistory, VotingHistory } from "@/lib/votingHistory";
 
@@ -148,6 +147,9 @@ export default function CompletionPage() {
                           {vote.activityName}
                         </h3>
                       </div>
+                      <p className="text-sm text-muted-foreground">
+                        學號：{vote.studentId}
+                      </p>
                       <p className="text-sm text-muted-foreground">
                         投票時間：
                         {new Date(vote.timestamp).toLocaleString("zh-TW", {
