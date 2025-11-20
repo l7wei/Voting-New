@@ -1,6 +1,7 @@
 // Voting history management utilities
 
 export interface VoteRecord {
+  studentId: string;
   activityId: string;
   activityName: string;
   token: string;
@@ -34,6 +35,7 @@ export function saveVotingRecord(
   activityId: string,
   token: string,
   activityName: string,
+  studentId: string,
 ): VotingHistory {
   try {
     const history = loadVotingHistory();
@@ -45,6 +47,7 @@ export function saveVotingRecord(
 
     // Add vote record
     history.votes.push({
+      studentId,
       activityId,
       activityName,
       token,
@@ -62,8 +65,17 @@ export function saveVotingRecord(
 /**
  * Check if user has voted for a specific activity
  */
-export function hasVoted(activityId: string): boolean {
+export function hasVoted(activityId: string, studentId?: string): boolean {
   const history = loadVotingHistory();
+  
+  // If studentId is provided, check if this specific student has voted
+  if (studentId) {
+    return history.votes.some(
+      (vote) => vote.activityId === activityId && vote.studentId === studentId
+    );
+  }
+  
+  // Otherwise, fall back to checking if any vote exists for this activity
   return history.votedActivityIds.includes(activityId);
 }
 

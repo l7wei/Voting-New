@@ -17,13 +17,10 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
-  getVotedActivityIds,
   saveVotingRecord,
 } from "@/lib/votingHistory";
 import {
   fetchActivity,
-  fetchActiveActivities,
-  Activity,
   ActivityWithOptions,
   Candidate,
 } from "@/lib/activities";
@@ -42,10 +39,6 @@ export default function VotingPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [voteToken, setVoteToken] = useState<string>("");
-  const [showConfirmation, setShowConfirmation] = useState(false);
-  const [allActivities, setAllActivities] = useState<Activity[]>([]);
-  const [votedActivityIds, setVotedActivityIds] = useState<string[]>([]);
   const [userData, setUserData] = useState<UserData | null>(null);
 
   // Vote state
@@ -56,7 +49,6 @@ export default function VotingPage() {
 
   useEffect(() => {
     fetchActivityData();
-    setVotedActivityIds(getVotedActivityIds());
     fetchUserData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [activityId]);
@@ -77,15 +69,6 @@ export default function VotingPage() {
       }
     } catch (err) {
       console.error("Error fetching user data:", err);
-    }
-  };
-
-  const fetchAllActivities = async () => {
-    try {
-      const activeActivities = await fetchActiveActivities();
-      setAllActivities(activeActivities);
-    } catch (err) {
-      console.error("Error fetching activities:", err);
     }
   };
 
@@ -159,15 +142,15 @@ export default function VotingPage() {
       const data = await response.json();
 
       if (data.success) {
-        setVoteToken(data.data.token);
-        const updatedHistory = saveVotingRecord(
+        saveVotingRecord(
           activityId,
           data.data.token,
           activity.name,
+          userData?.student_id || "",
         );
-        setVotedActivityIds(updatedHistory.votedActivityIds);
-        await fetchAllActivities();
-        setShowConfirmation(true);
+        
+        // Redirect to completion page
+        router.push(`/vote/${activityId}/completion?token=${data.data.token}&name=${encodeURIComponent(activity.name)}`);
       } else {
         setError(data.error || "投票失敗");
       }
@@ -271,151 +254,6 @@ export default function VotingPage() {
           <CardContent className="py-12 text-center">
             <h2 className="mb-4 text-2xl font-bold">找不到投票活動</h2>
             <Button onClick={() => router.push("/vote")}>返回投票列表</Button>
-          </CardContent>
-        </Card>
-      </div>
-    );
-  }
-
-  if (showConfirmation) {
-    // Find next unvoted activity
-    const nextActivity = allActivities.find(
-      (act) => act._id !== activityId && !votedActivityIds.includes(act._id),
-    );
-    const allVoted =
-      allActivities.length > 0 &&
-      allActivities.every((act) => votedActivityIds.includes(act._id));
-
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-green-50 via-emerald-50 to-teal-50 px-4 py-8">
-        <Card className="w-full max-w-3xl shadow-xl border-2 border-green-200">
-          <CardContent className="p-8 sm:p-12">
-            <div className="mx-auto mb-6 inline-flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-green-500 to-emerald-600 shadow-lg">
-              <CheckCircle2 className="h-12 w-12 text-white" />
-            </div>
-            <h2 className="mb-3 text-3xl font-bold text-gray-900 sm:text-4xl">
-              投票成功！
-            </h2>
-            <p className="mb-8 text-lg text-gray-600">
-              感謝您的參與，您的投票已成功送出
-            </p>
-
-            {/* Voter Information Card */}
-            {userData && (
-              <Card className="mb-6 border-2 border-green-200 bg-gradient-to-br from-white to-green-50">
-                <CardContent className="p-6">
-                  <h3 className="mb-4 text-center text-lg font-bold text-gray-900">
-                    投票人資訊
-                  </h3>
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between rounded-lg bg-white p-4 shadow-sm">
-                      <span className="text-sm font-semibold text-gray-700">
-                        學號
-                      </span>
-                      <span className="text-base font-bold text-gray-900">
-                        {userData.student_id}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between rounded-lg bg-white p-4 shadow-sm">
-                      <span className="text-sm font-semibold text-gray-700">
-                        姓名
-                      </span>
-                      <span className="text-base font-bold text-gray-900">
-                        {userData.name}
-                      </span>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {/* UUID Certificate Card */}
-            <Card className="mb-8 border-2 border-emerald-300 bg-gradient-to-br from-emerald-50 to-teal-50 shadow-md">
-              <CardContent className="p-6">
-                <h3 className="mb-3 text-center text-lg font-bold text-emerald-900">
-                  投票證明 UUID
-                </h3>
-                <div className="break-all rounded-lg border-2 border-emerald-200 bg-white p-4 font-mono text-sm text-emerald-800 shadow-inner">
-                  {voteToken}
-                </div>
-                <p className="mt-4 text-center text-sm leading-relaxed text-gray-700">
-                  請妥善保存此 UUID，這是您投票的唯一證明。
-                  <br />
-                  系統採用匿名投票機制，無法追溯您的投票內容。
-                </p>
-              </CardContent>
-            </Card>
-
-            {allVoted ? (
-              <div className="space-y-4">
-                <Card className="border-2 border-green-400 bg-gradient-to-br from-green-50 to-emerald-100 shadow-md">
-                  <CardContent className="p-6 text-center">
-                    <CheckCircle2 className="mx-auto mb-3 h-12 w-12 text-green-600" />
-                    <h3 className="mb-2 text-xl font-bold text-green-900">
-                      🎉 恭喜！您已完成所有投票活動
-                    </h3>
-                    <p className="text-sm text-green-800">
-                      您已經投完所有開放中的投票活動，感謝您的參與！
-                    </p>
-                  </CardContent>
-                </Card>
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="flex-1 border-2 border-gray-300 hover:bg-gray-50"
-                    onClick={() => router.push("/vote")}
-                  >
-                    返回投票列表
-                  </Button>
-                  <Button
-                    size="lg"
-                    className="flex-1 bg-gradient-to-r"
-                    onClick={() => router.push("/vote/completion")}
-                  >
-                    查看投票證明
-                  </Button>
-                </div>
-              </div>
-            ) : nextActivity ? (
-              <div className="space-y-4">
-                <Card className="border-2 border-sky-400 bg-gradient-to-br from-sky-50 to-blue-100 shadow-md">
-                  <CardContent className="p-6 text-center">
-                    <h3 className="mb-2 text-lg font-bold text-sky-900">
-                      下一個投票活動
-                    </h3>
-                    <p className="mb-1 text-base font-medium text-sky-800">
-                      {nextActivity.name}
-                    </p>
-                  </CardContent>
-                </Card>
-                <div className="flex flex-col gap-3 sm:flex-row">
-                  <Button
-                    size="lg"
-                    variant="outline"
-                    className="flex-1 border-2 border-gray-300 hover:bg-gray-50"
-                    onClick={() => router.push("/vote")}
-                  >
-                    返回投票列表
-                  </Button>
-                  <Button
-                    size="lg"
-                    className="flex-1 bg-gradient-to-r from-sky-600 to-blue-600 hover:from-sky-700 hover:to-blue-700"
-                    onClick={() => router.push(`/vote/${nextActivity._id}`)}
-                  >
-                    繼續投票
-                  </Button>
-                </div>
-              </div>
-            ) : (
-              <Button
-                size="lg"
-                className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-                onClick={() => router.push("/vote")}
-              >
-                返回投票列表
-              </Button>
-            )}
           </CardContent>
         </Card>
       </div>
