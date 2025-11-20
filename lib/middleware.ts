@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { verifyToken } from "@/lib/auth";
 import { isAdmin } from "@/lib/adminConfig";
 import { JWTPayload } from "@/types";
+import { API_CONSTANTS } from "@/lib/constants";
 
 export interface AuthenticatedRequest extends NextRequest {
   user?: JWTPayload;
@@ -23,7 +24,7 @@ export async function requireAuth(
 
   if (!token) {
     return NextResponse.json(
-      { success: false, error: "Authentication failed: No token provided" },
+      { success: false, error: API_CONSTANTS.ERRORS.AUTH_NO_TOKEN },
       { status: 401 },
     );
   }
@@ -32,7 +33,7 @@ export async function requireAuth(
 
   if (!decoded) {
     return NextResponse.json(
-      { success: false, error: "Authentication failed: Invalid token" },
+      { success: false, error: API_CONSTANTS.ERRORS.AUTH_INVALID_TOKEN },
       { status: 401 },
     );
   }
@@ -50,7 +51,7 @@ export async function requireAdmin(
       return NextResponse.json(
         {
           success: false,
-          error: "Authorization failed: Admin access required",
+          error: API_CONSTANTS.ERRORS.ADMIN_REQUIRED,
         },
         { status: 403 },
       );
@@ -59,7 +60,7 @@ export async function requireAdmin(
     return null;
   } catch {
     return NextResponse.json(
-      { success: false, error: "Authorization failed" },
+      { success: false, error: API_CONSTANTS.ERRORS.ADMIN_REQUIRED },
       { status: 403 },
     );
   }

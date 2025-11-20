@@ -8,6 +8,17 @@ import {
 import { Activity } from "@/lib/models/Activity";
 import { Option } from "@/lib/models/Option";
 import connectDB from "@/lib/db";
+import { isValidObjectId } from "@/lib/validation";
+import { API_CONSTANTS } from "@/lib/constants";
+
+// Configure API route
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "1mb",
+    },
+  },
+};
 
 // GET /api/options - List options for an activity
 export async function GET(request: NextRequest) {
@@ -18,7 +29,13 @@ export async function GET(request: NextRequest) {
     const activity_id = searchParams.get("activity_id");
 
     if (!activity_id) {
-      return createErrorResponse("activity_id is required");
+      return createErrorResponse(
+        `${API_CONSTANTS.ERRORS.MISSING_FIELD}: activity_id`,
+      );
+    }
+
+    if (!isValidObjectId(activity_id)) {
+      return createErrorResponse(API_CONSTANTS.ERRORS.INVALID_OBJECT_ID, 400);
     }
 
     const options = await Option.find({ activity_id }).sort({ created_at: 1 });
@@ -54,13 +71,19 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!activity_id) {
-      return createErrorResponse("Missing required field: activity_id");
+      return createErrorResponse(
+        `${API_CONSTANTS.ERRORS.MISSING_FIELD}: activity_id`,
+      );
+    }
+
+    if (!isValidObjectId(activity_id)) {
+      return createErrorResponse(API_CONSTANTS.ERRORS.INVALID_OBJECT_ID, 400);
     }
 
     // Check if activity exists
     const activity = await Activity.findById(activity_id);
     if (!activity) {
-      return createErrorResponse("Activity not found", 404);
+      return createErrorResponse(API_CONSTANTS.ERRORS.ACTIVITY_NOT_FOUND, 404);
     }
 
     const option = await Option.create({

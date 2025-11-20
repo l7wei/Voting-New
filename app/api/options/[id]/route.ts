@@ -8,6 +8,17 @@ import {
 import { Activity } from "@/lib/models/Activity";
 import { Option } from "@/lib/models/Option";
 import connectDB from "@/lib/db";
+import { isValidObjectId } from "@/lib/validation";
+import { API_CONSTANTS } from "@/lib/constants";
+
+// Configure API route
+export const config = {
+  api: {
+    bodyParser: {
+      sizeLimit: "1mb",
+    },
+  },
+};
 
 // GET /api/options/[id] - Get single option
 export async function GET(
@@ -18,10 +29,15 @@ export async function GET(
     await connectDB();
 
     const { id } = await params;
+    
+    if (!isValidObjectId(id)) {
+      return createErrorResponse(API_CONSTANTS.ERRORS.INVALID_OBJECT_ID, 400);
+    }
+
     const option = await Option.findById(id);
 
     if (!option) {
-      return createErrorResponse("Option not found", 404);
+      return createErrorResponse(API_CONSTANTS.ERRORS.OPTION_NOT_FOUND, 404);
     }
 
     return createSuccessResponse(option);
@@ -54,6 +70,11 @@ export async function PUT(
     await connectDB();
 
     const { id } = await params;
+    
+    if (!isValidObjectId(id)) {
+      return createErrorResponse(API_CONSTANTS.ERRORS.INVALID_OBJECT_ID, 400);
+    }
+
     const body = await request.json();
 
     const updateData: Record<string, unknown> = {
@@ -71,7 +92,7 @@ export async function PUT(
     });
 
     if (!option) {
-      return createErrorResponse("Option not found", 404);
+      return createErrorResponse(API_CONSTANTS.ERRORS.OPTION_NOT_FOUND, 404);
     }
 
     return createSuccessResponse(option);
@@ -104,10 +125,15 @@ export async function DELETE(
     await connectDB();
 
     const { id } = await params;
+    
+    if (!isValidObjectId(id)) {
+      return createErrorResponse(API_CONSTANTS.ERRORS.INVALID_OBJECT_ID, 400);
+    }
+
     const option = await Option.findById(id);
 
     if (!option) {
-      return createErrorResponse("Option not found", 404);
+      return createErrorResponse(API_CONSTANTS.ERRORS.OPTION_NOT_FOUND, 404);
     }
 
     // Remove option from activity's options array
