@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { exchangeCodeForToken, getUserInfo } from "@/lib/oauth";
 import { generateToken } from "@/lib/auth";
+import { API_CONSTANTS } from "@/lib/constants";
 
 export async function GET(request: NextRequest) {
   try {
@@ -49,7 +50,7 @@ export async function GET(request: NextRequest) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "lax",
-      maxAge: 86400, // 1 day
+      maxAge: API_CONSTANTS.COOKIE_MAX_AGE,
       path: "/",
     });
 

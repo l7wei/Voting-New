@@ -1,5 +1,6 @@
 import { SignJWT, jwtVerify } from "jose";
 import { JWTPayload, AuthUser } from "@/types";
+import { API_CONSTANTS } from "@/lib/constants";
 
 function getTokenSecret(): string {
   if (!process.env.TOKEN_SECRET) {
@@ -24,7 +25,7 @@ export async function generateToken(user: AuthUser): Promise<string> {
 
   return await new SignJWT(payload)
     .setProtectedHeader({ alg: "HS256" })
-    .setExpirationTime("1d")
+    .setExpirationTime(API_CONSTANTS.JWT_EXPIRATION)
     .sign(secret);
 }
 

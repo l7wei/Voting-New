@@ -7,6 +7,8 @@ import {
 } from "@/lib/middleware";
 import { Vote } from "@/lib/models/Vote";
 import connectDB from "@/lib/db";
+import { isValidObjectId } from "@/lib/validation";
+import { API_CONSTANTS } from "@/lib/constants";
 
 // GET /api/activities/[id]/verification - Get voted UUIDs for verification (Admin only)
 export async function GET(
@@ -29,6 +31,10 @@ export async function GET(
     await connectDB();
 
     const { id } = await params;
+    
+    if (!isValidObjectId(id)) {
+      return createErrorResponse(API_CONSTANTS.ERRORS.INVALID_OBJECT_ID, 400);
+    }
 
     // Get all votes for this activity with only the token field
     const votes = await Vote.find({ activity_id: id })

@@ -1,16 +1,19 @@
 import { readFile } from "fs/promises";
 import { join } from "path";
 import { parse } from "csv-parse/sync";
+import { API_CONSTANTS } from "@/lib/constants";
 
 let adminCache: string[] = [];
 let lastLoadTime = 0;
-const CACHE_DURATION = 60000; // 1 minute cache
 
 export async function loadAdmins(): Promise<string[]> {
   const now = Date.now();
 
   // Return cached data if still valid
-  if (adminCache.length > 0 && now - lastLoadTime < CACHE_DURATION) {
+  if (
+    adminCache.length > 0 &&
+    now - lastLoadTime < API_CONSTANTS.ADMIN_CACHE_DURATION
+  ) {
     return adminCache;
   }
 

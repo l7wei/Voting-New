@@ -7,6 +7,8 @@ import {
 } from "@/lib/middleware";
 import { Activity } from "@/lib/models/Activity";
 import connectDB from "@/lib/db";
+import { validateDateRange, isValidRule } from "@/lib/validation";
+import { API_CONSTANTS } from "@/lib/constants";
 
 // GET /api/activities - List all activities
 export async function GET(request: NextRequest) {
@@ -56,25 +58,21 @@ export async function POST(request: NextRequest) {
 
     // Validate required fields
     if (!name || !type || !rule || !open_from || !open_to) {
-      return createErrorResponse("Missing required fields");
+      return createErrorResponse(API_CONSTANTS.ERRORS.MISSING_FIELD);
     }
 
     // Validate rule
-    const allowRules = ["choose_all", "choose_one"];
-    if (!allowRules.includes(rule)) {
-      return createErrorResponse(`Invalid rule: ${rule}`);
+    if (!isValidRule(rule)) {
+      return createErrorResponse(API_CONSTANTS.ERRORS.INVALID_RULE);
     }
 
     // Validate dates
     const openFrom = new Date(open_from);
     const openTo = new Date(open_to);
 
-    if (isNaN(openFrom.getTime()) || isNaN(openTo.getTime())) {
-      return createErrorResponse("Invalid date format");
-    }
-
-    if (openFrom >= openTo) {
-      return createErrorResponse("open_from must be before open_to");
+    const dateValidation = validateDateRange(openFrom, openTo);
+    if (!dateValidation.valid) {
+      return createErrorResponse(dateValidation.error!);
     }
 
     const activity = await Activity.create({
